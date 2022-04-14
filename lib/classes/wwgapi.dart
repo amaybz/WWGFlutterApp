@@ -40,6 +40,31 @@ class WebAPI {
     return games;
   }
 
+  Future<Bases> getBasesByGameID(String gameID) async {
+    Bases bases = Bases();
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request(
+        'POST', Uri.parse(_apiLink! + 'bases/GetAllBasesByGameID.php'));
+    request.body = '{"GameID" : "' + gameID + '"}';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String jsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        print("json data: " + jsonData);
+      }
+      bases = Bases.fromJson(json.decode(jsonData));
+    } else {
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
+    }
+    if (kDebugMode) {
+      print(bases.message);
+    }
+    return bases;
+  }
+
   Future<APIValidateToken> validateToken(String token) async {
     APIValidateToken apiValidateToken = APIValidateToken();
     var headers = {'Authorization': token};
@@ -255,6 +280,81 @@ class ValidateData {
     data['access'] = access;
     data['GameID'] = gameID;
     data['BaseID'] = baseID;
+    return data;
+  }
+}
+
+class Bases {
+  String? message;
+  List<BaseData>? data;
+
+  Bases({this.message, this.data});
+
+  Bases.fromJson(Map<String, dynamic> json) {
+    message = json['message'];
+    if (json['data'] != null) {
+      data = <BaseData>[];
+      json['data'].forEach((v) {
+        data!.add(BaseData.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['message'] = message;
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class BaseData {
+  int? baseID;
+  int? gameID;
+  String? baseName;
+  String? baseCode;
+  int? randomEvents;
+  int? randomChance;
+  int? randomListID;
+  int? level;
+  int? iDFaction;
+
+  BaseData(
+      {this.baseID,
+      this.gameID,
+      this.baseName,
+      this.baseCode,
+      this.randomEvents,
+      this.randomChance,
+      this.randomListID,
+      this.level,
+      this.iDFaction});
+
+  BaseData.fromJson(Map<String, dynamic> json) {
+    baseID = json['BaseID'];
+    gameID = json['GameID'];
+    baseName = json['BaseName'];
+    baseCode = json['BaseCode'];
+    randomEvents = json['RandomEvents'];
+    randomChance = json['RandomChance'];
+    randomListID = json['RandomListID'];
+    level = json['level'];
+    iDFaction = json['IDFaction'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['BaseID'] = baseID;
+    data['GameID'] = gameID;
+    data['BaseName'] = baseName;
+    data['BaseCode'] = baseCode;
+    data['RandomEvents'] = randomEvents;
+    data['RandomChance'] = randomChance;
+    data['RandomListID'] = randomListID;
+    data['level'] = level;
+    data['IDFaction'] = iDFaction;
     return data;
   }
 }
