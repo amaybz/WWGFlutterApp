@@ -16,17 +16,17 @@ class WebAPI {
     _apiKey = newValue;
   }
 
-  Future<Games> getGames(String token) async {
+  Future<Games> getGames() async {
     Games games = Games();
     var headers = {'Authorization': _apiKey!};
-    var request = http.Request('POST', Uri.parse(_apiLink! + 'games'));
+    var request = http.Request('POST', Uri.parse(_apiLink! + 'games/'));
     request.body = '';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       String jsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print(jsonData);
+        print("json data: " + jsonData);
       }
       games = Games.fromJson(json.decode(jsonData));
     } else {

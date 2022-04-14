@@ -91,6 +91,10 @@ class _MyHomePageState extends State<MyHomePage> {
   String versionName = "";
   String versionCode = "";
   WebAPI webAPI = WebAPI();
+  List<DropdownMenuItem<String>> listGamesDropdown = [
+    const DropdownMenuItem(value: "0", child: Text("None Loaded")),
+  ];
+  String? selectedGame = "0";
 
   @override
   void initState() {
@@ -99,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getVersionInfo();
     getTheme();
     validateAPIToken();
+    getGames();
   }
 
   void getTheme() async {
@@ -116,6 +121,26 @@ class _MyHomePageState extends State<MyHomePage> {
       _navigateToLogin(context);
     }
     return apiValidateToken;
+  }
+
+  void getGames() async {
+    Games games = await webAPI.getGames();
+
+    if (games.data != null) {
+      List<GamesData> gamesDataList = games.data as List<GamesData>;
+      listGamesDropdown.clear();
+      selectedGame = null;
+      for (GamesData gamesData in gamesDataList) {
+        setState(() {
+          listGamesDropdown.add(DropdownMenuItem(
+              value: gamesData.gameID.toString(),
+              child: Text(gamesData.gameName.toString())));
+          if (gamesData.defaultGame == 1) {
+            selectedGame = gamesData.gameID.toString();
+          }
+        });
+      }
+    }
   }
 
   void getVersionInfo() async {
@@ -203,6 +228,38 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
                 'Welcome to Weekend Wide Game Scoring System to start select a Game.',
                 style: Theme.of(context).textTheme.subtitle1),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                DropdownButton(
+                    value: selectedGame,
+                    items: listGamesDropdown,
+                    onChanged: (item) {
+                      setState(() {
+                        selectedGame = item as String;
+                      });
+                      if (kDebugMode) {
+                        print("Selected Game: " + selectedGame!);
+                      }
+                    }),
+                Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          getGames();
+                        },
+                        child: const Text("Refresh"))),
+                Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                    child: ElevatedButton(
+                        onPressed: () {},
+                        child: const Text("Download Game Data"))),
+              ],
+            ),
+
             //FutureBuilder<APIValidateToken>(
             //    future: validateAPIToken(),
             //    builder: (BuildContext context,
