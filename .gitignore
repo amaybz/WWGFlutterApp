@@ -14,6 +14,13 @@
 *.ipr
 *.iws
 .idea/
+/build/app/
+/build/kotlin/
+/build/package_info_plus/
+/build/shared_preferences_android/
+/build/6ac7e3556c178af6e3e303b5d6ac7d62/
+/build/flutter_assets/
+
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
@@ -29,7 +36,6 @@
 .packages
 .pub-cache/
 .pub/
-/build/
 
 # Web related
 lib/generated_plugin_registrant.dart
