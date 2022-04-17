@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="au.com.widegame.wwgscoringsystem.wwgnfcscoringsystem">
+    <uses-permission android:name="android.permission.NFC"/>
    <application
         android:label="wwgnfcscoringsystem"
         android:name="${applicationName}"
