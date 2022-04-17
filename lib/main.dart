@@ -2,8 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wwgnfcscoringsystem/classes/wwgapi.dart';
+import 'package:wwgnfcscoringsystem/game_bases.dart';
 import 'package:wwgnfcscoringsystem/login.dart';
 
+import 'classes/games.dart';
 import 'classes/sharedprefs.dart';
 
 void main() {
@@ -95,6 +97,8 @@ class _MyHomePageState extends State<MyHomePage> {
     const DropdownMenuItem(value: "0", child: Text("None Loaded")),
   ];
   String? selectedGame = "0";
+  List<BaseData> listBases = [];
+  bool loggedIn = false;
 
   @override
   void initState() {
@@ -102,8 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     getVersionInfo();
     getTheme();
-    validateAPIToken();
-    getGames();
+    getDataFromAPI();
   }
 
   void getTheme() async {
@@ -120,12 +123,24 @@ class _MyHomePageState extends State<MyHomePage> {
     if (apiValidateToken.message == "Unauthorized") {
       _navigateToLogin(context);
     }
+
     return apiValidateToken;
   }
 
-  void getGames() async {
-    Games games = await webAPI.getGames();
+  void getDataFromAPI() async {
+    APIValidateToken apiValidateToken = await validateAPIToken();
+    loggedIn = await webAPI.getLoggedIn;
+    if (kDebugMode) {
+      print("logged in: " + loggedIn.toString());
+    }
+    if (loggedIn) {
+      await getGames();
+      getBases(selectedGame!);
+    }
+  }
 
+  Future<String?> getGames() async {
+    Games games = await webAPI.getGames();
     if (games.data != null) {
       List<GamesData> gamesDataList = games.data as List<GamesData>;
       listGamesDropdown.clear();
@@ -140,6 +155,17 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         });
       }
+    }
+    return selectedGame;
+  }
+
+  void getBases(String gameID) async {
+    Bases bases = await webAPI.getBasesByGameID(gameID);
+    if (bases.data != null) {
+      List<BaseData> basesDataList = bases.data as List<BaseData>;
+      setState(() {
+        listBases = basesDataList;
+      });
     }
   }
 
@@ -156,6 +182,14 @@ class _MyHomePageState extends State<MyHomePage> {
       context,
       // Create the SelectionScreen in the next step.
       MaterialPageRoute(builder: (context) => const Login()),
+    );
+  }
+
+  _navigateToGameBases(BuildContext context) async {
+    await Navigator.push(
+      context,
+      // Create the SelectionScreen in the next step.
+      MaterialPageRoute(builder: (context) => const GameBases()),
     );
   }
 
@@ -238,6 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onChanged: (item) {
                       setState(() {
                         selectedGame = item as String;
+                        getBases(selectedGame!);
                       });
                       if (kDebugMode) {
                         print("Selected Game: " + selectedGame!);
@@ -248,16 +283,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                     child: ElevatedButton(
                         onPressed: () {
-                          getGames();
+                          getDataFromAPI();
                         },
                         child: const Text("Refresh"))),
-                Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    child: ElevatedButton(
-                        onPressed: () {},
-                        child: const Text("Download Game Data"))),
               ],
+            ),
+            Expanded(
+              child: _buildListViewBases(),
             ),
 
             //FutureBuilder<APIValidateToken>(
@@ -278,6 +310,45 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildListViewBases() {
+    return ListView.builder(
+        padding: const EdgeInsets.all(10.0),
+        itemCount: listBases.length,
+        itemBuilder: (context, index) {
+          //return Row();
+          return _buildRowBases(listBases[index]);
+        });
+  }
+
+  Widget _buildRowBases(BaseData item) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Column(
+              children: [
+                Text(
+                  item.baseName!,
+                ),
+              ],
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue, // background
+                onPrimary: Colors.white, // foreground
+              ),
+              onPressed: () {
+                setState(() {
+                  _navigateToGameBases(context);
+                });
+              },
+              child: const Text('Select'),
+            ),
+          ]),
     );
   }
 }
