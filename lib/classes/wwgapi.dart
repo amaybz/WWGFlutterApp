@@ -2,15 +2,20 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'api_login.dart';
+import 'games.dart';
+
 class WebAPI {
   static final WebAPI _wwgApi = WebAPI._internal();
 
   String? _apiKey = "";
   String? _apiLink;
+  bool _loggedIn = false;
 
   get getApiKey => _apiKey;
 
   get getApiLink => _apiLink;
+  get getLoggedIn => _loggedIn;
 
   void setApiKey(newValue) {
     _apiKey = newValue;
@@ -81,9 +86,11 @@ class WebAPI {
 
       apiValidateToken = APIValidateToken.fromJson(json.decode(jsonData));
       _apiKey = token;
+      _loggedIn = true;
     } else {
       _apiKey = "";
       apiValidateToken.message = "Unauthorized";
+      _loggedIn = false;
       if (kDebugMode) {
         print(response.reasonPhrase);
       }
@@ -107,9 +114,11 @@ class WebAPI {
 
       wwgAPILogin = APILogin.fromJson(json.decode(loginJson));
       _apiKey = wwgAPILogin.jwt;
+      _loggedIn = true;
     } else {
       if (kDebugMode) {
         print(response.reasonPhrase);
+        _loggedIn = false;
       }
     }
     if (kDebugMode) {
@@ -120,110 +129,11 @@ class WebAPI {
 
   factory WebAPI() {
     _wwgApi._apiLink = "https://app.widegame.com.au/api/";
+    _wwgApi._loggedIn = false;
     return _wwgApi;
   }
 
   WebAPI._internal();
-}
-
-class APILogin {
-  String? message;
-  String? jwt;
-  String? username;
-  String? name;
-  int? access;
-  int? gameID;
-  int? baseID;
-
-  APILogin(
-      {this.message,
-      this.jwt,
-      this.username,
-      this.name,
-      this.access,
-      this.gameID,
-      this.baseID});
-
-  APILogin.fromJson(Map<String, dynamic> json) {
-    message = json['message'];
-    jwt = json['jwt'];
-    username = json['username'];
-    name = json['name'];
-    access = json['access'];
-    gameID = json['GameID'];
-    baseID = json['BaseID'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['message'] = message;
-    data['jwt'] = jwt;
-    data['username'] = username;
-    data['name'] = name;
-    data['access'] = access;
-    data['GameID'] = gameID;
-    data['BaseID'] = baseID;
-    return data;
-  }
-}
-
-class Games {
-  String? message;
-  List<GamesData>? data;
-
-  Games({this.message, this.data});
-
-  Games.fromJson(Map<String, dynamic> json) {
-    message = json['message'];
-    if (json['data'] != null) {
-      data = <GamesData>[];
-      json['data'].forEach((v) {
-        data!.add(GamesData.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['message'] = this.message;
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
-
-class GamesData {
-  int? gameID;
-  String? gameName;
-  int? remote;
-  String? deviceName;
-  int? defaultGame;
-
-  GamesData(
-      {this.gameID,
-      this.gameName,
-      this.remote,
-      this.deviceName,
-      this.defaultGame});
-
-  GamesData.fromJson(Map<String, dynamic> json) {
-    gameID = json['GameID'];
-    gameName = json['GameName'];
-    remote = json['Remote'];
-    deviceName = json['DeviceName'];
-    defaultGame = json['DefaultGame'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['GameID'] = gameID;
-    data['GameName'] = gameName;
-    data['Remote'] = remote;
-    data['DeviceName'] = deviceName;
-    data['DefaultGame'] = defaultGame;
-    return data;
-  }
 }
 
 class APIValidateToken {
