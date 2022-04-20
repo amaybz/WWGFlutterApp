@@ -2,21 +2,26 @@ import 'dart:convert';
 
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 
+import '../classes/patrol_sign_in.dart';
+
 class ScanPatrol extends StatefulWidget {
   const ScanPatrol({
     Key? key,
     required this.patrolData,
     required this.onSignIn,
+    required this.patrolsSignedIn,
   }) : super(key: key);
 
   final List<PatrolData> patrolData;
   final Function(String patrolTag) onSignIn;
+  final List<PatrolSignIn> patrolsSignedIn;
 
   @override
   State<ScanPatrol> createState() => _ScanPatrolState();
@@ -45,6 +50,11 @@ class _ScanPatrolState extends State<ScanPatrol> {
           final result = await handleTag(tag);
           if (result == null) return;
           setState(() => ndefText = result);
+          final splitData = ndefText?.split(':');
+          if (kDebugMode) {
+            print(splitData);
+          } // [Hello, world!];
+          widget.onSignIn(splitData![0]);
         } catch (e) {
           await NfcManager.instance.stopSession().catchError((_) {
             /* no op */
@@ -118,11 +128,10 @@ class _ScanPatrolState extends State<ScanPatrol> {
 
   @override
   Widget build(BuildContext context) {
-    return FractionallySizedBox(
-      widthFactor: 0.99,
-      child: Column(
+    return Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
+        children: <Widget>[
           Container(
             margin: const EdgeInsets.all(2.0),
             padding: const EdgeInsets.all(2.0),
@@ -219,8 +228,42 @@ class _ScanPatrolState extends State<ScanPatrol> {
                   ],
                 )),
           ),
-        ],
-      ),
+          Expanded(
+            flex: 2,
+            child: _buildListView(),
+          ),
+        ]);
+  }
+
+  Widget _buildListView() {
+    return ListView.builder(
+        padding: const EdgeInsets.all(10.0),
+        itemCount: widget.patrolsSignedIn.length,
+        itemBuilder: (context, index) {
+          return _buildRowPitData(widget.patrolsSignedIn[index]);
+        });
+  }
+
+  Widget _buildRowPitData(PatrolSignIn item) {
+    return Container(
+      padding: const EdgeInsets.all(5.0),
+      child:
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+        ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 250, maxWidth: 400),
+          child: Column(
+            children: [
+              Text(item.iDPatrol.toString()),
+              Text("Sign in time: " + item.scanIn.toString()),
+            ],
+          ),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(),
+          onPressed: () {},
+          child: const Text('Check Out'),
+        ),
+      ]),
     );
   }
 }
