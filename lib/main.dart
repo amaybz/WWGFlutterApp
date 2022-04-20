@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
@@ -295,31 +296,34 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
                 'Welcome to Weekend Wide Game Scoring System to start select a Game.',
                 style: Theme.of(context).textTheme.subtitle1),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                DropdownButton(
-                    value: selectedGame,
-                    items: listGamesDropdown,
-                    onChanged: (item) {
-                      setState(() {
-                        selectedGame = item as String;
-                        getBases(selectedGame!);
-                      });
-                      if (kDebugMode) {
-                        print("Selected Game: " + selectedGame!);
-                      }
-                    }),
-                Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    child: ElevatedButton(
-                        onPressed: () {
-                          getDataFromAPI();
-                        },
-                        child: const Text("Refresh"))),
-              ],
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 800),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  DropdownButton(
+                      value: selectedGame,
+                      items: listGamesDropdown,
+                      onChanged: (item) {
+                        setState(() {
+                          selectedGame = item as String;
+                          getBases(selectedGame!);
+                        });
+                        if (kDebugMode) {
+                          print("Selected Game: " + selectedGame!);
+                        }
+                      }),
+                  Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 0, horizontal: 10),
+                      child: ElevatedButton(
+                          onPressed: () {
+                            getDataFromAPI();
+                          },
+                          child: const Text("Refresh"))),
+                ],
+              ),
             ),
             Expanded(
               child: _buildListViewBases(),
@@ -357,31 +361,34 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildRowBases(BaseData item) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Column(
-              children: [
-                Text(
-                  item.baseName!,
-                ),
-              ],
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.blue, // background
-                onPrimary: Colors.white, // foreground
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 800),
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Column(
+                children: [
+                  Text(
+                    item.baseName!,
+                  ),
+                ],
               ),
-              onPressed: () {
-                setState(() {
-                  _navigateToGameBases(context, item.gameID!, item);
-                });
-              },
-              child: const Text('Select'),
-            ),
-          ]),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.blue, // background
+                  onPrimary: Colors.white, // foreground
+                ),
+                onPressed: () {
+                  setState(() {
+                    _navigateToGameBases(context, item.gameID!, item);
+                  });
+                },
+                child: const Text('Select'),
+              ),
+            ]),
+      ),
     );
   }
 }

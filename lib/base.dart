@@ -155,10 +155,9 @@ class _BaseState extends State<Base> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-              margin: const EdgeInsets.all(2.0),
-              padding: const EdgeInsets.all(2.0),
-              child: _showTab(_selectedTab)),
+          Expanded(
+            child: _showTab(_selectedTab),
+          ),
         ],
       ),
     );
@@ -168,6 +167,7 @@ class _BaseState extends State<Base> {
     if (index == 0) {
       return ScanPatrol(
         patrolData: widget.patrols,
+        patrolsSignedIn: patrolsSignedIn,
         onSignIn: signInPatrol,
       );
     }
@@ -221,7 +221,7 @@ class _BaseState extends State<Base> {
         txtValueResult.text = "";
       });
     } else {
-      DialogBuilder(context).showAlertOKDialog("Result", "error: " + error);
+      DialogBuilder(context).showAlertOKDialog("Result", "Error: " + error);
     }
     //getSignedInPatrols();
     //verify data and submit to API
@@ -233,11 +233,19 @@ class _BaseState extends State<Base> {
 
   Future<void> signInPatrol(gameTag) async {
     DialogBuilder(context).showLoadingIndicator("Signing in Patrol");
+    bool inDB = false;
     PatrolData patrol = PatrolData();
     PatrolSignIn patrolSignIn = PatrolSignIn();
     patrol = widget.patrols.firstWhere((element) => element.gameTag == gameTag,
         orElse: () => PatrolData());
-    patrolSignIn.iDPatrol = patrol.gameTag;
+    if (patrol.gameTag != null) {
+      patrolSignIn.iDPatrol = patrol.gameTag;
+      inDB = true;
+    } else {
+      patrolSignIn.iDPatrol = gameTag;
+      inDB = false;
+    }
+
     patrolSignIn.iDBaseCode = widget.base.baseCode;
     patrolSignIn.gameID = widget.base.gameID;
     patrolSignIn.offline = 0;
@@ -260,7 +268,11 @@ class _BaseState extends State<Base> {
     DialogBuilder(context).hideOpenDialog();
     if (signedIn) {
       DialogBuilder(context).showAlertOKDialog(
-          "Signed in Patrol", patrol.gameTag! + " " + patrol.patrolName!);
+          "Signed in Patrol", patrolSignIn.iDPatrol.toString());
+      if (!inDB) {
+        DialogBuilder(context).showAlertOKDialog(
+            "Patrol not in database, CONTACT WWG ADMIN! ", gameTag);
+      }
     } else {
       DialogBuilder(context).showAlertOKDialog("FAILED to Sign in Patrol",
           patrol.gameTag! + " " + patrol.patrolName!);
