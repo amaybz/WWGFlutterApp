@@ -1,0 +1,2 @@
+io/flutter/plugins/nfcmanager/BuildConfig.java
+ io.flutter.plugins.nfcmanager.BuildConfig
