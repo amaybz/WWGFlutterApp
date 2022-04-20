@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:wwgnfcscoringsystem/classes/activities.dart';
+import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/wwgapi.dart';
-import 'package:wwgnfcscoringsystem/game_bases.dart';
+import 'package:wwgnfcscoringsystem/base.dart';
 import 'package:wwgnfcscoringsystem/login.dart';
-
-import 'classes/games.dart';
+import 'classes/base_results.dart';
+import 'classes/games_results.dart';
 import 'classes/sharedprefs.dart';
 
 void main() {
@@ -99,6 +101,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String? selectedGame = "0";
   List<BaseData> listBases = [];
   bool loggedIn = false;
+  List<ActivityData> listActivities = [];
+  List<PatrolData> listPatrols = [];
 
   @override
   void initState() {
@@ -136,11 +140,13 @@ class _MyHomePageState extends State<MyHomePage> {
     if (loggedIn) {
       await getGames();
       getBases(selectedGame!);
+      getActivities(selectedGame!);
+      getPatrols(selectedGame!);
     }
   }
 
   Future<String?> getGames() async {
-    Games games = await webAPI.getGames();
+    GamesResults games = await webAPI.getGames();
     if (games.data != null) {
       List<GamesData> gamesDataList = games.data as List<GamesData>;
       listGamesDropdown.clear();
@@ -160,11 +166,32 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void getBases(String gameID) async {
-    Bases bases = await webAPI.getBasesByGameID(gameID);
+    BasesResults bases = await webAPI.getBasesByGameID(gameID);
     if (bases.data != null) {
       List<BaseData> basesDataList = bases.data as List<BaseData>;
       setState(() {
         listBases = basesDataList;
+      });
+    }
+  }
+
+  void getActivities(String gameID) async {
+    Activities activities = await webAPI.getActivitiesByGameID(gameID);
+    if (activities.data != null) {
+      List<ActivityData> activityDataList =
+          activities.data as List<ActivityData>;
+      setState(() {
+        listActivities = activityDataList;
+      });
+    }
+  }
+
+  void getPatrols(String gameID) async {
+    PatrolResults patrolResults = await webAPI.getPatrolsByGameID(gameID);
+    if (patrolResults.data != null) {
+      List<PatrolData> dataList = patrolResults.data as List<PatrolData>;
+      setState(() {
+        listPatrols = dataList;
       });
     }
   }
@@ -185,11 +212,17 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  _navigateToGameBases(BuildContext context) async {
+  _navigateToGameBases(BuildContext context, int gameID, BaseData base) async {
     await Navigator.push(
       context,
       // Create the SelectionScreen in the next step.
-      MaterialPageRoute(builder: (context) => const GameBases()),
+      MaterialPageRoute(
+          builder: (context) => Base(
+                gameID: gameID,
+                base: base,
+                activityData: listActivities,
+                patrols: listPatrols,
+              )),
     );
   }
 
@@ -343,7 +376,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               onPressed: () {
                 setState(() {
-                  _navigateToGameBases(context);
+                  _navigateToGameBases(context, item.gameID!, item);
                 });
               },
               child: const Text('Select'),

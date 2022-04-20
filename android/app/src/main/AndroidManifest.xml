@@ -2,7 +2,7 @@
     package="au.com.widegame.wwgscoringsystem.wwgnfcscoringsystem">
     <uses-permission android:name="android.permission.NFC"/>
    <application
-        android:label="wwgnfcscoringsystem"
+        android:label="WWG Scoring System"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
