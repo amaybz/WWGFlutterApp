@@ -1,9 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:wwgnfcscoringsystem/classes/activities.dart';
+import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
+import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
+import 'package:wwgnfcscoringsystem/classes/scan_results.dart';
 import 'dart:convert';
 
 import 'api_login.dart';
-import 'games.dart';
+import 'base_results.dart';
+import 'games_results.dart';
 
 class WebAPI {
   static final WebAPI _wwgApi = WebAPI._internal();
@@ -21,8 +26,8 @@ class WebAPI {
     _apiKey = newValue;
   }
 
-  Future<Games> getGames() async {
-    Games games = Games();
+  Future<GamesResults> getGames() async {
+    GamesResults games = GamesResults();
     var headers = {'Authorization': _apiKey!};
     var request = http.Request('POST', Uri.parse(_apiLink! + 'games/'));
     request.body = '';
@@ -33,7 +38,7 @@ class WebAPI {
       if (kDebugMode) {
         print("json data: " + jsonData);
       }
-      games = Games.fromJson(json.decode(jsonData));
+      games = GamesResults.fromJson(json.decode(jsonData));
     } else {
       if (kDebugMode) {
         print(response.reasonPhrase);
@@ -45,8 +50,8 @@ class WebAPI {
     return games;
   }
 
-  Future<Bases> getBasesByGameID(String gameID) async {
-    Bases bases = Bases();
+  Future<BasesResults> getBasesByGameID(String gameID) async {
+    BasesResults bases = BasesResults();
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
         'POST', Uri.parse(_apiLink! + 'bases/GetAllBasesByGameID.php'));
@@ -58,7 +63,7 @@ class WebAPI {
       if (kDebugMode) {
         print("json data: " + jsonData);
       }
-      bases = Bases.fromJson(json.decode(jsonData));
+      bases = BasesResults.fromJson(json.decode(jsonData));
     } else {
       if (kDebugMode) {
         print(response.reasonPhrase);
@@ -68,6 +73,173 @@ class WebAPI {
       print(bases.message);
     }
     return bases;
+  }
+
+  Future<Activities> getActivitiesByGameID(String gameID) async {
+    Activities activities = Activities();
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request('POST',
+        Uri.parse(_apiLink! + 'activities/GetAllActivitiesByGameID.php'));
+    request.body = '{"GameID" : ' + gameID + '}';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String jsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        print("json data: " + jsonData);
+      }
+      activities = Activities.fromJson(json.decode(jsonData));
+    } else {
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
+    }
+    if (kDebugMode) {
+      print(activities.message);
+    }
+    return activities;
+  }
+
+  Future<PatrolResults> getPatrolsByGameID(String gameID) async {
+    PatrolResults patrolResults = PatrolResults();
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request(
+        'POST', Uri.parse(_apiLink! + 'patrols/GetAllPatrolsByGameID.php'));
+    request.body = '{"GameID" : ' + gameID + '}';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String jsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        print("json data: " + jsonData);
+      }
+      patrolResults = PatrolResults.fromJson(json.decode(jsonData));
+    } else {
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
+    }
+    if (kDebugMode) {
+      print(patrolResults.message);
+    }
+    return patrolResults;
+  }
+
+  Future<List<PatrolSignIn>> getSignedInPatrols(
+      String gameID, String baseCode) async {
+    List<PatrolSignIn> patrolSignIn = [];
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request(
+        'POST', Uri.parse(_apiLink! + 'basesignin/all_patrols_signed_in.php'));
+    request.body =
+        '{"IDBaseCode" : "' + baseCode + '","GameID" : ' + gameID + '}';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String strjsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        print("json data: " + strjsonData);
+      }
+      List<dynamic> jsonData = json.decode(strjsonData);
+      if (jsonData[0] != "None") {
+        for (var i = 0; i < jsonData.length; i++) {
+          patrolSignIn.add(PatrolSignIn.fromJson(jsonData[i]));
+        }
+      } else {
+        if (kDebugMode) {
+          print(response.reasonPhrase);
+        }
+      }
+    }
+    if (kDebugMode) {
+      print(patrolSignIn);
+    }
+    return patrolSignIn;
+  }
+
+  Future<bool> setPatrolSignIn(PatrolSignIn patrolSignIn) async {
+    var headers = {'Authorization': _apiKey!};
+    var request =
+        http.Request('POST', Uri.parse(_apiLink! + 'basesignin/sign_in.php'));
+    request.body = '{"IDPatrol" : "' +
+        patrolSignIn.iDPatrol! +
+        '", "IDBaseCode" : "' +
+        patrolSignIn.iDBaseCode! +
+        '", "GameID" : "' +
+        patrolSignIn.gameID.toString() +
+        '", "ScanIn" : "' +
+        patrolSignIn.scanIn.toString() +
+        '","offline" : "' +
+        patrolSignIn.offline.toString() +
+        '"}';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String strJsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        print("json data: " + strJsonData);
+      }
+      Map<String, dynamic> jsonData = json.decode(strJsonData);
+      if (jsonData['data']['SignedIn'] == "true") {
+        return true;
+      } else {
+        if (kDebugMode) {
+          print(response.reasonPhrase);
+        }
+      }
+    }
+    if (kDebugMode) {
+      print(patrolSignIn);
+    }
+    return false;
+  }
+
+  Future<bool> insertScan(ScanData scanData) async {
+    var headers = {'Authorization': _apiKey!};
+    var request =
+        http.Request('POST', Uri.parse(_apiLink! + 'scan/insertScan.php'));
+    request.body = '{"GameTag" : "' +
+        scanData.gameTag! +
+        '", "ScanTime" : "' +
+        scanData.scanTime! +
+        '", "GameID" : "' +
+        scanData.gameID.toString() +
+        '", "IDBaseCode" : "' +
+        scanData.iDBaseCode! +
+        '","IDActivityCode" : "' +
+        scanData.iDActivityCode! +
+        '","Comment" : "' +
+        scanData.comment.toString() +
+        '","Offline" : "' +
+        scanData.offline.toString() +
+        '","ResultValue" : "' +
+        scanData.resultValue.toString() +
+        '","Result" : "' +
+        scanData.result! +
+        '","IDOpponent" : "' +
+        scanData.iDOpponent.toString() +
+        '"}';
+    print(request.body);
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String strJsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        print("json data: " + strJsonData);
+      }
+      Map<String, dynamic> jsonData = json.decode(strJsonData);
+      if (jsonData['code'] == "1") {
+        return true;
+      } else {
+        if (kDebugMode) {
+          print(response.reasonPhrase);
+        }
+      }
+    }
+    if (kDebugMode) {
+      print(scanData);
+    }
+    return false;
   }
 
   Future<APIValidateToken> validateToken(String token) async {
@@ -190,81 +362,6 @@ class ValidateData {
     data['access'] = access;
     data['GameID'] = gameID;
     data['BaseID'] = baseID;
-    return data;
-  }
-}
-
-class Bases {
-  String? message;
-  List<BaseData>? data;
-
-  Bases({this.message, this.data});
-
-  Bases.fromJson(Map<String, dynamic> json) {
-    message = json['message'];
-    if (json['data'] != null) {
-      data = <BaseData>[];
-      json['data'].forEach((v) {
-        data!.add(BaseData.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['message'] = message;
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
-
-class BaseData {
-  int? baseID;
-  int? gameID;
-  String? baseName;
-  String? baseCode;
-  int? randomEvents;
-  int? randomChance;
-  int? randomListID;
-  int? level;
-  int? iDFaction;
-
-  BaseData(
-      {this.baseID,
-      this.gameID,
-      this.baseName,
-      this.baseCode,
-      this.randomEvents,
-      this.randomChance,
-      this.randomListID,
-      this.level,
-      this.iDFaction});
-
-  BaseData.fromJson(Map<String, dynamic> json) {
-    baseID = json['BaseID'];
-    gameID = json['GameID'];
-    baseName = json['BaseName'];
-    baseCode = json['BaseCode'];
-    randomEvents = json['RandomEvents'];
-    randomChance = json['RandomChance'];
-    randomListID = json['RandomListID'];
-    level = json['level'];
-    iDFaction = json['IDFaction'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['BaseID'] = baseID;
-    data['GameID'] = gameID;
-    data['BaseName'] = baseName;
-    data['BaseCode'] = baseCode;
-    data['RandomEvents'] = randomEvents;
-    data['RandomChance'] = randomChance;
-    data['RandomListID'] = randomListID;
-    data['level'] = level;
-    data['IDFaction'] = iDFaction;
     return data;
   }
 }
