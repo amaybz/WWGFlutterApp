@@ -71,4 +71,15 @@ class BaseData {
     data['IDFaction'] = iDFaction;
     return data;
   }
+
+  @override
+  String toString() {
+    return 'BaseData{'
+        'GameID: $gameID, '
+        'BaseID: $baseID, '
+        'BaseName: $baseName, '
+        'BaseCode: $baseCode, '
+        'level: $level, '
+        'IDFaction: $iDFaction, ';
+  }
 }

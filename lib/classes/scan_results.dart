@@ -66,17 +66,17 @@ class ScanData {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['GameTag'] = this.gameTag;
-    data['ScanTime'] = this.scanTime;
+    data['GameTag'] = gameTag;
+    data['ScanTime'] = scanTime;
     data['GameID'] = gameID;
-    data['IDBaseCode'] = this.iDBaseCode;
-    data['IDActivityCode'] = this.iDActivityCode;
-    data['Comment'] = this.comment;
-    data['Offline'] = this.offline;
-    data['ResultValue'] = this.resultValue;
-    data['Result'] = this.result;
-    data['IDOpponent'] = this.iDOpponent;
-    data['IDFaction'] = this.iDFaction;
+    data['IDBaseCode'] = iDBaseCode;
+    data['IDActivityCode'] = iDActivityCode;
+    data['Comment'] = comment;
+    data['Offline'] = offline;
+    data['ResultValue'] = resultValue;
+    data['Result'] = result;
+    data['IDOpponent'] = iDOpponent;
+    data['IDFaction'] = iDFaction;
     return data;
   }
 

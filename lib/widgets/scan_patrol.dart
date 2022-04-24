@@ -8,19 +8,22 @@ import 'package:flutter/material.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
+import 'package:wwgnfcscoringsystem/classes/utils.dart';
 
 import '../classes/patrol_sign_in.dart';
 
 class ScanPatrol extends StatefulWidget {
-  const ScanPatrol({
-    Key? key,
-    required this.patrolData,
-    required this.onSignIn,
-    required this.patrolsSignedIn,
-  }) : super(key: key);
+  const ScanPatrol(
+      {Key? key,
+      required this.patrolData,
+      required this.onSignIn,
+      required this.patrolsSignedIn,
+      required this.onSignOut})
+      : super(key: key);
 
   final List<PatrolData> patrolData;
   final Function(String patrolTag) onSignIn;
+  final Function(String patrolTag) onSignOut;
   final List<PatrolSignIn> patrolsSignedIn;
 
   @override
@@ -253,14 +256,22 @@ class _ScanPatrolState extends State<ScanPatrol> {
           constraints: const BoxConstraints(minWidth: 250, maxWidth: 400),
           child: Column(
             children: [
-              Text(item.iDPatrol.toString()),
+              Text(item.iDPatrol.toString() +
+                  ": " +
+                  Utils()
+                      .getPatrolDataByGameTag(
+                          item.iDPatrol.toString(), widget.patrolData)
+                      .patrolName
+                      .toString()),
               Text("Sign in time: " + item.scanIn.toString()),
             ],
           ),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(),
-          onPressed: () {},
+          onPressed: () {
+            widget.onSignOut(item.iDPatrol!);
+          },
           child: const Text('Check Out'),
         ),
       ]),

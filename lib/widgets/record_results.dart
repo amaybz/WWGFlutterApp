@@ -6,6 +6,8 @@ import 'package:wwgnfcscoringsystem/classes/scan_results.dart';
 import 'package:wwgnfcscoringsystem/widgets/widget_success_fail.dart';
 import 'package:wwgnfcscoringsystem/widgets/widget_value_result.dart';
 
+import '../classes/utils.dart';
+
 class RecordResults extends StatefulWidget {
   const RecordResults({
     Key? key,
@@ -87,17 +89,7 @@ class _RecordResultsState extends State<RecordResults> {
 
   void submitClicked() {
     DateTime now = DateTime.now();
-    widget.scanData.scanTime = now.year.toString() +
-        "-" +
-        now.month.toString() +
-        "-" +
-        now.day.toString() +
-        " " +
-        now.hour.toString() +
-        ":" +
-        now.minute.toString() +
-        ":" +
-        now.second.toString();
+    widget.scanData.scanTime = Utils().getCurrentDateSQL();
     if (kDebugMode) {
       print(widget.scanData.scanTime);
     }

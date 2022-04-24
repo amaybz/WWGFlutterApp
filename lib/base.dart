@@ -2,13 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
+import 'package:wwgnfcscoringsystem/classes/database/datamanager.dart';
 import 'package:wwgnfcscoringsystem/classes/dialog_builder.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/widgets/record_results.dart';
 import 'package:wwgnfcscoringsystem/widgets/scan_patrol.dart';
 import 'classes/patrol_sign_in.dart';
 import 'classes/scan_results.dart';
-import 'classes/wwgapi.dart';
+import 'classes/utils.dart';
+import 'classes/database/wwgapi.dart';
 import 'login.dart';
 
 class Base extends StatefulWidget {
@@ -36,8 +38,10 @@ class _BaseState extends State<Base> {
   ScanData scanData = ScanData();
   List<PatrolSignIn> patrolsSignedIn = [];
   WebAPI webAPI = WebAPI();
+  DataManager dataManager = DataManager();
   final TextEditingController txtValueResult = TextEditingController();
   String error = "Please fill in all Fields";
+  bool offline = false;
 
   @override
   void initState() {
@@ -49,10 +53,10 @@ class _BaseState extends State<Base> {
   }
 
   Future<void> getSignedInPatrols() async {
-    List<PatrolSignIn> patrolSignIn = await webAPI.getSignedInPatrols(
+    List<PatrolSignIn>? patrolSignIn = await dataManager.getSignedInPatrols(
         widget.base.gameID.toString(), widget.base.baseCode!);
     setState(() {
-      patrolsSignedIn = patrolSignIn;
+      patrolsSignedIn = patrolSignIn!;
     });
   }
 
@@ -169,6 +173,7 @@ class _BaseState extends State<Base> {
         patrolData: widget.patrols,
         patrolsSignedIn: patrolsSignedIn,
         onSignIn: signInPatrol,
+        onSignOut: signOutPatrol,
       );
     }
     if (index == 1) {
@@ -192,7 +197,9 @@ class _BaseState extends State<Base> {
   }
 
   Future<void> submitResult(
-      updatedScanData, ActivityData selectedActivity) async {
+    updatedScanData,
+    ActivityData selectedActivity,
+  ) async {
     bool resultSubmitted = false;
     bool validData = true;
 
@@ -210,7 +217,7 @@ class _BaseState extends State<Base> {
       scanData.comment ??= "";
       scanData.offline ??= 0;
       scanData.resultValue ??= 0;
-      resultSubmitted = await webAPI.insertScan(scanData);
+      resultSubmitted = await dataManager.insertScan(scanData);
     }
     if (resultSubmitted) {
       DialogBuilder(context).showAlertOKDialog("Result", "Submitted");
@@ -234,10 +241,10 @@ class _BaseState extends State<Base> {
   Future<void> signInPatrol(gameTag) async {
     DialogBuilder(context).showLoadingIndicator("Signing in Patrol");
     bool inDB = false;
+    bool signedIn = false;
     PatrolData patrol = PatrolData();
     PatrolSignIn patrolSignIn = PatrolSignIn();
-    patrol = widget.patrols.firstWhere((element) => element.gameTag == gameTag,
-        orElse: () => PatrolData());
+    patrol = Utils().getPatrolDataByGameTag(gameTag, widget.patrols);
     if (patrol.gameTag != null) {
       patrolSignIn.iDPatrol = patrol.gameTag;
       inDB = true;
@@ -245,25 +252,14 @@ class _BaseState extends State<Base> {
       patrolSignIn.iDPatrol = gameTag;
       inDB = false;
     }
-
     patrolSignIn.iDBaseCode = widget.base.baseCode;
     patrolSignIn.gameID = widget.base.gameID;
     patrolSignIn.offline = 0;
+    patrolSignIn.status = 1;
 
     //get current time
-    DateTime now = DateTime.now();
-    patrolSignIn.scanIn = now.year.toString() +
-        "-" +
-        now.month.toString() +
-        "-" +
-        now.day.toString() +
-        " " +
-        now.hour.toString() +
-        ":" +
-        now.minute.toString() +
-        ":" +
-        now.second.toString();
-    bool signedIn = await webAPI.setPatrolSignIn(patrolSignIn);
+    patrolSignIn.scanIn = Utils().getCurrentDateSQL();
+    signedIn = await dataManager.signInPatrol(patrolSignIn);
     await getSignedInPatrols();
     DialogBuilder(context).hideOpenDialog();
     if (signedIn) {
@@ -277,6 +273,35 @@ class _BaseState extends State<Base> {
       DialogBuilder(context).showAlertOKDialog("FAILED to Sign in Patrol",
           patrol.gameTag! + " " + patrol.patrolName!);
     }
+
+    if (kDebugMode) {
+      //print(patrolSignIn);
+    }
+  }
+
+  Future<void> signOutPatrol(gameTag) async {
+    PatrolSignIn patrol = PatrolSignIn();
+    patrol = patrolsSignedIn.firstWhere(
+        (element) => element.iDPatrol == gameTag,
+        orElse: () => PatrolSignIn());
+    if (patrol.iDPatrol != null) {
+      DialogBuilder(context).showLoadingIndicator("Signing Out Patrol");
+      //sign out patrol
+      patrol.scanOut = Utils().getCurrentDateSQL();
+      bool signedOut = await dataManager.signOutPatrol(patrol);
+      DialogBuilder(context).hideOpenDialog();
+      if (signedOut) {
+        DialogBuilder(context)
+            .showAlertOKDialog("Signed out Patrol", patrol.iDPatrol.toString());
+      } else {
+        DialogBuilder(context)
+            .showAlertOKDialog("FAILED to Sign Out Patrol", patrol.iDPatrol!);
+      }
+    } else {
+      //patrol already signed out
+    }
+
+    await getSignedInPatrols();
 
     if (kDebugMode) {
       //print(patrolSignIn);

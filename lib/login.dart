@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'classes/api_login.dart';
-import 'classes/sharedprefs.dart';
-import 'classes/wwgapi.dart';
+import 'classes/database/sharedprefs.dart';
+import 'classes/database/wwgapi.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);

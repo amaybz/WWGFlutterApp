@@ -146,7 +146,7 @@ class ActivityData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['ActivityID'] = this.activityID;
     data['BaseID'] = this.baseID;
     data['ActivityName'] = this.activityName;
