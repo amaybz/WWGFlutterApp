@@ -103,19 +103,21 @@ class DataManager {
     try {
       signedIn = await webAPI.setPatrolSignIn(patrolSignIn);
     } on SocketException {
-      webAPI.setOffline(true);
-      patrolSignIn.offline = 1;
-      insertID = await localDB.insertPatrolSignIn(patrolSignIn);
-      if (insertID != null) {
-        if (kDebugMode) {
-          print("Unable to upload Sign in to API");
-          print("Offline Record inserted: " + insertID.toString());
-        }
-        signedIn = true;
-      } else {
-        signedIn = false;
-        if (kDebugMode) {
-          print("Unable to upload Sign in to API or LocalDB");
+      if (!kIsWeb) {
+        webAPI.setOffline(true);
+        patrolSignIn.offline = 1;
+        insertID = await localDB.insertPatrolSignIn(patrolSignIn);
+        if (insertID != null) {
+          if (kDebugMode) {
+            print("Unable to upload Sign in to API");
+            print("Offline Record inserted: " + insertID.toString());
+          }
+          signedIn = true;
+        } else {
+          signedIn = false;
+          if (kDebugMode) {
+            print("Unable to upload Sign in to API or LocalDB");
+          }
         }
       }
     } catch (e) {
@@ -147,7 +149,9 @@ class DataManager {
     List<PatrolSignIn> patrolsSignIn = [];
     await isAPIOnline();
     try {
+      print("getting Patrols Signed in");
       print("API Offline: " + webAPI.getOffLine.toString());
+      print("web: " + kIsWeb.toString());
       // check for offline patrols and sync data to local DB
       if (!kIsWeb && !webAPI.getOffLine) {
         List<PatrolSignIn> offlineData =
@@ -163,10 +167,11 @@ class DataManager {
             await localDB.clearPatrolSignIn();
           }
         }
+
         //connect to API and get latest data
         patrolsSignIn = await webAPI.getSignedInPatrols(gameID, baseCode);
 
-        if (offlineData.isEmpty) {
+        if (offlineData.isEmpty && !kIsWeb) {
           await localDB.clearPatrolSignIn();
           for (PatrolSignIn patrolSignIn in patrolsSignIn) {
             int? insertId = await localDB.insertPatrolSignIn(patrolSignIn);
@@ -175,6 +180,9 @@ class DataManager {
             }
           }
         }
+      } else {
+        //connect to API and get latest data
+        patrolsSignIn = await webAPI.getSignedInPatrols(gameID, baseCode);
       }
     } on SocketException {
       webAPI.setOffline(true);
