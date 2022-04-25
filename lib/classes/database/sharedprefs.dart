@@ -6,7 +6,7 @@ class MySharedPrefs {
   Future<String> readStr(String key) async {
     final prefs = await SharedPreferences.getInstance();
     final value = prefs.getString(key) ?? "";
-    print('read: $key Value: $value');
+    //print('read: $key Value: $value');
     return value;
   }
 

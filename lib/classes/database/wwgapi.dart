@@ -86,7 +86,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String jsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + jsonData);
+        //print("json data: " + jsonData);
       }
       bases = BasesResults.fromJson(json.decode(jsonData));
     } else {
@@ -95,7 +95,7 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print(bases.message);
+      print("Bases results: " + bases.message!);
     }
     return bases;
   }
@@ -111,7 +111,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String jsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + jsonData);
+        //print("json data: " + jsonData);
       }
       activities = Activities.fromJson(json.decode(jsonData));
     } else {
@@ -120,7 +120,7 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print(activities.message);
+      print("Activity Results: " + activities.message!);
     }
     return activities;
   }
@@ -145,7 +145,7 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print(patrolResults.message);
+      print("Patrol Results: " + patrolResults.message!);
     }
     return patrolResults;
   }
@@ -311,7 +311,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String strJsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + strJsonData);
+        //print("json data: " + strJsonData);
       }
       Map<String, dynamic> jsonData = json.decode(strJsonData);
       if (jsonData['code'] == "1") {
@@ -339,7 +339,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String jsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print(jsonData);
+        //print(jsonData);
       }
 
       apiValidateToken = APIValidateToken.fromJson(json.decode(jsonData));
