@@ -299,6 +299,31 @@ class LocalDB {
     });
   }
 
+  Future<List<ScanData>> listScanDataOfflineRecords() async {
+    // Get a reference to the database.
+    final Database? db = await database;
+    // Query the table for all records.
+    final List<Map<String, dynamic>>? maps =
+        await db?.query(tblScan, where: 'offline=?', whereArgs: [1]);
+    // Convert the List<Map<String, dynamic> into a List<Dog>.
+    return List.generate(maps!.length, (i) {
+      return ScanData.fromJson(maps[i]);
+    });
+  }
+
+  Future<int?> updateOfflineScanData(
+      String gameTag, String scanTime, int status) async {
+    // Get a reference to the database.
+    final Database? db = await database;
+
+    Map<String, dynamic> row = {"Offline": status};
+    int? updateCount = 0;
+    // do the update and get the number of affected rows
+    updateCount = await db?.update(tblScan, row,
+        where: 'GameTag=? and ScanTime=?', whereArgs: [gameTag, scanTime]);
+    return updateCount;
+  }
+
   Future<List<BaseData>> listBaseData() async {
     // Get a reference to the database.
     final Database? db = await database;

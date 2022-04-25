@@ -50,6 +50,7 @@ class _BaseState extends State<Base> {
     getSignedInPatrols();
     scanData.gameID = widget.base.gameID;
     scanData.iDBaseCode = widget.base.baseCode;
+    dataManager.uploadOfflineScans();
   }
 
   Future<void> getSignedInPatrols() async {
@@ -232,7 +233,7 @@ class _BaseState extends State<Base> {
     }
     //getSignedInPatrols();
     //verify data and submit to API
-
+    dataManager.uploadOfflineScans();
     if (kDebugMode) {
       print(scanData);
     }

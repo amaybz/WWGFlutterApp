@@ -144,20 +144,54 @@ class DataManager {
     return false;
   }
 
+  Future<bool> uploadOfflineScans() async {
+    if (!kIsWeb && !webAPI.getOffLine) {
+      List<ScanData> offlineData = await localDB.listScanDataOfflineRecords();
+      print("offline Scan Data Records: " + offlineData.length.toString());
+      if (offlineData.isNotEmpty) {
+        List<dynamic> response =
+            await webAPI.uploadOfflineScanData(offlineData);
+        if (kDebugMode) {
+          print(response);
+        }
+        for (var i = 0; i < response.length; i++) {
+          if (response[i]["Uploaded"] == true) {
+            int? updateCount = await localDB.updateOfflineScanData(
+                response[i]["GameTag"], response[i]["ScanTime"], 0);
+            if (updateCount == 0) {
+              print("Update to offline record FAILED!");
+            }
+          }
+          if (response[i]["Uploaded"] == false) {
+            int? updateCount = await localDB.updateOfflineScanData(
+                response[i]["GameTag"], response[i]["ScanTime"], 3);
+            print("Offline Record error: Record marked as conflicted!");
+            if (updateCount == 0) {
+              print("Update to offline record FAILED!");
+            }
+          }
+        }
+        print("Offline Records Submitted: " + response.length.toString());
+        return true;
+      }
+    }
+    return false;
+  }
+
   Future<List<PatrolSignIn>?> getSignedInPatrols(
       String gameID, String baseCode) async {
     List<PatrolSignIn> patrolsSignIn = [];
     await isAPIOnline();
     try {
-      print("getting Patrols Signed in");
+      print("Getting Patrols Signed in");
       print("API Offline: " + webAPI.getOffLine.toString());
-      print("web: " + kIsWeb.toString());
+      print("Web App: " + kIsWeb.toString());
       // check for offline patrols and sync data to local DB
       if (!kIsWeb && !webAPI.getOffLine) {
         List<PatrolSignIn> offlineData =
             await localDB.listPatrolSignInOfflineRecords();
-        print("offline Data: " + offlineData.length.toString());
-        print(offlineData);
+        print("offline Base Sign in Data: " + offlineData.length.toString());
+        //print(offlineData);
 
         if (offlineData.isNotEmpty) {
           List<dynamic> response =

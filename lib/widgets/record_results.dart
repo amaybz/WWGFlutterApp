@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
+import 'package:wwgnfcscoringsystem/classes/database/datamanager.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
 import 'package:wwgnfcscoringsystem/classes/scan_results.dart';
 import 'package:wwgnfcscoringsystem/widgets/widget_success_fail.dart';
@@ -39,11 +40,13 @@ class _RecordResultsState extends State<RecordResults> {
   List<DropdownMenuItem<String>> listPatrolsDropdown = [
     const DropdownMenuItem(value: "0", child: Text("Please Sign in a Patrol"))
   ];
+  DataManager dataManager = DataManager();
 
   @override
   void initState() {
     super.initState();
     updatePatrolsDropDown();
+    dataManager.uploadOfflineScans();
   }
 
   void updatePatrolsDropDown() {

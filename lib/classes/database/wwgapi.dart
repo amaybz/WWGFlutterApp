@@ -179,6 +179,33 @@ class WebAPI {
     return patrolSignIn;
   }
 
+  Future<List<dynamic>> uploadOfflineScanData(
+      List<ScanData> offlineData) async {
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request(
+        'POST', Uri.parse(_apiLink! + 'scan/UploadOfflineResults.php'));
+    request.body = jsonEncode(offlineData);
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String strJsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        print("json data: " + strJsonData);
+        //print(response.reasonPhrase);
+      }
+      List<dynamic> jsonData = json.decode(strJsonData);
+      if (jsonData.isNotEmpty) {
+        return jsonData;
+      } else {
+        if (kDebugMode) {
+          print(response.reasonPhrase);
+        }
+        return jsonData;
+      }
+    }
+    return jsonDecode('[{"Uploaded": false,"GameTag": "None"}]"');
+  }
+
   Future<List<dynamic>> signedInPatrolsUploadOffline(
       List<PatrolSignIn> offlinePatrols) async {
     var headers = {'Authorization': _apiKey!};
