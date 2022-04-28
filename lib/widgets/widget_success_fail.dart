@@ -30,7 +30,7 @@ class _SuccessFailFieldState extends State<SuccessFailField> {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 2),
-            width: 100,
+            width: 150,
             child: const Text("Result:"),
           ),
           Flexible(

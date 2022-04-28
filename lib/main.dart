@@ -343,44 +343,34 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildListViewBases() {
-    return ListView.builder(
-        padding: const EdgeInsets.all(10.0),
-        itemCount: listBases.length,
-        itemBuilder: (context, index) {
-          //return Row();
-          return _buildRowBases(listBases[index]);
-        });
+    return ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 800, minWidth: 200),
+        child: ListView.builder(
+            padding: const EdgeInsets.all(10.0),
+            itemCount: listBases.length,
+            itemBuilder: (context, index) {
+              //return Row();
+              return _buildRowBases(listBases[index]);
+            }));
   }
 
   Widget _buildRowBases(BaseData item) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 800),
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Column(
-                children: [
-                  Text(
-                    item.baseName.toString(),
-                  ),
-                ],
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.blue, // background
-                  onPrimary: Colors.white, // foreground
-                ),
-                onPressed: () {
-                  setState(() {
-                    _navigateToGameBases(context, item.gameID!, item);
-                  });
-                },
-                child: const Text('Select'),
-              ),
-            ]),
-      ),
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(minimumSize: const Size(250, 50)),
+              onPressed: () {
+                setState(() {
+                  _navigateToGameBases(context, item.gameID!, item);
+                });
+              },
+              child: Text(item.baseName.toString()),
+            ),
+          ]),
     );
   }
 }

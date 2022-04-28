@@ -34,6 +34,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
   Map<String, dynamic>? nfcResult;
   NdefMessage? ndefMessage;
   String? ndefText = "";
+  String? ndefId = "";
   bool isAvailable = false;
   List<DropdownMenuItem<String>> listPatrolsDropdown = [
     const DropdownMenuItem(value: "0", child: Text("No Patrols Loaded"))
@@ -103,20 +104,27 @@ class _ScanPatrolState extends State<ScanPatrol> {
     }
   }
 
-  Future<String?> handleTag(tag) async {
+  Future<String?> handleTag(NfcTag tag) async {
     await nfcAvailable();
     if (isAvailable) {
       nfcResult = tag.data;
+      print(nfcResult);
       var ndef = Ndef.from(tag);
+
       ndefMessage = await ndef?.read();
       NdefRecord? ndefRecord = ndefMessage?.records.first;
+
+      //decode identifier
+      final Uint8List ndefTagId = ndef?.additionalData["identifier"];
+      ndefId = ndefTagId.toString();
+      //decode Message
       final languageCodeLength = ndefRecord?.payload.first;
       final textBytes = ndefRecord?.payload.sublist(1 + languageCodeLength!);
       ndefText = utf8.decode(textBytes!);
       if (kDebugMode) {
         print("NFC: Scan Tag");
-        print(nfcResult);
-        print(ndefText);
+        print("Ndef ID: " + ndefId.toString());
+        print("Ndef Text: " + ndefText.toString());
       }
     } else {
       {

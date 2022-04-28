@@ -12,7 +12,7 @@ import '../activities.dart';
 class LocalDB {
   static const _databaseName = "local_database.db";
   // Increment this version when you need to change the schema.
-  static const _databaseVersion = 8;
+  static const _databaseVersion = 10;
 
   final String tblBases = "tblbases";
   final String tblGameConfig = "tblgameconfig";
@@ -20,6 +20,7 @@ class LocalDB {
   final String tblPatrols = "tblpatrol";
   final String tblBaseSignIn = "tblbasesignin";
   final String tblScan = "tblscan";
+  final String tblBankConfig = "tblbankconfig";
 
   // Make this a singleton class.
   LocalDB._privateConstructor();
@@ -46,6 +47,17 @@ class LocalDB {
   }
 
   void _createTables(Database db, int version) async {
+    final String createTblBankConfig = "CREATE TABLE IF NOT EXISTS " +
+        tblBankConfig +
+        "("
+            "IDAccount INTEGER PRIMARY KEY, "
+            "AccountName TEXT, "
+            "Dep INTEGER,"
+            "Withdraw INTEGER,"
+            "DisplayPatrolBalance INTEGER,"
+            "DisplayBaseBalance INTEGER"
+            ")";
+
     final String createTblBases = "CREATE TABLE IF NOT EXISTS " +
         tblBases +
         "("
@@ -57,7 +69,8 @@ class LocalDB {
             "RandomChance INTEGER,"
             "RandomListID INTEGER,"
             "level INTEGER,"
-            "IDFaction INTEGER)";
+            "IDFaction INTEGER,"
+            "Bank INTEGER)";
 
     final String createTblGameConfig = "CREATE TABLE IF NOT EXISTS " +
         tblGameConfig +
@@ -160,6 +173,7 @@ class LocalDB {
     await db.execute(createTblPatrols);
     await db.execute(createTblBaseSignIn);
     await db.execute(createTblScan);
+    await db.execute(createTblBankConfig);
   }
 
   void _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -169,6 +183,7 @@ class LocalDB {
     await db.execute("DROP TABLE IF EXISTS $tblPatrols");
     await db.execute("DROP TABLE IF EXISTS $tblBaseSignIn");
     await db.execute("DROP TABLE IF EXISTS $tblScan");
+    await db.execute("DROP TABLE IF EXISTS $tblBankConfig");
     _createTables(db, newVersion);
   }
 

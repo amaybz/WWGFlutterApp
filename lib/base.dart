@@ -7,6 +7,7 @@ import 'package:wwgnfcscoringsystem/classes/dialog_builder.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/widgets/record_results.dart';
 import 'package:wwgnfcscoringsystem/widgets/scan_patrol.dart';
+import 'package:wwgnfcscoringsystem/widgets/widget_bank.dart';
 import 'classes/patrol_sign_in.dart';
 import 'classes/scan_results.dart';
 import 'classes/utils.dart';
@@ -146,19 +147,10 @@ class _BaseState extends State<Base> {
           setState(() => _selectedTab = value);
           getSignedInPatrols();
         }, // is will be set when a new tab is tapped
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_overscan),
-            label: 'Scan',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment),
-            label: 'Results',
-          ),
-        ],
+        items: bottomNavItems(),
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
             child: _showTab(_selectedTab),
@@ -166,6 +158,36 @@ class _BaseState extends State<Base> {
         ],
       ),
     );
+  }
+
+  List<BottomNavigationBarItem> bottomNavItems() {
+    if (widget.base.bank == 1) {
+      return const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings_overscan),
+          label: 'Scan',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.assignment),
+          label: 'Results',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.monetization_on),
+          label: 'Bank',
+        ),
+      ];
+    } else {
+      return const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings_overscan),
+          label: 'Scan',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.assignment),
+          label: 'Results',
+        ),
+      ];
+    }
   }
 
   _showTab(int index) {
@@ -193,6 +215,21 @@ class _BaseState extends State<Base> {
           }
         },
         onSubmit: submitResult,
+      );
+    }
+    if (index == 2) {
+      return Banking(
+        patrolsSignedIn: patrolsSignedIn,
+        activitiesData: widget.activityData,
+        scanData: scanData,
+        onChange: (updatedScanData) {
+          setState(() {
+            scanData = updatedScanData;
+          });
+          if (kDebugMode) {
+            print(scanData);
+          }
+        },
       );
     }
   }
