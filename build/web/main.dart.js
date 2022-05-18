@@ -68799,26 +68799,27 @@ r.l(0,"BaseControl",s.a5)
 r.l(0,"GameID",s.al)
 return r}}
 A.SK.prototype={
-a7U(a,b){var s,r=new A.SJ(!1,""),q=a.fy
-if(q===1){r.a=!0
-r.b="VisitCount ALERT WIP"
-return r}if(q===2)if(b.y==="Success"){r.a=!0
-r.b=a.id
-return r}if(q===3){r.a=!0
-r.b="Bank Value ALERT WIP"
-return r}if(q===4){s=b.y
-if(s==="Success"){r.a=!0
-r.b=a.id
-return r}if(s==="Fail"){r.a=!0
-r.b=a.k2
-return r}}if(q===5){q=b.y
-if(q==="Success"){r.a=!0
-r.b=a.id
-return r}if(q==="Partial"){r.a=!0
-r.b=a.k1
-return r}if(q==="Fail"){r.a=!0
-r.b=a.k2
-return r}}return r}}
+a7U(a,b){var s,r,q=new A.SJ(!1,"")
+if(a.fx===1){s=a.fy
+if(s===1){q.a=!0
+q.b="VisitCount ALERT WIP"
+return q}if(s===2)if(b.y==="Success"){q.a=!0
+q.b=a.id
+return q}if(s===3){q.a=!0
+q.b="Bank Value ALERT WIP"
+return q}if(s===4){r=b.y
+if(r==="Success"){q.a=!0
+q.b=a.id
+return q}if(r==="Fail"){q.a=!0
+q.b=a.k2
+return q}}if(s===5){s=b.y
+if(s==="Success"){q.a=!0
+q.b=a.id
+return q}if(s==="Partial"){q.a=!0
+q.b=a.k1
+return q}if(s==="Fail"){q.a=!0
+q.b=a.k2
+return q}}}return q}}
 A.SJ.prototype={}
 A.ub.prototype={
 ci(){var s=this,r=A.w(t.N,t.z)
