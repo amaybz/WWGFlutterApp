@@ -22,10 +22,28 @@ class _SuccessFailFieldState extends State<SuccessFailField> {
     const DropdownMenuItem(value: "Success", child: Text("Success")),
     const DropdownMenuItem(value: "Fail", child: Text("Fail")),
   ];
+  bool show = false;
 
   @override
   Widget build(BuildContext context) {
+    if (widget.activityData.successPartialFailResultField == 1) {
+      listSuccessFail.clear();
+      listSuccessFail.addAll([
+        const DropdownMenuItem(value: "Success", child: Text("Success")),
+        const DropdownMenuItem(value: "Partial", child: Text("Partial")),
+        const DropdownMenuItem(value: "Fail", child: Text("Fail")),
+      ]);
+      show = true;
+    }
     if (widget.activityData.successFailResultField == 1) {
+      listSuccessFail.clear();
+      listSuccessFail.addAll([
+        const DropdownMenuItem(value: "Success", child: Text("Success")),
+        const DropdownMenuItem(value: "Fail", child: Text("Fail")),
+      ]);
+      show = true;
+    }
+    if (show) {
       return Row(
         children: [
           Container(

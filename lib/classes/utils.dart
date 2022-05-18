@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
 
@@ -60,6 +61,32 @@ class Utils {
       listPatrolsDropdown.add(const DropdownMenuItem(
           value: "0", child: Text("Please sign in a Patrol")));
       return listPatrolsDropdown;
+    }
+  }
+
+  List<DropdownMenuItem<String>> convertListBankDataToAccountsDropDownList(
+      List<BankData> listBankData) {
+    List<DropdownMenuItem<String>> listAccountsDropDown = [
+      const DropdownMenuItem(value: "0", child: Text("No Accounts Configured"))
+    ];
+
+    if (kDebugMode) {
+      print("#Accountss");
+      print(listBankData.length);
+    }
+
+    if (listBankData.isNotEmpty) {
+      listAccountsDropDown.clear();
+      for (BankData bankData in listBankData) {
+        listAccountsDropDown.add(DropdownMenuItem(
+            value: bankData.accountName, child: Text(bankData.accountName!)));
+      }
+      return listAccountsDropDown;
+    } else {
+      listAccountsDropDown.clear();
+      listAccountsDropDown.add(const DropdownMenuItem(
+          value: "0", child: Text("No Accounts Configured")));
+      return listAccountsDropDown;
     }
   }
 }

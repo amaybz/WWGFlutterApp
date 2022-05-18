@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
+import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
 import 'package:wwgnfcscoringsystem/classes/database/sharedprefs.dart';
 import 'package:wwgnfcscoringsystem/classes/database/wwgapi.dart';
@@ -234,6 +235,48 @@ class DataManager {
     }
 
     return patrolsSignIn;
+  }
+
+  Future<List<BankData>?> getBankData() async {
+    List<BankData>? listBankData = [];
+
+    if (!webAPI.getOffLine) {
+      try {
+        listBankData = await webAPI.getBankConfig();
+      } on SocketException {
+        if (kDebugMode) {
+          print("Unable to get Bank Config from API.");
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
+      }
+    }
+    //update local DB with latest data
+    if (listBankData != null) {
+      if (!kIsWeb && !webAPI.getOffLine) {
+        if (kDebugMode) {
+          print("Saving Bank data to local DB");
+        }
+        await localDB.clearBankData();
+        for (BankData bankData in listBankData) {
+          int? insertId = await localDB.insertBankData(bankData);
+          if (kDebugMode) {
+            //print(insertId);
+          }
+        }
+      }
+      //print(games.data);
+      return listBankData;
+    } else {
+      if (kDebugMode) {
+        print("Loading games from local DB");
+      }
+      listBankData = await localDB.listBankData();
+      //print(games.data);
+      return listBankData;
+    }
   }
 
   Future<List<GamesData>?> getGames() async {

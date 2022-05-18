@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
 import 'package:wwgnfcscoringsystem/classes/games_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
@@ -12,7 +13,7 @@ import '../activities.dart';
 class LocalDB {
   static const _databaseName = "local_database.db";
   // Increment this version when you need to change the schema.
-  static const _databaseVersion = 10;
+  static const _databaseVersion = 11;
 
   final String tblBases = "tblbases";
   final String tblGameConfig = "tblgameconfig";
@@ -94,6 +95,7 @@ class LocalDB {
             "ValueResultName2 TEXT,"
             "ValueResultField2 INTEGER,"
             "SuccessFailResultField INTEGER,"
+            "SuccessPartialFailResultField INTEGER,"
             "CommentField INTEGER,"
             "ActivityType INTEGER,"
             "RandomGen INTEGER,"
@@ -115,6 +117,7 @@ class LocalDB {
             "DropDownField INTEGER,"
             "Scoring_type INTEGER,"
             "Scoring_Success INTEGER,"
+            "Scoring_Partial INTEGER,"
             "Scoring_Fail INTEGER,"
             "Scoring_Value INTEGER,"
             "DropDownFieldListID INTEGER,"
@@ -204,6 +207,17 @@ class LocalDB {
     int? insertedID = await db?.insert(
       tblScan,
       scanData.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    return insertedID;
+  }
+
+  Future<int?> insertBankData(BankData bankData) async {
+    // Get a reference to the database.
+    final Database? db = await database;
+    int? insertedID = await db?.insert(
+      tblBankConfig,
+      bankData.toJson(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
     return insertedID;
@@ -352,6 +366,19 @@ class LocalDB {
     });
   }
 
+  Future<List<BankData>> listBankData() async {
+    // Get a reference to the database.
+    final Database? db = await database;
+
+    // Query the table for all records.
+    final List<Map<dynamic, dynamic>>? maps = await db?.query(tblBankConfig);
+
+    // Convert the List<Map<String, dynamic> into a List<Dog>.
+    return List.generate(maps!.length, (i) {
+      return BankData.fromJson(maps[i] as Map<String, dynamic>);
+    });
+  }
+
   Future<List<ActivityData>> listActivityData() async {
     // Get a reference to the database.
     final Database? db = await database;
@@ -430,5 +457,12 @@ class LocalDB {
     final Database? db = await database;
     //delete all teams in DB
     await db?.execute("delete from " + tblBaseSignIn);
+  }
+
+  Future<void> clearBankData() async {
+    // Get a reference to the database.
+    final Database? db = await database;
+    //delete all teams in DB
+    await db?.execute("delete from " + tblBankConfig);
   }
 }

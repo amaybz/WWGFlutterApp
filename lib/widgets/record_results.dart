@@ -48,6 +48,7 @@ class _RecordResultsState extends State<RecordResults> {
     super.initState();
     updatePatrolsDropDown();
     dataManager.uploadOfflineScans();
+    widget.scanData.comment = null;
   }
 
   void updatePatrolsDropDown() {

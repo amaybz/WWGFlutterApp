@@ -226,7 +226,8 @@ class _ScanPatrolState extends State<ScanPatrol> {
                               });
                             }),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
                           child: ElevatedButton(
                             onPressed: () {
                               widget.onSignIn(selectedPatrol!);

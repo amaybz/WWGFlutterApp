@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
+import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
 import 'package:wwgnfcscoringsystem/classes/scan_results.dart';
@@ -19,15 +20,20 @@ class WebAPI {
   String? _apiLink;
   bool _loggedIn = false;
   bool _offLine = false;
+  int _accessLevel = 10;
 
   get getApiKey => _apiKey;
-
+  get getAccessLevel => _accessLevel;
   get getApiLink => _apiLink;
   get getLoggedIn => _loggedIn;
   get getOffLine => _offLine;
 
   void setApiKey(newValue) {
     _apiKey = newValue;
+  }
+
+  void setAccessLevel(int newValue) {
+    _accessLevel = newValue;
   }
 
   void setOffline(bool newValue) {
@@ -73,6 +79,30 @@ class WebAPI {
       print(games.message);
     }
     return games;
+  }
+
+  Future<List<BankData>?> getBankConfig() async {
+    BankResults bankConfig = BankResults();
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request('POST', Uri.parse(_apiLink! + 'bank/'));
+    request.body = '';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String jsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        print("json data: " + jsonData);
+      }
+      bankConfig = BankResults.fromJson(json.decode(jsonData));
+    } else {
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
+    }
+    if (kDebugMode) {
+      print(bankConfig.message);
+    }
+    return bankConfig.data;
   }
 
   Future<BasesResults> getBasesByGameID(String gameID) async {
@@ -399,6 +429,7 @@ class WebAPI {
 
       wwgAPILogin = APILogin.fromJson(json.decode(loginJson));
       _apiKey = wwgAPILogin.jwt;
+      _accessLevel = wwgAPILogin.access!;
       _loggedIn = true;
     } else {
       if (kDebugMode) {
