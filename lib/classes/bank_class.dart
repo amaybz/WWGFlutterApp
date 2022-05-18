@@ -1,15 +1,15 @@
 class BankResults {
   String? message;
-  List<Data>? data;
+  List<BankData>? data;
 
   BankResults({this.message, this.data});
 
   BankResults.fromJson(Map<String, dynamic> json) {
     message = json['message'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <BankData>[];
       json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
+        data!.add(BankData.fromJson(v));
       });
     }
   }
@@ -24,7 +24,7 @@ class BankResults {
   }
 }
 
-class Data {
+class BankData {
   int? iDAccount;
   String? accountName;
   int? dep;
@@ -32,7 +32,7 @@ class Data {
   int? displayPatrolBalance;
   int? displayBaseBalance;
 
-  Data(
+  BankData(
       {this.iDAccount,
       this.accountName,
       this.dep,
@@ -40,7 +40,7 @@ class Data {
       this.displayPatrolBalance,
       this.displayBaseBalance});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  BankData.fromJson(Map<String, dynamic> json) {
     iDAccount = json['IDAccount'];
     accountName = json['AccountName'];
     dep = json['Dep'];

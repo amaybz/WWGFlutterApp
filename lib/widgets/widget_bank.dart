@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 
 import '../classes/activities.dart';
 import '../classes/database/datamanager.dart';
@@ -7,18 +9,24 @@ import '../classes/scan_results.dart';
 import '../classes/utils.dart';
 
 class Banking extends StatefulWidget {
-  const Banking({
-    Key? key,
-    required this.activitiesData,
-    required this.scanData,
-    required this.onChange,
-    required this.patrolsSignedIn,
-  }) : super(key: key);
+  const Banking(
+      {Key? key,
+      required this.activitiesData,
+      required this.scanData,
+      required this.onChange,
+      required this.patrolsSignedIn,
+      required this.txtValueAmount,
+      required this.listBankData,
+      required this.onSubmit(ScanData scanData)})
+      : super(key: key);
 
   final List<ActivityData> activitiesData;
   final ScanData scanData;
   final ValueChanged<ScanData> onChange;
   final List<PatrolSignIn> patrolsSignedIn;
+  final TextEditingController txtValueAmount;
+  final List<BankData> listBankData;
+  final Function(ScanData scanData) onSubmit;
 
   @override
   State<Banking> createState() => _BankingState();
@@ -30,11 +38,20 @@ class _BankingState extends State<Banking> {
   List<DropdownMenuItem<String>> listPatrolsDropdown = [
     const DropdownMenuItem(value: "0", child: Text("Please Sign in a Patrol"))
   ];
+  List<DropdownMenuItem<String>> listAccountsDropdown = [
+    const DropdownMenuItem(value: "0", child: Text("No Accounts Configured"))
+  ];
+
+  List<DropdownMenuItem<String>> listTransactionTypes = [
+    const DropdownMenuItem(value: "Deposit", child: Text("Deposit")),
+    const DropdownMenuItem(value: "Withdrawal", child: Text("Withdrawal")),
+  ];
 
   @override
   void initState() {
     super.initState();
     updatePatrolsDropDown();
+    updateAccountsDropDown();
     dataManager.uploadOfflineScans();
   }
 
@@ -51,6 +68,13 @@ class _BankingState extends State<Banking> {
     listPatrolsDropdown.clear();
     listPatrolsDropdown
         .addAll(utils.convertPatrolsListToDropDownList(widget.patrolsSignedIn));
+  }
+
+  void updateAccountsDropDown() {
+    widget.scanData.iDActivityCode = null;
+    listAccountsDropdown.clear();
+    listAccountsDropdown.addAll(
+        utils.convertListBankDataToAccountsDropDownList(widget.listBankData));
   }
 
   @override
@@ -84,11 +108,82 @@ class _BankingState extends State<Banking> {
               )
             ],
           ),
-          Text("Account: IDActivityCode"),
-          Text("Transaction Type: Comment"),
-          Text("Amount: ResultValue"),
-          Text("Patrol Accounts"),
-          Text("Base Accounts"),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                width: 150,
+                child: const Text("Account:"),
+              ),
+              Flexible(
+                fit: FlexFit.loose,
+                child: DropdownButton(
+                  isExpanded: true,
+                  value: widget.scanData.iDActivityCode,
+                  items: listAccountsDropdown,
+                  onChanged: (item) {
+                    setState(() {
+                      widget.scanData.iDActivityCode = item.toString();
+                    });
+                  },
+                ),
+              )
+            ],
+          ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                width: 150,
+                child: const Text("Transaction Type:"),
+              ),
+              Flexible(
+                fit: FlexFit.loose,
+                child: DropdownButton(
+                  isExpanded: true,
+                  value: widget.scanData.comment,
+                  items: listTransactionTypes,
+                  onChanged: (item) {
+                    setState(() {
+                      widget.scanData.comment = item.toString();
+                      updatePatrolsDropDown();
+                    });
+                  },
+                ),
+              )
+            ],
+          ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                width: 150,
+                child: const Text("Amount:"),
+              ),
+              Flexible(
+                fit: FlexFit.loose,
+                child: TextField(
+                    controller: widget.txtValueAmount,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onChanged: (string) {
+                      widget.scanData.resultValue = int.tryParse(string);
+                    }),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: ElevatedButton(
+              onPressed: () {
+                widget.scanData.scanTime = Utils().getCurrentDateSQL();
+                widget.onSubmit(widget.scanData);
+              },
+              child: const Text("Submit"),
+            ),
+          ),
+          Text("List Patrol Accounts..."),
+          Text("Base Accounts..."),
         ],
       ),
     );

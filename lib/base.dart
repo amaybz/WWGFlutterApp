@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
+import 'package:wwgnfcscoringsystem/classes/alerts.dart';
+import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
 import 'package:wwgnfcscoringsystem/classes/database/datamanager.dart';
 import 'package:wwgnfcscoringsystem/classes/dialog_builder.dart';
@@ -38,9 +40,12 @@ class _BaseState extends State<Base> {
   ];
   ScanData scanData = ScanData();
   List<PatrolSignIn> patrolsSignedIn = [];
+  List<BankData> listBankData = [];
   WebAPI webAPI = WebAPI();
+  Alerts alerts = Alerts();
   DataManager dataManager = DataManager();
   final TextEditingController txtValueResult = TextEditingController();
+  final TextEditingController txtValueAmount = TextEditingController();
   String error = "Please fill in all Fields";
   bool offline = false;
 
@@ -52,6 +57,10 @@ class _BaseState extends State<Base> {
     scanData.gameID = widget.base.gameID;
     scanData.iDBaseCode = widget.base.baseCode;
     dataManager.uploadOfflineScans();
+    if (widget.base.bank == 1) {
+      print("getting bank data.");
+      getBankConfig();
+    }
   }
 
   Future<void> getSignedInPatrols() async {
@@ -59,6 +68,13 @@ class _BaseState extends State<Base> {
         widget.base.gameID.toString(), widget.base.baseCode!);
     setState(() {
       patrolsSignedIn = patrolSignIn!;
+    });
+  }
+
+  Future<void> getBankConfig() async {
+    listBankData = (await dataManager.getBankData())!;
+    setState(() {
+      listBankData = listBankData;
     });
   }
 
@@ -219,9 +235,12 @@ class _BaseState extends State<Base> {
     }
     if (index == 2) {
       return Banking(
+        txtValueAmount: txtValueAmount,
         patrolsSignedIn: patrolsSignedIn,
         activitiesData: widget.activityData,
+        listBankData: listBankData,
         scanData: scanData,
+        onSubmit: submitBankResult,
         onChange: (updatedScanData) {
           setState(() {
             scanData = updatedScanData;
@@ -231,6 +250,34 @@ class _BaseState extends State<Base> {
           }
         },
       );
+    }
+  }
+
+  submitBankResult(submittedScanData) async {
+    bool resultSubmitted = false;
+    scanData = submittedScanData;
+    if (scanData.iDBaseCode != null &&
+        scanData.iDActivityCode != null &&
+        scanData.gameTag != null &&
+        scanData.scanTime != null &&
+        scanData.gameID != null) {
+      scanData.iDOpponent ??= "";
+      scanData.comment ??= "";
+      scanData.offline ??= 0;
+      scanData.resultValue ??= 0;
+      scanData.result = "Success";
+      resultSubmitted = await dataManager.insertScan(scanData);
+    }
+    if (resultSubmitted) {
+      DialogBuilder(context).showAlertOKDialog("Result", "Submitted");
+      setState(() {
+        scanData.result = null;
+        scanData.gameTag = null;
+        scanData.resultValue = 0;
+        txtValueResult.text = "";
+      });
+    } else {
+      DialogBuilder(context).showAlertOKDialog("Result", "Error: " + error);
     }
   }
 
@@ -258,7 +305,14 @@ class _BaseState extends State<Base> {
       resultSubmitted = await dataManager.insertScan(scanData);
     }
     if (resultSubmitted) {
-      DialogBuilder(context).showAlertOKDialog("Result", "Submitted");
+      AlertData alertData = AlertData(alert: false, alertMessage: "Submitted");
+      alertData = alerts.checkAlerts(selectedActivity, scanData);
+      if (!alertData.alert!) {
+        alertData.alertMessage = "Submitted";
+      }
+
+      DialogBuilder(context)
+          .showAlertOKDialog("Result", alertData.alertMessage!);
       setState(() {
         scanData.result = null;
         scanData.gameTag = null;
