@@ -13,7 +13,7 @@ import '../activities.dart';
 class LocalDB {
   static const _databaseName = "local_database.db";
   // Increment this version when you need to change the schema.
-  static const _databaseVersion = 11;
+  static const _databaseVersion = 12;
 
   final String tblBases = "tblbases";
   final String tblGameConfig = "tblgameconfig";
@@ -107,6 +107,7 @@ class LocalDB {
             "AlertRule INTEGER,"
             "AlertCount INTEGER,"
             "AlertMessage TEXT,"
+            "AlertMessagePartial TEXT,"
             "AlertMessageFail TEXT,"
             "Reward INTEGER,"
             "RewardValue INTEGER,"
