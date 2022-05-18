@@ -52,7 +52,7 @@ class Alerts {
       }
       if (scanData.result == "Partial") {
         alertData.alert = true;
-        alertData.alertMessage = "Partial ALERT WIP";
+        alertData.alertMessage = activityData.alertMessagePartial;
         return alertData;
       }
       if (scanData.result == "Fail") {
