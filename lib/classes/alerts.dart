@@ -11,54 +11,56 @@ class Alerts {
   AlertData checkAlerts(ActivityData activityData, ScanData scanData) {
     AlertData alertData = AlertData(alert: false, alertMessage: "");
     //Visit Count
-    if (activityData.alertRule == 1) {
-      alertData.alert = true;
-      alertData.alertMessage = "VisitCount ALERT WIP";
-      return alertData;
-    }
-    //success result only
-    if (activityData.alertRule == 2) {
-      if (scanData.result == "Success") {
+    if (activityData.alert == 1) {
+      if (activityData.alertRule == 1) {
         alertData.alert = true;
-        alertData.alertMessage = activityData.alertMessage;
+        alertData.alertMessage = "VisitCount ALERT WIP";
         return alertData;
       }
-    }
-    //Bank above Level
-    if (activityData.alertRule == 3) {
-      alertData.alert = true;
-      alertData.alertMessage = "Bank Value ALERT WIP";
-      return alertData;
-    }
-    //Success and Fail
-    if (activityData.alertRule == 4) {
-      if (scanData.result == "Success") {
+      //success result only
+      if (activityData.alertRule == 2) {
+        if (scanData.result == "Success") {
+          alertData.alert = true;
+          alertData.alertMessage = activityData.alertMessage;
+          return alertData;
+        }
+      }
+      //Bank above Level
+      if (activityData.alertRule == 3) {
         alertData.alert = true;
-        alertData.alertMessage = activityData.alertMessage;
+        alertData.alertMessage = "Bank Value ALERT WIP";
         return alertData;
       }
-      if (scanData.result == "Fail") {
-        alertData.alert = true;
-        alertData.alertMessage = activityData.alertMessageFail;
-        return alertData;
+      //Success and Fail
+      if (activityData.alertRule == 4) {
+        if (scanData.result == "Success") {
+          alertData.alert = true;
+          alertData.alertMessage = activityData.alertMessage;
+          return alertData;
+        }
+        if (scanData.result == "Fail") {
+          alertData.alert = true;
+          alertData.alertMessage = activityData.alertMessageFail;
+          return alertData;
+        }
       }
-    }
-    //Success, Partial and Fail
-    if (activityData.alertRule == 5) {
-      if (scanData.result == "Success") {
-        alertData.alert = true;
-        alertData.alertMessage = activityData.alertMessage;
-        return alertData;
-      }
-      if (scanData.result == "Partial") {
-        alertData.alert = true;
-        alertData.alertMessage = activityData.alertMessagePartial;
-        return alertData;
-      }
-      if (scanData.result == "Fail") {
-        alertData.alert = true;
-        alertData.alertMessage = activityData.alertMessageFail;
-        return alertData;
+      //Success, Partial and Fail
+      if (activityData.alertRule == 5) {
+        if (scanData.result == "Success") {
+          alertData.alert = true;
+          alertData.alertMessage = activityData.alertMessage;
+          return alertData;
+        }
+        if (scanData.result == "Partial") {
+          alertData.alert = true;
+          alertData.alertMessage = activityData.alertMessagePartial;
+          return alertData;
+        }
+        if (scanData.result == "Fail") {
+          alertData.alert = true;
+          alertData.alertMessage = activityData.alertMessageFail;
+          return alertData;
+        }
       }
     }
     return alertData;
