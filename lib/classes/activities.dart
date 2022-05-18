@@ -47,6 +47,7 @@ class ActivityData {
   int? alertRule;
   int? alertCount;
   String? alertMessage;
+  String? alertMessagePartial;
   String? alertMessageFail;
   int? reward;
   int? rewardValue;
@@ -89,6 +90,7 @@ class ActivityData {
       this.alertRule,
       this.alertCount,
       this.alertMessage,
+      this.alertMessagePartial,
       this.alertMessageFail,
       this.reward,
       this.rewardValue,
@@ -131,6 +133,7 @@ class ActivityData {
     alertRule = json['AlertRule'];
     alertCount = json['AlertCount'];
     alertMessage = json['AlertMessage'];
+    alertMessagePartial = json['AlertMessagePartial'];
     alertMessageFail = json['AlertMessageFail'];
     reward = json['Reward'];
     rewardValue = json['RewardValue'];
@@ -175,6 +178,7 @@ class ActivityData {
     data['AlertRule'] = alertRule;
     data['AlertCount'] = alertCount;
     data['AlertMessage'] = alertMessage;
+    data['AlertMessagePartial'] = alertMessagePartial;
     data['AlertMessageFail'] = alertMessageFail;
     data['Reward'] = reward;
     data['RewardValue'] = rewardValue;
