@@ -321,7 +321,7 @@ class NFCScan extends StatelessWidget {
           margin: const EdgeInsets.all(5.0),
           padding: const EdgeInsets.all(5.0),
           child: Column(
-            children: const [Text("NFC: Not available on this Device")],
+            children: const [Text("NFC: Not available on this device.")],
           ),
         ),
       );
