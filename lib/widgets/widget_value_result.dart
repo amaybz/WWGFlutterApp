@@ -37,7 +37,7 @@ class _ValueResultState extends State<ValueResult> {
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 2),
-            width: 100,
+            width: 150,
             child: Text(widget.label + ":"),
           ),
           Flexible(

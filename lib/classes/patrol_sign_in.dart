@@ -4,7 +4,7 @@ class PatrolSignIn {
   String? iDBaseCode;
   String? scanIn;
   String? scanOut;
-  String? status;
+  int? status;
   int? gameID;
   int? offline;
 
@@ -49,7 +49,8 @@ class PatrolSignIn {
         'IDPatrol: $iDPatrol, '
         'IDBaseCode: $iDBaseCode, '
         'ScanIn: $scanIn, '
-        'scanOut: $scanOut, '
-        'offline: $offline, ';
+        'ScanOut: $scanOut, '
+        'offline: $offline, '
+        'Status: $status} ';
   }
 }

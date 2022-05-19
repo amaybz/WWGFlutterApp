@@ -1,14 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
+import 'package:wwgnfcscoringsystem/classes/database/datamanager.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
-import 'package:wwgnfcscoringsystem/classes/wwgapi.dart';
+import 'package:wwgnfcscoringsystem/classes/database/wwgapi.dart';
 import 'package:wwgnfcscoringsystem/base.dart';
 import 'package:wwgnfcscoringsystem/login.dart';
 import 'classes/base_results.dart';
+import 'classes/database/localdb.dart';
 import 'classes/games_results.dart';
-import 'classes/sharedprefs.dart';
+import 'classes/database/sharedprefs.dart';
 
 void main() {
   runApp(const MyApp());
@@ -92,6 +96,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   MySharedPrefs mySharedPrefs = MySharedPrefs();
+  DataManager dataManager = DataManager();
+  LocalDB localDB = LocalDB.instance;
   String versionName = "";
   String versionCode = "";
   WebAPI webAPI = WebAPI();
@@ -110,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     getVersionInfo();
     getTheme();
-    getDataFromAPI();
+    loadData();
   }
 
   void getTheme() async {
@@ -120,38 +126,31 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<APIValidateToken> validateAPIToken() async {
-    webAPI.setApiKey(await mySharedPrefs.readStr('apikey'));
-    APIValidateToken apiValidateToken =
-        await webAPI.validateToken(webAPI.getApiKey);
-    if (apiValidateToken.message == "Unauthorized") {
+  void loadData() async {
+    //check connection to API
+    bool isAPIOffline = await dataManager.isAPIOnline();
+    loggedIn = await webAPI.getLoggedIn;
+    if (kDebugMode) {
+      print("Logged in: " + loggedIn.toString());
+      print("API Offline: " + isAPIOffline.toString());
+    }
+    if (!isAPIOffline && !loggedIn) {
       _navigateToLogin(context);
     }
 
-    return apiValidateToken;
-  }
-
-  void getDataFromAPI() async {
-    APIValidateToken apiValidateToken = await validateAPIToken();
-    loggedIn = await webAPI.getLoggedIn;
-    if (kDebugMode) {
-      print("logged in: " + loggedIn.toString());
-    }
-    if (loggedIn) {
-      await getGames();
-      getBases(selectedGame!);
-      getActivities(selectedGame!);
-      getPatrols(selectedGame!);
-    }
+    await getGames();
+    getBases(selectedGame!);
+    getActivities(selectedGame!);
+    getPatrols(selectedGame!);
   }
 
   Future<String?> getGames() async {
-    GamesResults games = await webAPI.getGames();
-    if (games.data != null) {
-      List<GamesData> gamesDataList = games.data as List<GamesData>;
+    List<GamesData>? games = [];
+    games = await dataManager.getGames();
+    if (games != null) {
       listGamesDropdown.clear();
       selectedGame = null;
-      for (GamesData gamesData in gamesDataList) {
+      for (GamesData gamesData in games) {
         setState(() {
           listGamesDropdown.add(DropdownMenuItem(
               value: gamesData.gameID.toString(),
@@ -162,24 +161,29 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     }
+
     return selectedGame;
   }
 
   void getBases(String gameID) async {
-    BasesResults bases = await webAPI.getBasesByGameID(gameID);
-    if (bases.data != null) {
-      List<BaseData> basesDataList = bases.data as List<BaseData>;
+    List<BaseData>? bases = await dataManager.getBasesByGameID(gameID);
+    if (bases != null) {
+      List<BaseData> basesDataList = bases;
       setState(() {
         listBases = basesDataList;
+      });
+    } else {
+      setState(() {
+        listBases = [];
       });
     }
   }
 
   void getActivities(String gameID) async {
-    Activities activities = await webAPI.getActivitiesByGameID(gameID);
-    if (activities.data != null) {
-      List<ActivityData> activityDataList =
-          activities.data as List<ActivityData>;
+    List<ActivityData>? activities =
+        await dataManager.getActivitiesByGameID(gameID, webAPI.getOffLine);
+    if (activities != null) {
+      List<ActivityData> activityDataList = activities;
       setState(() {
         listActivities = activityDataList;
       });
@@ -187,9 +191,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void getPatrols(String gameID) async {
-    PatrolResults patrolResults = await webAPI.getPatrolsByGameID(gameID);
-    if (patrolResults.data != null) {
-      List<PatrolData> dataList = patrolResults.data as List<PatrolData>;
+    List<PatrolData>? listPatrolData =
+        await dataManager.getPatrolsByGameID(gameID, webAPI.getOffLine);
+    if (listPatrolData != null) {
+      List<PatrolData> dataList = listPatrolData;
       setState(() {
         listPatrols = dataList;
       });
@@ -253,18 +258,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   BoxDecoration(color: Theme.of(context).primaryColorDark),
             ),
             ListTile(
-              title: const Text('Scoring'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text('Scan Tag'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
               title: const Text('Login'),
               onTap: () {
                 Navigator.pop(context);
@@ -295,31 +288,34 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
                 'Welcome to Weekend Wide Game Scoring System to start select a Game.',
                 style: Theme.of(context).textTheme.subtitle1),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                DropdownButton(
-                    value: selectedGame,
-                    items: listGamesDropdown,
-                    onChanged: (item) {
-                      setState(() {
-                        selectedGame = item as String;
-                        getBases(selectedGame!);
-                      });
-                      if (kDebugMode) {
-                        print("Selected Game: " + selectedGame!);
-                      }
-                    }),
-                Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    child: ElevatedButton(
-                        onPressed: () {
-                          getDataFromAPI();
-                        },
-                        child: const Text("Refresh"))),
-              ],
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  DropdownButton(
+                      value: selectedGame,
+                      items: listGamesDropdown,
+                      onChanged: (item) {
+                        setState(() {
+                          selectedGame = item as String;
+                          getBases(selectedGame!);
+                        });
+                        if (kDebugMode) {
+                          print("Selected Game: " + selectedGame!);
+                        }
+                      }),
+                  Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 0, horizontal: 10),
+                      child: ElevatedButton(
+                          onPressed: () {
+                            loadData();
+                          },
+                          child: const Text("Refresh"))),
+                ],
+              ),
             ),
             Expanded(
               child: _buildListViewBases(),
@@ -347,39 +343,32 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildListViewBases() {
-    return ListView.builder(
-        padding: const EdgeInsets.all(10.0),
-        itemCount: listBases.length,
-        itemBuilder: (context, index) {
-          //return Row();
-          return _buildRowBases(listBases[index]);
-        });
+    return ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 800, minWidth: 200),
+        child: ListView.builder(
+            padding: const EdgeInsets.all(10.0),
+            itemCount: listBases.length,
+            itemBuilder: (context, index) {
+              //return Row();
+              return _buildRowBases(listBases[index]);
+            }));
   }
 
   Widget _buildRowBases(BaseData item) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Column(
-              children: [
-                Text(
-                  item.baseName!,
-                ),
-              ],
-            ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.blue, // background
-                onPrimary: Colors.white, // foreground
-              ),
+              style: ElevatedButton.styleFrom(minimumSize: const Size(250, 50)),
               onPressed: () {
                 setState(() {
                   _navigateToGameBases(context, item.gameID!, item);
                 });
               },
-              child: const Text('Select'),
+              child: Text(item.baseName.toString()),
             ),
           ]),
     );

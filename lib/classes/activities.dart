@@ -35,6 +35,7 @@ class ActivityData {
   String? valueResultName2;
   int? valueResultField2;
   int? successFailResultField;
+  int? successPartialFailResultField;
   int? commentField;
   int? activityType;
   int? randomGen;
@@ -46,6 +47,7 @@ class ActivityData {
   int? alertRule;
   int? alertCount;
   String? alertMessage;
+  String? alertMessagePartial;
   String? alertMessageFail;
   int? reward;
   int? rewardValue;
@@ -56,6 +58,7 @@ class ActivityData {
   int? dropDownField;
   int? scoringType;
   int? scoringSuccess;
+  int? scoringPartial;
   int? scoringFail;
   double? scoringValue;
   int? dropDownFieldListID;
@@ -75,6 +78,7 @@ class ActivityData {
       this.valueResultName2,
       this.valueResultField2,
       this.successFailResultField,
+      this.successPartialFailResultField,
       this.commentField,
       this.activityType,
       this.randomGen,
@@ -86,6 +90,7 @@ class ActivityData {
       this.alertRule,
       this.alertCount,
       this.alertMessage,
+      this.alertMessagePartial,
       this.alertMessageFail,
       this.reward,
       this.rewardValue,
@@ -96,6 +101,7 @@ class ActivityData {
       this.dropDownField,
       this.scoringType,
       this.scoringSuccess,
+      this.scoringPartial,
       this.scoringFail,
       this.scoringValue,
       this.dropDownFieldListID,
@@ -115,6 +121,7 @@ class ActivityData {
     valueResultName2 = json['ValueResultName2'];
     valueResultField2 = json['ValueResultField2'];
     successFailResultField = json['SuccessFailResultField'];
+    successPartialFailResultField = json['SuccessPartialFailResultField'];
     commentField = json['CommentField'];
     activityType = json['ActivityType'];
     randomGen = json['RandomGen'];
@@ -126,6 +133,7 @@ class ActivityData {
     alertRule = json['AlertRule'];
     alertCount = json['AlertCount'];
     alertMessage = json['AlertMessage'];
+    alertMessagePartial = json['AlertMessagePartial'];
     alertMessageFail = json['AlertMessageFail'];
     reward = json['Reward'];
     rewardValue = json['RewardValue'];
@@ -136,6 +144,7 @@ class ActivityData {
     dropDownField = json['DropDownField'];
     scoringType = json['Scoring_type'];
     scoringSuccess = json['Scoring_Success'];
+    scoringPartial = json['Scoring_Partial'];
     scoringFail = json['Scoring_Fail'];
     scoringValue = double.parse(json['Scoring_Value'].toString());
     dropDownFieldListID = json['DropDownFieldListID'];
@@ -146,45 +155,48 @@ class ActivityData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['ActivityID'] = this.activityID;
-    data['BaseID'] = this.baseID;
-    data['ActivityName'] = this.activityName;
-    data['ActivityCode'] = this.activityCode;
-    data['ValueResultName'] = this.valueResultName;
-    data['ValueResultField'] = this.valueResultField;
-    data['ValueResultMax'] = this.valueResultMax;
-    data['ValueResultName2'] = this.valueResultName2;
-    data['ValueResultField2'] = this.valueResultField2;
-    data['SuccessFailResultField'] = this.successFailResultField;
-    data['CommentField'] = this.commentField;
-    data['ActivityType'] = this.activityType;
-    data['RandomGen'] = this.randomGen;
-    data['RandomGenListID'] = this.randomGenListID;
-    data['Trade'] = this.trade;
-    data['HideSubmitButton'] = this.hideSubmitButton;
-    data['Bank'] = this.bank;
-    data['Alert'] = this.alert;
-    data['AlertRule'] = this.alertRule;
-    data['AlertCount'] = this.alertCount;
-    data['AlertMessage'] = this.alertMessage;
-    data['AlertMessageFail'] = this.alertMessageFail;
-    data['Reward'] = this.reward;
-    data['RewardValue'] = this.rewardValue;
-    data['Upgrades'] = this.upgrades;
-    data['ItemCrafting'] = this.itemCrafting;
-    data['Ranking'] = this.ranking;
-    data['DisableWithdrawal'] = this.disableWithdrawal;
-    data['DropDownField'] = this.dropDownField;
-    data['Scoring_type'] = this.scoringType;
-    data['Scoring_Success'] = this.scoringSuccess;
-    data['Scoring_Fail'] = this.scoringFail;
-    data['Scoring_Value'] = this.scoringValue;
-    data['DropDownFieldListID'] = this.dropDownFieldListID;
-    data['PassBasedonValueResult'] = this.passBasedonValueResult;
-    data['PassValue'] = this.passValue;
-    data['BaseControl'] = this.baseControl;
-    data['GameID'] = this.gameID;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['ActivityID'] = activityID;
+    data['BaseID'] = baseID;
+    data['ActivityName'] = activityName;
+    data['ActivityCode'] = activityCode;
+    data['ValueResultName'] = valueResultName;
+    data['ValueResultField'] = valueResultField;
+    data['ValueResultMax'] = valueResultMax;
+    data['ValueResultName2'] = valueResultName2;
+    data['ValueResultField2'] = valueResultField2;
+    data['SuccessFailResultField'] = successFailResultField;
+    data['SuccessPartialFailResultField'] = successPartialFailResultField;
+    data['CommentField'] = commentField;
+    data['ActivityType'] = activityType;
+    data['RandomGen'] = randomGen;
+    data['RandomGenListID'] = randomGenListID;
+    data['Trade'] = trade;
+    data['HideSubmitButton'] = hideSubmitButton;
+    data['Bank'] = bank;
+    data['Alert'] = alert;
+    data['AlertRule'] = alertRule;
+    data['AlertCount'] = alertCount;
+    data['AlertMessage'] = alertMessage;
+    data['AlertMessagePartial'] = alertMessagePartial;
+    data['AlertMessageFail'] = alertMessageFail;
+    data['Reward'] = reward;
+    data['RewardValue'] = rewardValue;
+    data['Upgrades'] = upgrades;
+    data['ItemCrafting'] = itemCrafting;
+    data['Ranking'] = ranking;
+    data['DisableWithdrawal'] = disableWithdrawal;
+    data['DropDownField'] = dropDownField;
+    data['Scoring_type'] = scoringType;
+    data['Scoring_Success'] = scoringSuccess;
+    data['Scoring_Partial'] = scoringPartial;
+    data['Scoring_Fail'] = scoringFail;
+    data['Scoring_Value'] = scoringValue;
+    data['DropDownFieldListID'] = dropDownFieldListID;
+    data['PassBasedonValueResult'] = passBasedonValueResult;
+    data['PassValue'] = passValue;
+    data['BaseControl'] = baseControl;
+    data['GameID'] = gameID;
     return data;
   }
 }

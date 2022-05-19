@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="au.com.widegame.wwgscoringsystem.wwgnfcscoringsystem">
+    package="au.com.widegame.wwgscoringsystem">
     <uses-permission android:name="android.permission.NFC"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
    <application
         android:label="WWG Scoring System"
         android:name="${applicationName}"

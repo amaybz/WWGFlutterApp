@@ -20,6 +20,8 @@
 /build/shared_preferences_android/
 /build/6ac7e3556c178af6e3e303b5d6ac7d62/
 /build/flutter_assets/
+/build/sqflite/
+/build/nfc_manager/
 
 
 # The .vscode folder contains launch configuration and tasks you configure in
