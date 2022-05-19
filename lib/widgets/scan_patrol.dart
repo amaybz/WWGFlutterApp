@@ -67,6 +67,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
         }
       },
     ).catchError((e) => setState(() => ndefText = '$e'));
+    nfcAvailable();
   }
 
   @override
@@ -82,6 +83,9 @@ class _ScanPatrolState extends State<ScanPatrol> {
 
   Future<bool> nfcAvailable() async {
     isAvailable = await NfcManager.instance.isAvailable();
+    setState(() {
+      isAvailable = isAvailable;
+    });
     return isAvailable;
   }
 
@@ -148,29 +152,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
             padding: const EdgeInsets.all(2.0),
             child: const Text("Base Sign in"),
           ),
-          FractionallySizedBox(
-            widthFactor: 0.99,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
-                //color: Colors.red,
-                borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10)),
-              ),
-              margin: const EdgeInsets.all(5.0),
-              padding: const EdgeInsets.all(5.0),
-              child: Column(
-                children: [
-                  const Text(
-                      "NFC: Press tag to back of device to login a patrol."),
-                  Text(ndefText!),
-                ],
-              ),
-            ),
-          ),
+          NFCScan(ndefText: ndefText, isAvailable: isAvailable),
           const Text("OR"),
           FractionallySizedBox(
             widthFactor: 0.99,
@@ -285,5 +267,64 @@ class _ScanPatrolState extends State<ScanPatrol> {
         ),
       ]),
     );
+  }
+}
+
+class NFCScan extends StatelessWidget {
+  const NFCScan({
+    Key? key,
+    required this.ndefText,
+    required this.isAvailable,
+  }) : super(key: key);
+
+  final String? ndefText;
+  final bool isAvailable;
+
+  @override
+  Widget build(BuildContext context) {
+    if (isAvailable) {
+      return FractionallySizedBox(
+        widthFactor: 0.99,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black),
+            //color: Colors.red,
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10)),
+          ),
+          margin: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(5.0),
+          child: Column(
+            children: [
+              const Text("NFC: Press tag to back of device to login a patrol."),
+              Text(ndefText!),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return FractionallySizedBox(
+        widthFactor: 0.99,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black),
+            //color: Colors.red,
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10)),
+          ),
+          margin: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(5.0),
+          child: Column(
+            children: const [Text("NFC: Not available on this Device")],
+          ),
+        ),
+      );
+    }
   }
 }
