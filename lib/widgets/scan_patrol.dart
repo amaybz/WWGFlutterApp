@@ -4,10 +4,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/utils.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 import '../classes/patrol_sign_in.dart';
 
@@ -34,6 +36,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
   NdefMessage? ndefMessage;
   String? ndefText = "";
   String? ndefId = "";
+  String _scanBarcode = "";
   bool isAvailable = false;
   List<DropdownMenuItem<String>> listPatrolsDropdown = [
     const DropdownMenuItem(value: "0", child: Text("No Patrols Loaded"))
@@ -140,6 +143,31 @@ class _ScanPatrolState extends State<ScanPatrol> {
     return ndefText;
   }
 
+  Future<void> scanQR() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.QR);
+      if (kDebugMode) {
+        print(barcodeScanRes);
+      }
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+    setState(() {
+      _scanBarcode = barcodeScanRes;
+      if (_scanBarcode.length == 6) {
+        widget.onSignIn(_scanBarcode);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -172,7 +200,11 @@ class _ScanPatrolState extends State<ScanPatrol> {
                     const Text(
                         "Barcode: Click here to scan the Patrols barcode"),
                     ElevatedButton(
-                        onPressed: () {}, child: const Text("Scan Barcode")),
+                        onPressed: () {
+                          scanQR();
+                        },
+                        child: const Text("Scan Barcode")),
+                    Text(_scanBarcode),
                   ],
                 )),
           ),
