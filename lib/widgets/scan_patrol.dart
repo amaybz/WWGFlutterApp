@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +12,7 @@ import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/utils.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
+import '../classes/database/datamanager.dart';
 import '../classes/patrol_sign_in.dart';
 
 class ScanPatrol extends StatefulWidget {
@@ -38,6 +40,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
   String? ndefId = "";
   String _scanBarcode = "";
   bool isAvailable = false;
+  bool manSignIn = false;
   List<DropdownMenuItem<String>> listPatrolsDropdown = [
     const DropdownMenuItem(value: "0", child: Text("No Patrols Loaded"))
   ];
@@ -47,6 +50,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
   void initState() {
     super.initState();
     updatePatrolsDropDown();
+    manSignIn = DataManager().getManSignIn();
     if (kDebugMode) {
       print("NFC: Starting Session");
     }
@@ -183,7 +187,6 @@ class _ScanPatrolState extends State<ScanPatrol> {
             ),
           ),
           NFCScan(ndefText: ndefText, isAvailable: isAvailable),
-          const Text("OR"),
           FractionallySizedBox(
             widthFactor: 0.99,
             child: Container(
@@ -205,7 +208,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
                       children: [
                         Image.asset(
                           'assets/img/barcode.jpg',
-                          scale: 15,
+                          scale: 1,
                         ),
                         const Text("  Scan the Patrols barcode"),
                         Expanded(
@@ -230,56 +233,77 @@ class _ScanPatrolState extends State<ScanPatrol> {
                   ],
                 )),
           ),
-          const Text("OR"),
-          FractionallySizedBox(
-            widthFactor: 0.99,
-            child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                  //color: Colors.red,
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10)),
-                ),
-                margin: const EdgeInsets.all(5.0),
-                padding: const EdgeInsets.all(5.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text("Text: Select Patrol from dropdown"),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        DropdownButton(
-                            value: selectedPatrol,
-                            items: listPatrolsDropdown,
-                            onChanged: (item) {
-                              setState(() {
-                                selectedPatrol = item.toString();
-                              });
-                            }),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              widget.onSignIn(selectedPatrol!);
-                            },
-                            child: const Text("Sign In"),
-                          ),
-                        )
-                      ],
-                    )
-                  ],
-                )),
+          buildManSignIn(),
+          Container(
+            margin: const EdgeInsets.all(2.0),
+            padding: const EdgeInsets.all(2.0),
+            child: const Text(
+              "Patrols Signed In",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
           Expanded(
             flex: 2,
             child: _buildListView(),
           ),
         ]);
+  }
+
+  Widget buildManSignIn() {
+    if (manSignIn) {
+      return FractionallySizedBox(
+        widthFactor: 0.99,
+        child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              //color: Colors.red,
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10)),
+            ),
+            margin: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      'assets/img/mansignin.png',
+                      scale: 1,
+                    ),
+                    const Text("  Patrol: "),
+                    DropdownButton(
+                        value: selectedPatrol,
+                        items: listPatrolsDropdown,
+                        onChanged: (item) {
+                          setState(() {
+                            selectedPatrol = item.toString();
+                          });
+                        }),
+                    Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                widget.onSignIn(selectedPatrol!);
+                              },
+                              child: const Text("Sign In"),
+                            ),
+                          ]),
+                    ),
+                  ],
+                )
+              ],
+            )),
+      );
+    } else {
+      return FractionallySizedBox(widthFactor: 0.99);
+    }
   }
 
   Widget _buildListView() {
