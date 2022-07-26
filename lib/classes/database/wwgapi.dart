@@ -21,12 +21,14 @@ class WebAPI {
   bool _loggedIn = false;
   bool _offLine = false;
   int _accessLevel = 10;
+  int _manSignIn = 0;
 
   get getApiKey => _apiKey;
   get getAccessLevel => _accessLevel;
   get getApiLink => _apiLink;
   get getLoggedIn => _loggedIn;
   get getOffLine => _offLine;
+  get getManSignIn => _manSignIn;
 
   void setApiKey(newValue) {
     _apiKey = newValue;
@@ -34,6 +36,10 @@ class WebAPI {
 
   void setAccessLevel(int newValue) {
     _accessLevel = newValue;
+  }
+
+  void setManSignIn(int newValue) {
+    _manSignIn = newValue;
   }
 
   void setOffline(bool newValue) {
@@ -402,6 +408,8 @@ class WebAPI {
       apiValidateToken = APIValidateToken.fromJson(json.decode(jsonData));
       _apiKey = token;
       _loggedIn = true;
+      _accessLevel = apiValidateToken.data?.access! as int;
+      _manSignIn = apiValidateToken.data?.manSignIn as int;
     } else {
       _apiKey = "";
       apiValidateToken.message = "Unauthorized";
@@ -430,6 +438,7 @@ class WebAPI {
       wwgAPILogin = APILogin.fromJson(json.decode(loginJson));
       _apiKey = wwgAPILogin.jwt;
       _accessLevel = wwgAPILogin.access!;
+      _manSignIn = wwgAPILogin.manSignIn!;
       _loggedIn = true;
     } else {
       if (kDebugMode) {
@@ -480,6 +489,7 @@ class ValidateData {
   int? access;
   int? gameID;
   int? baseID;
+  int? manSignIn;
 
   ValidateData(
       {this.id,
@@ -487,7 +497,8 @@ class ValidateData {
       this.name,
       this.access,
       this.gameID,
-      this.baseID});
+      this.baseID,
+      this.manSignIn});
 
   ValidateData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -496,6 +507,7 @@ class ValidateData {
     access = json['access'];
     gameID = json['GameID'];
     baseID = json['BaseID'];
+    manSignIn = json['manSignIn'];
   }
 
   Map<String, dynamic> toJson() {
@@ -506,6 +518,7 @@ class ValidateData {
     data['access'] = access;
     data['GameID'] = gameID;
     data['BaseID'] = baseID;
+    data['manSignIn'] = manSignIn;
     return data;
   }
 }

@@ -5,11 +5,14 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/utils.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
+import '../classes/database/datamanager.dart';
 import '../classes/patrol_sign_in.dart';
 
 class ScanPatrol extends StatefulWidget {
@@ -35,7 +38,9 @@ class _ScanPatrolState extends State<ScanPatrol> {
   NdefMessage? ndefMessage;
   String? ndefText = "";
   String? ndefId = "";
+  String _scanBarcode = "";
   bool isAvailable = false;
+  bool manSignIn = false;
   List<DropdownMenuItem<String>> listPatrolsDropdown = [
     const DropdownMenuItem(value: "0", child: Text("No Patrols Loaded"))
   ];
@@ -45,6 +50,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
   void initState() {
     super.initState();
     updatePatrolsDropDown();
+    manSignIn = DataManager().getManSignIn();
     if (kDebugMode) {
       print("NFC: Starting Session");
     }
@@ -67,6 +73,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
         }
       },
     ).catchError((e) => setState(() => ndefText = '$e'));
+    nfcAvailable();
   }
 
   @override
@@ -82,6 +89,9 @@ class _ScanPatrolState extends State<ScanPatrol> {
 
   Future<bool> nfcAvailable() async {
     isAvailable = await NfcManager.instance.isAvailable();
+    setState(() {
+      isAvailable = isAvailable;
+    });
     return isAvailable;
   }
 
@@ -137,6 +147,31 @@ class _ScanPatrolState extends State<ScanPatrol> {
     return ndefText;
   }
 
+  Future<void> scanQR() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.QR);
+      if (kDebugMode) {
+        print(barcodeScanRes);
+      }
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+    setState(() {
+      _scanBarcode = barcodeScanRes;
+      if (_scanBarcode.length == 6) {
+        widget.onSignIn(_scanBarcode);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -146,32 +181,12 @@ class _ScanPatrolState extends State<ScanPatrol> {
           Container(
             margin: const EdgeInsets.all(2.0),
             padding: const EdgeInsets.all(2.0),
-            child: const Text("Base Sign in"),
-          ),
-          FractionallySizedBox(
-            widthFactor: 0.99,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
-                //color: Colors.red,
-                borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10)),
-              ),
-              margin: const EdgeInsets.all(5.0),
-              padding: const EdgeInsets.all(5.0),
-              child: Column(
-                children: [
-                  const Text(
-                      "NFC: Press tag to back of device to login a patrol."),
-                  Text(ndefText!),
-                ],
-              ),
+            child: const Text(
+              "Base Sign in",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
-          const Text("OR"),
+          NFCScan(ndefText: ndefText, isAvailable: isAvailable),
           FractionallySizedBox(
             widthFactor: 0.99,
             child: Container(
@@ -185,66 +200,110 @@ class _ScanPatrolState extends State<ScanPatrol> {
                       bottomRight: Radius.circular(10)),
                 ),
                 margin: const EdgeInsets.all(5.0),
-                padding: const EdgeInsets.all(5.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    const Text(
-                        "Barcode: Click here to scan the Patrols barcode"),
-                    ElevatedButton(
-                        onPressed: () {}, child: const Text("Scan Barcode")),
-                  ],
-                )),
-          ),
-          const Text("OR"),
-          FractionallySizedBox(
-            widthFactor: 0.99,
-            child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                  //color: Colors.red,
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10)),
-                ),
-                margin: const EdgeInsets.all(5.0),
-                padding: const EdgeInsets.all(5.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text("Text: Select Patrol from dropdown"),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Image.asset(
+                          'assets/img/barcode.jpg',
+                          scale: 1,
+                        ),
+                        const Text("  Scan the Patrols barcode"),
+                        Expanded(
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                ElevatedButton(
+                                    onPressed: () {
+                                      scanQR();
+                                    },
+                                    child: const Text("Scan Barcode")),
+                              ]),
+                        ),
+                      ],
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        DropdownButton(
-                            value: selectedPatrol,
-                            items: listPatrolsDropdown,
-                            onChanged: (item) {
-                              setState(() {
-                                selectedPatrol = item.toString();
-                              });
-                            }),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              widget.onSignIn(selectedPatrol!);
-                            },
-                            child: const Text("Sign In"),
-                          ),
-                        )
+                        Text(_scanBarcode),
                       ],
-                    )
+                    ),
                   ],
                 )),
+          ),
+          buildManSignIn(),
+          Container(
+            margin: const EdgeInsets.all(2.0),
+            padding: const EdgeInsets.all(2.0),
+            child: const Text(
+              "Patrols Signed In",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
           Expanded(
             flex: 2,
             child: _buildListView(),
           ),
         ]);
+  }
+
+  Widget buildManSignIn() {
+    if (manSignIn) {
+      return FractionallySizedBox(
+        widthFactor: 0.99,
+        child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              //color: Colors.red,
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10)),
+            ),
+            margin: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      'assets/img/mansignin.png',
+                      scale: 1,
+                    ),
+                    const Text("  Patrol: "),
+                    DropdownButton(
+                        value: selectedPatrol,
+                        items: listPatrolsDropdown,
+                        onChanged: (item) {
+                          setState(() {
+                            selectedPatrol = item.toString();
+                          });
+                        }),
+                    Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                widget.onSignIn(selectedPatrol!);
+                              },
+                              child: const Text("Sign In"),
+                            ),
+                          ]),
+                    ),
+                  ],
+                )
+              ],
+            )),
+      );
+    } else {
+      return FractionallySizedBox(widthFactor: 0.99);
+    }
   }
 
   Widget _buildListView() {
@@ -285,5 +344,79 @@ class _ScanPatrolState extends State<ScanPatrol> {
         ),
       ]),
     );
+  }
+}
+
+class NFCScan extends StatelessWidget {
+  const NFCScan({
+    Key? key,
+    required this.ndefText,
+    required this.isAvailable,
+  }) : super(key: key);
+
+  final String? ndefText;
+  final bool isAvailable;
+
+  @override
+  Widget build(BuildContext context) {
+    if (isAvailable) {
+      return FractionallySizedBox(
+        widthFactor: 0.99,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black),
+            //color: Colors.red,
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10)),
+          ),
+          margin: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Image.asset(
+                  'assets/img/nfcicon.jpg',
+                  scale: 8,
+                ),
+                const Text("  Press tag to back of device to login a patrol."),
+                Text(ndefText!),
+              ]),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return FractionallySizedBox(
+        widthFactor: 0.99,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.red,
+            border: Border.all(color: Colors.black),
+            //color: Colors.red,
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10)),
+          ),
+          margin: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Image.asset(
+                  'assets/img/nfcicon.jpg',
+                  scale: 8,
+                ),
+                const Text("  Not available on this device.")
+              ]),
+            ],
+          ),
+        ),
+      );
+    }
   }
 }

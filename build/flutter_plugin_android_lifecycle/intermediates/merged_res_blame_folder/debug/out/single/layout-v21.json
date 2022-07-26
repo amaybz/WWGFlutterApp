@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "D:\\SDK\\wwgNFCScoring\\wwgGoogleApp\\Flutter\\wwgnfcscoringsystem\\build\\flutter_plugin_android_lifecycle\\intermediates\\res\\merged\\debug\\layout-v21\\notification_template_custom_big.xml",
+        "source": "C:\\Users\\aiden\\.gradle\\caches\\transforms-2\\files-2.1\\16a4eaa9083fcb08b8642b835d688c88\\core-1.6.0\\res\\layout-v21\\notification_template_custom_big.xml"
+    },
+    {
+        "merged": "D:\\SDK\\wwgNFCScoring\\wwgGoogleApp\\Flutter\\wwgnfcscoringsystem\\build\\flutter_plugin_android_lifecycle\\intermediates\\res\\merged\\debug\\layout-v21\\notification_action_tombstone.xml",
+        "source": "C:\\Users\\aiden\\.gradle\\caches\\transforms-2\\files-2.1\\16a4eaa9083fcb08b8642b835d688c88\\core-1.6.0\\res\\layout-v21\\notification_action_tombstone.xml"
+    },
+    {
+        "merged": "D:\\SDK\\wwgNFCScoring\\wwgGoogleApp\\Flutter\\wwgnfcscoringsystem\\build\\flutter_plugin_android_lifecycle\\intermediates\\res\\merged\\debug\\layout-v21\\notification_action.xml",
+        "source": "C:\\Users\\aiden\\.gradle\\caches\\transforms-2\\files-2.1\\16a4eaa9083fcb08b8642b835d688c88\\core-1.6.0\\res\\layout-v21\\notification_action.xml"
+    },
+    {
+        "merged": "D:\\SDK\\wwgNFCScoring\\wwgGoogleApp\\Flutter\\wwgnfcscoringsystem\\build\\flutter_plugin_android_lifecycle\\intermediates\\res\\merged\\debug\\layout-v21\\notification_template_icon_group.xml",
+        "source": "C:\\Users\\aiden\\.gradle\\caches\\transforms-2\\files-2.1\\16a4eaa9083fcb08b8642b835d688c88\\core-1.6.0\\res\\layout-v21\\notification_template_icon_group.xml"
+    }
+]
