@@ -6,6 +6,7 @@ class APILogin {
   int? access;
   int? gameID;
   int? baseID;
+  int? manSignIn;
 
   APILogin(
       {this.message,
@@ -14,7 +15,8 @@ class APILogin {
       this.name,
       this.access,
       this.gameID,
-      this.baseID});
+      this.baseID,
+      this.manSignIn});
 
   APILogin.fromJson(Map<String, dynamic> json) {
     message = json['message'];
@@ -24,6 +26,7 @@ class APILogin {
     access = json['access'];
     gameID = json['GameID'];
     baseID = json['BaseID'];
+    manSignIn = json['manSignIn'];
   }
 
   Map<String, dynamic> toJson() {
@@ -35,6 +38,7 @@ class APILogin {
     data['access'] = access;
     data['GameID'] = gameID;
     data['BaseID'] = baseID;
+    data['manSignIn'] = manSignIn;
     return data;
   }
 }

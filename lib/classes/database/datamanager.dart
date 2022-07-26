@@ -36,6 +36,14 @@ class DataManager {
     return webAPI.getOffLine;
   }
 
+  bool getManSignIn() {
+    if (webAPI.getManSignIn == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<bool> signOutPatrol(PatrolSignIn patrolSignIn) async {
     bool? signedOut;
     int? insertID = 0;
