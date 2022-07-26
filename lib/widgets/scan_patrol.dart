@@ -177,7 +177,10 @@ class _ScanPatrolState extends State<ScanPatrol> {
           Container(
             margin: const EdgeInsets.all(2.0),
             padding: const EdgeInsets.all(2.0),
-            child: const Text("Base Sign in"),
+            child: const Text(
+              "Base Sign in",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
           NFCScan(ndefText: ndefText, isAvailable: isAvailable),
           const Text("OR"),
@@ -194,17 +197,36 @@ class _ScanPatrolState extends State<ScanPatrol> {
                       bottomRight: Radius.circular(10)),
                 ),
                 margin: const EdgeInsets.all(5.0),
-                padding: const EdgeInsets.all(5.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    const Text(
-                        "Barcode: Click here to scan the Patrols barcode"),
-                    ElevatedButton(
-                        onPressed: () {
-                          scanQR();
-                        },
-                        child: const Text("Scan Barcode")),
-                    Text(_scanBarcode),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Image.asset(
+                          'assets/img/barcode.jpg',
+                          scale: 15,
+                        ),
+                        const Text("  Scan the Patrols barcode"),
+                        Expanded(
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                ElevatedButton(
+                                    onPressed: () {
+                                      scanQR();
+                                    },
+                                    child: const Text("Scan Barcode")),
+                              ]),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(_scanBarcode),
+                      ],
+                    ),
                   ],
                 )),
           ),
@@ -327,11 +349,17 @@ class NFCScan extends StatelessWidget {
                 bottomRight: Radius.circular(10)),
           ),
           margin: const EdgeInsets.all(5.0),
-          padding: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              const Text("NFC: Press tag to back of device to login a patrol."),
-              Text(ndefText!),
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Image.asset(
+                  'assets/img/nfcicon.jpg',
+                  scale: 8,
+                ),
+                const Text("  Press tag to back of device to login a patrol."),
+                Text(ndefText!),
+              ]),
             ],
           ),
         ),
@@ -341,6 +369,7 @@ class NFCScan extends StatelessWidget {
         widthFactor: 0.99,
         child: Container(
           decoration: BoxDecoration(
+            color: Colors.red,
             border: Border.all(color: Colors.black),
             //color: Colors.red,
             borderRadius: const BorderRadius.only(
@@ -350,9 +379,17 @@ class NFCScan extends StatelessWidget {
                 bottomRight: Radius.circular(10)),
           ),
           margin: const EdgeInsets.all(5.0),
-          padding: const EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
-            children: const [Text("NFC: Not available on this device.")],
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Image.asset(
+                  'assets/img/nfcicon.jpg',
+                  scale: 8,
+                ),
+                const Text("  Not available on this device.")
+              ]),
+            ],
           ),
         ),
       );

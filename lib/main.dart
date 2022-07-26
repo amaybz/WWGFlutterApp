@@ -285,9 +285,12 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           children: <Widget>[
-            Text(
-                'Welcome to Weekend Wide Game Scoring System to start select a Game.',
-                style: Theme.of(context).textTheme.subtitle1),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                  'Welcome to Weekend Wide Game Scoring System to start select a Game.',
+                  style: Theme.of(context).textTheme.titleMedium),
+            ),
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 800),
               child: Row(
