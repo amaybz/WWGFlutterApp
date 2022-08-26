@@ -6,10 +6,12 @@ import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
 import 'package:wwgnfcscoringsystem/classes/database/datamanager.dart';
 import 'package:wwgnfcscoringsystem/classes/dialog_builder.dart';
+import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/widgets/record_results.dart';
 import 'package:wwgnfcscoringsystem/widgets/scan_patrol.dart';
 import 'package:wwgnfcscoringsystem/widgets/widget_bank.dart';
+import 'package:wwgnfcscoringsystem/widgets/widget_info.dart';
 import 'classes/patrol_sign_in.dart';
 import 'classes/scan_results.dart';
 import 'classes/utils.dart';
@@ -17,18 +19,20 @@ import 'classes/database/wwgapi.dart';
 import 'login.dart';
 
 class Base extends StatefulWidget {
-  const Base(
-      {Key? key,
-      required this.gameID,
-      required this.base,
-      required this.activityData,
-      required this.patrols})
-      : super(key: key);
+  const Base({
+    Key? key,
+    required this.gameID,
+    required this.base,
+    required this.activityData,
+    required this.patrols,
+    required this.groups,
+  }) : super(key: key);
 
   final int gameID;
   final BaseData base;
   final List<ActivityData> activityData;
   final List<PatrolData> patrols;
+  final List<GroupData> groups;
   @override
   State<Base> createState() => _BaseState();
 }
@@ -188,6 +192,10 @@ class _BaseState extends State<Base> {
           label: 'Results',
         ),
         BottomNavigationBarItem(
+          icon: Icon(Icons.info),
+          label: 'Info',
+        ),
+        BottomNavigationBarItem(
           icon: Icon(Icons.monetization_on),
           label: 'Bank',
         ),
@@ -201,6 +209,10 @@ class _BaseState extends State<Base> {
         BottomNavigationBarItem(
           icon: Icon(Icons.assignment),
           label: 'Results',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.info),
+          label: 'Info',
         ),
       ];
     }
@@ -234,6 +246,24 @@ class _BaseState extends State<Base> {
       );
     }
     if (index == 2) {
+      return Info(
+        baseData: widget.base,
+        scanData: scanData,
+        patrols: widget.patrols,
+        activitiesData: widget.activityData,
+        patrolsSignedIn: patrolsSignedIn,
+        groups: widget.groups,
+        onChange: (updatedScanData) {
+          setState(() {
+            scanData = updatedScanData;
+          });
+          if (kDebugMode) {
+            print(scanData);
+          }
+        },
+      );
+    }
+    if (index == 3) {
       return Banking(
         txtValueAmount: txtValueAmount,
         patrolsSignedIn: patrolsSignedIn,

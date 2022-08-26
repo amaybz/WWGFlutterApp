@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/database/datamanager.dart';
+import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/database/wwgapi.dart';
 import 'package:wwgnfcscoringsystem/base.dart';
@@ -55,9 +56,9 @@ class _DarkLightThemeState extends State<DarkLightTheme> {
   );
 
   final ThemeData _lightTheme = ThemeData(
-    brightness: Brightness.light,
-    primaryColor: Colors.blue,
-  );
+      brightness: Brightness.light,
+      primaryColor: Colors.blue,
+      splashColor: Colors.yellow);
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool loggedIn = false;
   List<ActivityData> listActivities = [];
   List<PatrolData> listPatrols = [];
+  List<GroupData> listGroups = [];
 
   @override
   void initState() {
@@ -142,6 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getBases(selectedGame!);
     getActivities(selectedGame!);
     getPatrols(selectedGame!);
+    getGroups();
   }
 
   Future<String?> getGames() async {
@@ -201,6 +204,16 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void getGroups() async {
+    List<GroupData>? listGroupData = await dataManager.getGroups();
+    if (listGroupData != null) {
+      List<GroupData> dataList = listGroupData;
+      setState(() {
+        listGroups = dataList;
+      });
+    }
+  }
+
   void getVersionInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
@@ -227,6 +240,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 base: base,
                 activityData: listActivities,
                 patrols: listPatrols,
+                groups: listGroups,
               )),
     );
   }
@@ -304,6 +318,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         setState(() {
                           selectedGame = item as String;
                           getBases(selectedGame!);
+                          getActivities(selectedGame!);
+                          getPatrols(selectedGame!);
+                          getGroups();
                         });
                         if (kDebugMode) {
                           print("Selected Game: " + selectedGame!);

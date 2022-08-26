@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
+import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
 import 'package:wwgnfcscoringsystem/classes/scan_results.dart';
@@ -85,6 +86,30 @@ class WebAPI {
       print(games.message);
     }
     return games;
+  }
+
+  Future<Groups> getGroups() async {
+    Groups groups = Groups();
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request('POST', Uri.parse(_apiLink! + 'groups/'));
+    request.body = '';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String jsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        //print("json data: " + jsonData);
+      }
+      groups = Groups.fromJson(json.decode(jsonData));
+    } else {
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
+    }
+    if (kDebugMode) {
+      print(groups.message);
+    }
+    return groups;
   }
 
   Future<List<BankData>?> getBankConfig() async {

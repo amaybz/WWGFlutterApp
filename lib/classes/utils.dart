@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
+import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
 
@@ -28,6 +29,13 @@ class Utils {
     patrol = listPatrols.firstWhere((element) => element.gameTag == gameTag,
         orElse: () => PatrolData());
     return patrol;
+  }
+
+  GroupData getGroupDataByID(int iDGroup, List<GroupData> groups) {
+    GroupData group = GroupData();
+    group = groups.firstWhere((element) => element.iDGroup == iDGroup,
+        orElse: () => GroupData());
+    return group;
   }
 
   List<DropdownMenuItem<String>> convertPatrolsListToDropDownList(
