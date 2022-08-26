@@ -6,6 +6,7 @@ import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
 import 'package:wwgnfcscoringsystem/classes/database/sharedprefs.dart';
 import 'package:wwgnfcscoringsystem/classes/database/wwgapi.dart';
+import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
 import 'package:wwgnfcscoringsystem/classes/scan_results.dart';
@@ -326,6 +327,48 @@ class DataManager {
       games.data = await localDB.listGamesData();
       //print(games.data);
       return games.data;
+    }
+  }
+
+  Future<List<GroupData>?> getGroups() async {
+    Groups groups = Groups();
+
+    if (!webAPI.getOffLine) {
+      try {
+        groups = await webAPI.getGroups();
+      } on SocketException {
+        if (kDebugMode) {
+          print("Unable to get groups from API.");
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
+      }
+    }
+    //update local DB with latest data
+    if (groups.data != null) {
+      if (!kIsWeb && !webAPI.getOffLine) {
+        if (kDebugMode) {
+          print("Saving Groups data to local DB");
+        }
+        await localDB.clearGroupData();
+        for (GroupData groupData in groups.data!) {
+          int? insertId = await localDB.insertGroupData(groupData);
+          if (kDebugMode) {
+            //print(insertId);
+          }
+        }
+      }
+      //print(groups.data);
+      return groups.data;
+    } else {
+      if (kDebugMode) {
+        print("Loading groups from local DB");
+      }
+      groups.data = await localDB.listGroupData();
+      //print(groups.data);
+      return groups.data;
     }
   }
 

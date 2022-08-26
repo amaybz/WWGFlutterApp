@@ -52,6 +52,7 @@ class _BankingState extends State<Banking> {
     super.initState();
     updatePatrolsDropDown();
     updateAccountsDropDown();
+    clearTransactionTypeDropDown();
     dataManager.uploadOfflineScans();
   }
 
@@ -75,6 +76,10 @@ class _BankingState extends State<Banking> {
     listAccountsDropdown.clear();
     listAccountsDropdown.addAll(
         utils.convertListBankDataToAccountsDropDownList(widget.listBankData));
+  }
+
+  void clearTransactionTypeDropDown() {
+    widget.scanData.comment = null;
   }
 
   @override
@@ -182,8 +187,6 @@ class _BankingState extends State<Banking> {
               child: const Text("Submit"),
             ),
           ),
-          Text("List Patrol Accounts..."),
-          Text("Base Accounts..."),
         ],
       ),
     );

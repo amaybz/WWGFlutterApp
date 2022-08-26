@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
 import 'package:wwgnfcscoringsystem/classes/games_results.dart';
+import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
 import 'package:wwgnfcscoringsystem/classes/scan_results.dart';
@@ -13,7 +14,7 @@ import '../activities.dart';
 class LocalDB {
   static const _databaseName = "local_database.db";
   // Increment this version when you need to change the schema.
-  static const _databaseVersion = 12;
+  static const _databaseVersion = 13;
 
   final String tblBases = "tblbases";
   final String tblGameConfig = "tblgameconfig";
@@ -22,6 +23,8 @@ class LocalDB {
   final String tblBaseSignIn = "tblbasesignin";
   final String tblScan = "tblscan";
   final String tblBankConfig = "tblbankconfig";
+  final String tblFaction = "tblFaction";
+  final String tblGroup = "tblgroup";
 
   // Make this a singleton class.
   LocalDB._privateConstructor();
@@ -171,6 +174,26 @@ class LocalDB {
             "PRIMARY KEY (GameTag, ScanTime)"
             ")";
 
+    final String createTblFaction = "CREATE TABLE IF NOT EXISTS " +
+        tblFaction +
+        "("
+            "IDFaction INTEGER PRIMARY KEY, "
+            "FactionName TEXT, "
+            "GameID INTEGER"
+            ")";
+
+    final String createTblGroup = "CREATE TABLE IF NOT EXISTS " +
+        tblGroup +
+        "("
+            "IDGroup INTEGER PRIMARY KEY, "
+            "GroupName TEXT, "
+            "ContactName TEXT, "
+            "ContactPhone TEXT, "
+            "ContactEmail TEXT, "
+            "IDUser INTEGER, "
+            "Comments TEXT"
+            ")";
+
     await db.execute(createTblBases);
     await db.execute(createTblGameConfig);
     await db.execute(createTblActivities);
@@ -178,6 +201,8 @@ class LocalDB {
     await db.execute(createTblBaseSignIn);
     await db.execute(createTblScan);
     await db.execute(createTblBankConfig);
+    await db.execute(createTblFaction);
+    await db.execute(createTblGroup);
   }
 
   void _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -188,6 +213,8 @@ class LocalDB {
     await db.execute("DROP TABLE IF EXISTS $tblBaseSignIn");
     await db.execute("DROP TABLE IF EXISTS $tblScan");
     await db.execute("DROP TABLE IF EXISTS $tblBankConfig");
+    await db.execute("DROP TABLE IF EXISTS $tblFaction");
+    await db.execute("DROP TABLE IF EXISTS $tblGroup");
     _createTables(db, newVersion);
   }
 
@@ -197,6 +224,17 @@ class LocalDB {
     int? insertedID = await db?.insert(
       tblGameConfig,
       gamesData.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    return insertedID;
+  }
+
+  Future<int?> insertGroupData(GroupData groupData) async {
+    // Get a reference to the database.
+    final Database? db = await database;
+    int? insertedID = await db?.insert(
+      tblGroup,
+      groupData.toJson(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
     return insertedID;
@@ -406,6 +444,19 @@ class LocalDB {
     });
   }
 
+  Future<List<GroupData>> listGroupData() async {
+    // Get a reference to the database.
+    final Database? db = await database;
+
+    // Query the table for all records.
+    final List<Map<dynamic, dynamic>>? maps = await db?.query(tblGroup);
+
+    // Convert the List<Map<String, dynamic> into a List<Dog>.
+    return List.generate(maps!.length, (i) {
+      return GroupData.fromJson(maps[i] as Map<String, dynamic>);
+    });
+  }
+
   Future<List<GamesData>> listGamesData() async {
     // Get a reference to the database.
     final Database? db = await database;
@@ -430,6 +481,13 @@ class LocalDB {
     final Database? db = await database;
     //delete all teams in DB
     await db?.execute("delete from " + tblGameConfig);
+  }
+
+  Future<void> clearGroupData() async {
+    // Get a reference to the database.
+    final Database? db = await database;
+    //delete all teams in DB
+    await db?.execute("delete from " + tblGroup);
   }
 
   Future<void> clearBaseData() async {
