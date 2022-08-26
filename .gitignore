@@ -23,6 +23,7 @@
 /build/sqflite/
 /build/nfc_manager/
 /build/flutter_plugin_android_lifecycle/
+/build/flutter_barcode_scanner/
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
