@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/database/datamanager.dart';
+import 'package:wwgnfcscoringsystem/classes/fractions.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/database/wwgapi.dart';
@@ -111,6 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<ActivityData> listActivities = [];
   List<PatrolData> listPatrols = [];
   List<GroupData> listGroups = [];
+  List<FractionData> listFractions = [];
 
   @override
   void initState() {
@@ -145,6 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getActivities(selectedGame!);
     getPatrols(selectedGame!);
     getGroups();
+    getFractions(selectedGame!);
   }
 
   Future<String?> getGames() async {
@@ -200,6 +203,17 @@ class _MyHomePageState extends State<MyHomePage> {
       List<PatrolData> dataList = listPatrolData;
       setState(() {
         listPatrols = dataList;
+      });
+    }
+  }
+
+  void getFractions(String gameID) async {
+    List<FractionData>? listFractionData =
+        await dataManager.getFractionsByGameID(gameID);
+    if (listFractionData != null) {
+      List<FractionData> dataList = listFractionData;
+      setState(() {
+        listFractions = dataList;
       });
     }
   }

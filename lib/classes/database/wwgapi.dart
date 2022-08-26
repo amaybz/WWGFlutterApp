@@ -165,8 +165,7 @@ class WebAPI {
   Future<Fractions> getFractionsByGameID(String gameID) async {
     Fractions fractions = Fractions();
     var headers = {'Authorization': _apiKey!};
-    var request = http.Request(
-        'POST', Uri.parse(_apiLink! + 'fractions/GetAllBasesByGameID.php'));
+    var request = http.Request('POST', Uri.parse(_apiLink! + 'fractions/'));
     request.body = '{"GameID" : "' + gameID + '"}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
