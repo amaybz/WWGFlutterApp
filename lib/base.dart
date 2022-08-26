@@ -12,6 +12,7 @@ import 'package:wwgnfcscoringsystem/widgets/record_results.dart';
 import 'package:wwgnfcscoringsystem/widgets/scan_patrol.dart';
 import 'package:wwgnfcscoringsystem/widgets/widget_bank.dart';
 import 'package:wwgnfcscoringsystem/widgets/widget_info.dart';
+import 'classes/fractions.dart';
 import 'classes/patrol_sign_in.dart';
 import 'classes/scan_results.dart';
 import 'classes/utils.dart';
@@ -26,6 +27,7 @@ class Base extends StatefulWidget {
     required this.activityData,
     required this.patrols,
     required this.groups,
+    required this.fractions,
   }) : super(key: key);
 
   final int gameID;
@@ -33,6 +35,7 @@ class Base extends StatefulWidget {
   final List<ActivityData> activityData;
   final List<PatrolData> patrols;
   final List<GroupData> groups;
+  final List<FractionData> fractions;
   @override
   State<Base> createState() => _BaseState();
 }

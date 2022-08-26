@@ -255,6 +255,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 activityData: listActivities,
                 patrols: listPatrols,
                 groups: listGroups,
+                fractions: listFractions,
               )),
     );
   }
