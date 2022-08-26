@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
+import 'package:wwgnfcscoringsystem/classes/fractions.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
@@ -159,6 +160,31 @@ class WebAPI {
       print("Bases results: " + bases.message!);
     }
     return bases;
+  }
+
+  Future<Fractions> getFractionsByGameID(String gameID) async {
+    Fractions fractions = Fractions();
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request(
+        'POST', Uri.parse(_apiLink! + 'fractions/GetAllBasesByGameID.php'));
+    request.body = '{"GameID" : "' + gameID + '"}';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String jsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        //print("json data: " + jsonData);
+      }
+      fractions = Fractions.fromJson(json.decode(jsonData));
+    } else {
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
+    }
+    if (kDebugMode) {
+      print("Fractions results: " + fractions.message!);
+    }
+    return fractions;
   }
 
   Future<Activities> getActivitiesByGameID(String gameID) async {

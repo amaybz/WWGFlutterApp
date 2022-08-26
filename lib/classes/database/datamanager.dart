@@ -6,6 +6,7 @@ import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
 import 'package:wwgnfcscoringsystem/classes/database/sharedprefs.dart';
 import 'package:wwgnfcscoringsystem/classes/database/wwgapi.dart';
+import 'package:wwgnfcscoringsystem/classes/fractions.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
@@ -411,6 +412,48 @@ class DataManager {
       bases.data = await localDB.listBaseData();
       //print(bases.data);
       return bases.data;
+    }
+  }
+
+  Future<List<FractionData>?> getFractionsByGameID(String gameID) async {
+    Fractions fractions = Fractions();
+    if (!webAPI.getOffLine) {
+      try {
+        fractions = await webAPI.getFractionsByGameID(gameID);
+      } on SocketException {
+        webAPI.setOffline(true);
+        if (kDebugMode) {
+          print("Unable to get fractions from API.");
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
+      }
+    }
+    //update local DB with latest data
+    if (fractions.data != null) {
+      if (!kIsWeb && !webAPI.getOffLine) {
+        if (kDebugMode) {
+          print("Saving fractions data to local DB");
+        }
+        await localDB.clearBaseData();
+        for (FractionData fractionData in fractions.data!) {
+          int? insertId = await localDB.insertFractionData(fractionData);
+          if (kDebugMode) {
+            //print(insertId);
+          }
+        }
+      }
+      //print(bases.data);
+      return fractions.data;
+    } else {
+      if (kDebugMode) {
+        print("Loading bases from local DB");
+      }
+      fractions.data = await localDB.listFractionData();
+      //print(bases.data);
+      return fractions.data;
     }
   }
 
