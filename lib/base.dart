@@ -256,6 +256,7 @@ class _BaseState extends State<Base> {
         activitiesData: widget.activityData,
         patrolsSignedIn: patrolsSignedIn,
         groups: widget.groups,
+        fractions: widget.fractions,
         onChange: (updatedScanData) {
           setState(() {
             scanData = updatedScanData;

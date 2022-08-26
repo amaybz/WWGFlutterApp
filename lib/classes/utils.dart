@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
+import 'package:wwgnfcscoringsystem/classes/fractions.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
@@ -36,6 +37,15 @@ class Utils {
     group = groups.firstWhere((element) => element.iDGroup == iDGroup,
         orElse: () => GroupData());
     return group;
+  }
+
+  FractionData getFractionDataByID(
+      int idFraction, List<FractionData> fractions) {
+    FractionData fraction = FractionData();
+    fraction = fractions.firstWhere(
+        (element) => element.iDFaction == idFraction,
+        orElse: () => FractionData());
+    return fraction;
   }
 
   List<DropdownMenuItem<String>> convertPatrolsListToDropDownList(
