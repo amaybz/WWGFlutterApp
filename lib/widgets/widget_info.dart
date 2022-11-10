@@ -121,7 +121,12 @@ class _InfoState extends State<Info> {
                       children: [
                         Text("Details: ",
                             style: Theme.of(context).textTheme.titleSmall),
-                        const Text("nothing to see here..."),
+                        Expanded(
+                          child: Text(widget.baseData.details!,
+                              softWrap: false,
+                              maxLines: 7,
+                              overflow: TextOverflow.ellipsis),
+                        ),
                       ],
                     ),
                   ],

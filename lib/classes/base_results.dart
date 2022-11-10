@@ -35,6 +35,7 @@ class BaseData {
   int? level;
   int? iDFaction;
   int? bank;
+  String? details;
 
   BaseData(
       {this.baseID,
@@ -46,7 +47,8 @@ class BaseData {
       this.randomListID,
       this.level,
       this.iDFaction,
-      this.bank});
+      this.bank,
+      this.details});
 
   BaseData.fromJson(Map<String, dynamic> json) {
     baseID = json['BaseID'];
@@ -59,6 +61,7 @@ class BaseData {
     level = json['level'];
     iDFaction = json['IDFaction'];
     bank = json['Bank'];
+    details = json['Details'];
   }
 
   Map<String, dynamic> toJson() {
@@ -73,6 +76,7 @@ class BaseData {
     data['level'] = level;
     data['IDFaction'] = iDFaction;
     data['Bank'] = bank;
+    data['Details'] = details;
     return data;
   }
 
@@ -85,6 +89,7 @@ class BaseData {
         'BaseCode: $baseCode, '
         'level: $level, '
         'IDFaction: $iDFaction, '
-        'bank: $bank,';
+        'bank: $bank,'
+        'Details: $details, ';
   }
 }

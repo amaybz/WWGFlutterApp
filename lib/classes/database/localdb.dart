@@ -15,7 +15,7 @@ import '../activities.dart';
 class LocalDB {
   static const _databaseName = "local_database.db";
   // Increment this version when you need to change the schema.
-  static const _databaseVersion = 13;
+  static const _databaseVersion = 15;
 
   final String tblBases = "tblbases";
   final String tblGameConfig = "tblgameconfig";
@@ -75,7 +75,8 @@ class LocalDB {
             "RandomListID INTEGER,"
             "level INTEGER,"
             "IDFaction INTEGER,"
-            "Bank INTEGER)";
+            "Bank INTEGER,"
+            "Details TEXT)";
 
     final String createTblGameConfig = "CREATE TABLE IF NOT EXISTS " +
         tblGameConfig +
