@@ -107,7 +107,7 @@ class _InfoState extends State<Info> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Fraction: ",
+                        Text("Faction: ",
                             style: Theme.of(context).textTheme.titleSmall),
                         Text(Utils()
                             .getFractionDataByID(

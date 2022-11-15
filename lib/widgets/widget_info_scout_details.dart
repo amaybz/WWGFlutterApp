@@ -71,7 +71,7 @@ class _InfoScoutDetailsState extends State<InfoScoutDetails> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Fraction: ", style: Theme.of(context).textTheme.titleSmall),
+            Text("Faction: ", style: Theme.of(context).textTheme.titleSmall),
             Text(Utils()
                 .getFractionDataByID(
                     Utils()
