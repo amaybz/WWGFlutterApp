@@ -15,7 +15,7 @@ import '../activities.dart';
 class LocalDB {
   static const _databaseName = "local_database.db";
   // Increment this version when you need to change the schema.
-  static const _databaseVersion = 15;
+  static const _databaseVersion = 16;
 
   final String tblBases = "tblbases";
   final String tblGameConfig = "tblgameconfig";
@@ -99,6 +99,12 @@ class LocalDB {
             "ValueResultMax INTEGER,"
             "ValueResultName2 TEXT,"
             "ValueResultField2 INTEGER,"
+            "ValueResult3Name TEXT,"
+            "ValueResult3Field INTEGER,"
+            "ValueResult4Name TEXT,"
+            "ValueResult4Field INTEGER,"
+            "ValueResult5Name TEXT,"
+            "ValueResult5Field INTEGER,"
             "SuccessFailResultField INTEGER,"
             "SuccessPartialFailResultField INTEGER,"
             "CommentField INTEGER,"
@@ -170,6 +176,10 @@ class LocalDB {
             "Comment TEXT,"
             "Offline INTEGER,"
             "ResultValue INTEGER,"
+            "ResultValue2 INTEGER,"
+            "ResultValue3 INTEGER,"
+            "ResultValue4 INTEGER,"
+            "ResultValue5 INTEGER,"
             "Result TEXT,"
             "IDOpponent TEXT,"
             "IDFaction TEXT,"

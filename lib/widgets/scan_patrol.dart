@@ -53,26 +53,32 @@ class _ScanPatrolState extends State<ScanPatrol> {
     if (kDebugMode) {
       print("NFC: Starting Session");
     }
-    NfcManager.instance.startSession(
-      onDiscovered: (tag) async {
-        try {
-          final result = await handleTag(tag);
-          if (result == null) return;
-          setState(() => ndefText = result);
-          final splitData = ndefText?.split(':');
-          if (kDebugMode) {
-            print(splitData);
-          } // [Hello, world!];
-          widget.onSignIn(splitData![0]);
-        } catch (e) {
-          await NfcManager.instance.stopSession().catchError((_) {
-            /* no op */
-          });
-          setState(() => ndefText = '$e');
-        }
-      },
-    ).catchError((e) => setState(() => ndefText = '$e'));
-    nfcAvailable();
+    if(!kIsWeb ) {
+      NfcManager.instance.startSession(
+        onDiscovered: (tag) async {
+          try {
+            final result = await handleTag(tag);
+            if (result == null) return;
+            setState(() => ndefText = result);
+            final splitData = ndefText?.split(':');
+            if (kDebugMode) {
+              print(splitData);
+            } // [Hello, world!];
+            widget.onSignIn(splitData![0]);
+          } catch (e) {
+            await NfcManager.instance.stopSession().catchError((_) {
+              /* no op */
+            });
+            setState(() => ndefText = '$e');
+          }
+        },
+      ).catchError((e) => setState(() => ndefText = '$e'));
+      nfcAvailable();
+    }
+    else
+      {
+        print("NFC not supported on WEB");
+      }
   }
 
   @override

@@ -24,6 +24,7 @@ class WebAPI {
   bool _offLine = false;
   int _accessLevel = 10;
   int _manSignIn = 0;
+  int _gameID = 0;
 
   get getApiKey => _apiKey;
   get getAccessLevel => _accessLevel;
@@ -31,6 +32,7 @@ class WebAPI {
   get getLoggedIn => _loggedIn;
   get getOffLine => _offLine;
   get getManSignIn => _manSignIn;
+  get getGameID=> _gameID;
 
   void setApiKey(newValue) {
     _apiKey = newValue;
@@ -46,6 +48,10 @@ class WebAPI {
 
   void setOffline(bool newValue) {
     _offLine = newValue;
+  }
+
+  void setGameID(int newValue) {
+    _gameID = newValue;
   }
 
   Future<bool> checkConnection(apiToken) async {
@@ -413,6 +419,14 @@ class WebAPI {
         scanData.offline.toString() +
         '","ResultValue" : "' +
         scanData.resultValue.toString() +
+        '","ResultValue2" : "' +
+        scanData.resultValue2.toString() +
+        '","ResultValue3" : "' +
+        scanData.resultValue3.toString() +
+        '","ResultValue4" : "' +
+        scanData.resultValue4.toString() +
+        '","ResultValue5" : "' +
+        scanData.resultValue5.toString() +
         '","Result" : "' +
         scanData.result! +
         '","IDOpponent" : "' +
@@ -460,6 +474,7 @@ class WebAPI {
       _loggedIn = true;
       _accessLevel = apiValidateToken.data?.access! as int;
       _manSignIn = apiValidateToken.data?.manSignIn as int;
+      _gameID = apiValidateToken.data?.gameID as int;
     } else {
       _apiKey = "";
       apiValidateToken.message = "Unauthorized";
@@ -490,6 +505,7 @@ class WebAPI {
       _accessLevel = wwgAPILogin.access!;
       _manSignIn = wwgAPILogin.manSignIn!;
       _loggedIn = true;
+      _gameID = wwgAPILogin.gameID!;
     } else {
       if (kDebugMode) {
         print(response.reasonPhrase);

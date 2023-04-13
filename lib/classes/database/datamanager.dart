@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -46,6 +47,10 @@ class DataManager {
     }
   }
 
+  int getUserBaseID() {
+      return webAPI.getGameID;
+  }
+
   Future<bool> signOutPatrol(PatrolSignIn patrolSignIn) async {
     bool? signedOut;
     int? insertID = 0;
@@ -82,7 +87,9 @@ class DataManager {
     bool resultSubmitted = false;
     int? insertID = 0;
     try {
-      resultSubmitted = await webAPI.insertScan(scanData);
+      resultSubmitted = await webAPI
+          .insertScan(scanData)
+          .timeout(const Duration(seconds: 10));
       print("API Scan Data Submitted: " + resultSubmitted.toString());
     } on SocketException {
       webAPI.setOffline(true);
@@ -99,7 +106,24 @@ class DataManager {
           print("Unable to upload Sign in to API or LocalDB");
         }
       }
-    } catch (e) {
+    }
+    on TimeoutException {
+      webAPI.setOffline(true);
+      scanData.offline = 1;
+      insertID = await localDB.insertScan(scanData);
+      if (insertID != null) {
+        if (kDebugMode) {
+          print("Unable to upload scanData to API - TIMEOUT");
+          print("Offline Record inserted: " + insertID.toString());
+        }
+        resultSubmitted = true;
+      } else {
+        if (kDebugMode) {
+          print("Unable to upload Sign in to API or LocalDB");
+        }
+      }
+    }
+    catch (e) {
       webAPI.setOffline(true);
       if (kDebugMode) {
         print(e);
@@ -112,7 +136,9 @@ class DataManager {
     bool signedIn = false;
     int? insertID = 0;
     try {
-      signedIn = await webAPI.setPatrolSignIn(patrolSignIn);
+      signedIn = await webAPI
+          .setPatrolSignIn(patrolSignIn)
+          .timeout(const Duration(seconds: 10));
     } on SocketException {
       if (!kIsWeb) {
         webAPI.setOffline(true);
@@ -120,7 +146,25 @@ class DataManager {
         insertID = await localDB.insertPatrolSignIn(patrolSignIn);
         if (insertID != null) {
           if (kDebugMode) {
-            print("Unable to upload Sign in to API");
+            print("Unable to upload Sign in to API: SocketException");
+            print("Offline Record inserted: " + insertID.toString());
+          }
+          signedIn = true;
+        } else {
+          signedIn = false;
+          if (kDebugMode) {
+            print("Unable to upload Sign in to API or LocalDB");
+          }
+        }
+      }
+    } on TimeoutException {
+      if (!kIsWeb) {
+        webAPI.setOffline(true);
+        patrolSignIn.offline = 1;
+        insertID = await localDB.insertPatrolSignIn(patrolSignIn);
+        if (insertID != null) {
+          if (kDebugMode) {
+            print("Unable to upload Sign in to API: TimeoutException");
             print("Offline Record inserted: " + insertID.toString());
           }
           signedIn = true;

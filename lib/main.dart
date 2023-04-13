@@ -139,10 +139,17 @@ class _MyHomePageState extends State<MyHomePage> {
       print("API Offline: " + isAPIOffline.toString());
     }
     if (!isAPIOffline && !loggedIn) {
-      _navigateToLogin(context);
+     await _navigateToLogin(context);
     }
-
+    dataManager.uploadOfflineScans();
     await getGames();
+    int userGameID = dataManager.getUserBaseID();
+    if(userGameID > 0)
+    {
+      setState(() {
+        selectedGame = userGameID.toString();
+      });
+    }
     getBases(selectedGame!);
     getActivities(selectedGame!);
     getPatrols(selectedGame!);
@@ -242,6 +249,22 @@ class _MyHomePageState extends State<MyHomePage> {
       // Create the SelectionScreen in the next step.
       MaterialPageRoute(builder: (context) => const Login()),
     );
+    await getGames();
+    int userGameID = dataManager.getUserBaseID();
+    if(userGameID > 0)
+      {
+        setState(() {
+          selectedGame = userGameID.toString();
+
+        });
+
+      }
+    getBases(selectedGame!);
+    getActivities(selectedGame!);
+    getPatrols(selectedGame!);
+    getGroups();
+    getFractions(selectedGame!);
+
   }
 
   _navigateToGameBases(BuildContext context, int gameID, BaseData base) async {
@@ -264,7 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     if (kDebugMode) {
-      print("Screen Size: " + width.toString());
+      //print("Screen Size: " + width.toString());
     }
 
     return Scaffold(

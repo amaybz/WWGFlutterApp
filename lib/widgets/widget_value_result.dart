@@ -7,6 +7,7 @@ import '../classes/scan_results.dart';
 class ValueResult extends StatefulWidget {
   const ValueResult(
       {Key? key,
+        required this.active ,
       required this.activityData,
       required this.scanData,
       required this.onChange,
@@ -16,9 +17,10 @@ class ValueResult extends StatefulWidget {
 
   final ActivityData activityData;
   final ScanData scanData;
-  final ValueChanged<ScanData> onChange;
+  final ValueChanged<int> onChange;
   final TextEditingController txtValueResult;
   final String label;
+  final int active;
 
   @override
   State<ValueResult> createState() => _ValueResultState();
@@ -32,7 +34,7 @@ class _ValueResultState extends State<ValueResult> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.activityData.valueResultField == 1) {
+    if (widget.active == 1) {
       return Row(
         children: [
           Container(
@@ -47,7 +49,7 @@ class _ValueResultState extends State<ValueResult> {
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 onChanged: (string) {
-                  widget.scanData.resultValue = int.tryParse(string);
+                  widget.onChange(int.tryParse(string)!) ;
                 }),
           ),
         ],

@@ -52,6 +52,10 @@ class _BaseState extends State<Base> {
   Alerts alerts = Alerts();
   DataManager dataManager = DataManager();
   final TextEditingController txtValueResult = TextEditingController();
+  final TextEditingController txtValueResult2 = TextEditingController();
+  final TextEditingController txtValueResult3 = TextEditingController();
+  final TextEditingController txtValueResult4 = TextEditingController();
+  final TextEditingController txtValueResult5 = TextEditingController();
   final TextEditingController txtValueAmount = TextEditingController();
   String error = "Please fill in all Fields";
   bool offline = false;
@@ -233,6 +237,10 @@ class _BaseState extends State<Base> {
     if (index == 1) {
       return RecordResults(
         txtValueResult: txtValueResult,
+        txtValueResult2: txtValueResult2,
+        txtValueResult3: txtValueResult3,
+        txtValueResult4: txtValueResult4,
+        txtValueResult5: txtValueResult5,
         scanData: scanData,
         listActivitiesDropdown: listActivitiesDropdown,
         activitiesData: widget.activityData,
@@ -241,9 +249,6 @@ class _BaseState extends State<Base> {
           setState(() {
             scanData = updatedScanData;
           });
-          if (kDebugMode) {
-            print(scanData);
-          }
         },
         onSubmit: submitResult,
       );
@@ -261,9 +266,7 @@ class _BaseState extends State<Base> {
           setState(() {
             scanData = updatedScanData;
           });
-          if (kDebugMode) {
-            print(scanData);
-          }
+
         },
       );
     }
@@ -337,6 +340,10 @@ class _BaseState extends State<Base> {
       scanData.offline ??= 0;
       scanData.resultValue ??= 0;
       resultSubmitted = await dataManager.insertScan(scanData);
+      if (!resultSubmitted) {
+        error = "Upload Failed";
+      }
+
     }
     if (resultSubmitted) {
       AlertData alertData = AlertData(alert: false, alertMessage: "Submitted");
@@ -351,7 +358,15 @@ class _BaseState extends State<Base> {
         scanData.result = null;
         scanData.gameTag = null;
         scanData.resultValue = 0;
+        scanData.resultValue2 = 0;
+        scanData.resultValue3 = 0;
+        scanData.resultValue4 = 0;
+        scanData.resultValue5 = 0;
         txtValueResult.text = "";
+        txtValueResult2.text = "";
+        txtValueResult3.text = "";
+        txtValueResult4.text = "";
+        txtValueResult5.text = "";
       });
     } else {
       DialogBuilder(context).showAlertOKDialog("Result", "Error: " + error);
@@ -360,7 +375,7 @@ class _BaseState extends State<Base> {
     //verify data and submit to API
     dataManager.uploadOfflineScans();
     if (kDebugMode) {
-      print(scanData);
+      print("Reset scanData: " + scanData.toString());
     }
   }
 
@@ -386,7 +401,7 @@ class _BaseState extends State<Base> {
     //get current time
     patrolSignIn.scanIn = Utils().getCurrentDateSQL();
     signedIn = await dataManager.signInPatrol(patrolSignIn);
-    await getSignedInPatrols();
+    await getSignedInPatrols().timeout(const Duration(seconds: 5));
     DialogBuilder(context).hideOpenDialog();
     if (signedIn) {
       DialogBuilder(context).showAlertOKDialog(
@@ -435,15 +450,18 @@ class _BaseState extends State<Base> {
   }
 
   bool validateData(ActivityData activityData) {
+    error = "";
     if (activityData.valueResultField == 1) {
       if (activityData.successFailResultField == 0) {
         scanData.result = "Success";
+        print("Setting Result to " + scanData.result.toString());
       }
       if (scanData.resultValue == null) {
         error = "Please enter a value for " +
             activityData.valueResultName.toString();
         return false;
       }
+
       if (activityData.valueResultMax! < scanData.resultValue!) {
         error = "Max value is " + activityData.valueResultMax.toString();
         return false;
