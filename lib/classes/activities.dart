@@ -183,6 +183,12 @@ class ActivityData {
     data['ValueResultMax'] = valueResultMax;
     data['ValueResultName2'] = valueResultName2;
     data['ValueResultField2'] = valueResultField2;
+    data['ValueResult3Name'] = valueResult3Name;
+    data['ValueResult3Field'] = valueResult3Field;
+    data['ValueResult4Name'] = valueResult4Name;
+    data['ValueResult4Field'] = valueResult4Field;
+    data['ValueResult5Name'] = valueResult5Name;
+    data['ValueResult5Field'] = valueResult5Field;
     data['SuccessFailResultField'] = successFailResultField;
     data['SuccessPartialFailResultField'] = successPartialFailResultField;
     data['CommentField'] = commentField;

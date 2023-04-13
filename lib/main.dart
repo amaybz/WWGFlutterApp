@@ -221,6 +221,12 @@ class _MyHomePageState extends State<MyHomePage> {
         listFractions = dataList;
       });
     }
+    if(listFractions.isEmpty){
+      List<FractionData> dataList = [FractionData(iDFaction: 0, factionName: "None", gameID: 0)];
+      setState(() {
+        listFractions = dataList;
+      });
+    }
   }
 
   void getGroups() async {
@@ -353,29 +359,32 @@ class _MyHomePageState extends State<MyHomePage> {
                       onChanged: (item) {
                         setState(() {
                           selectedGame = item as String;
+                          if (kDebugMode) {
+                            print("Main.Dart: Updating Data for Selected Game: " + selectedGame!);
+                          }
                           getBases(selectedGame!);
                           getActivities(selectedGame!);
                           getPatrols(selectedGame!);
                           getGroups();
+                          getFractions(selectedGame!);
                         });
-                        if (kDebugMode) {
-                          print("Selected Game: " + selectedGame!);
-                        }
+
                       }),
-                  Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 0, horizontal: 10),
-                      child: ElevatedButton(
-                          onPressed: () {
-                            loadData();
-                          },
-                          child: const Text("Refresh"))),
+
                 ],
               ),
             ),
             Expanded(
               child: _buildListViewBases(),
             ),
+            Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 0, horizontal: 10),
+                child: ElevatedButton(
+                    onPressed: () {
+                      loadData();
+                    },
+                    child: const Text("Sync Data with Server"))),
 
             //FutureBuilder<APIValidateToken>(
             //    future: validateAPIToken(),

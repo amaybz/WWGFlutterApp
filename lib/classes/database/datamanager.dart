@@ -493,7 +493,7 @@ class DataManager {
       return fractions.data;
     } else {
       if (kDebugMode) {
-        print("Loading bases from local DB");
+        print("Loading factions from local DB");
       }
       fractions.data = await localDB.listFractionData();
       //print(bases.data);
