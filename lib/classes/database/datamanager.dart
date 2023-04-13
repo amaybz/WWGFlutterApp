@@ -28,7 +28,7 @@ class DataManager {
     } on SocketException {
       webAPI.setOffline(true);
       if (kDebugMode) {
-        print("Unable to connect to API");
+        print("DataManager: Unable to connect to API");
       }
     } catch (e) {
       webAPI.setOffline(true);
@@ -62,14 +62,14 @@ class DataManager {
       int? updateCount = await localDB.signOutPatrol(patrolSignIn);
       if (updateCount != null) {
         if (kDebugMode) {
-          print("Unable to upload Sign out to API");
-          print("Offline Record inserted: " + insertID.toString());
+          print("DataManager: Unable to upload Sign out to API");
+          print("DataManager: Offline Record inserted: " + insertID.toString());
         }
         signedOut = true;
       } else {
         signedOut = false;
         if (kDebugMode) {
-          print("Unable to upload Sign in to API or LocalDB");
+          print("DataManager: Unable to upload Sign in to API or LocalDB");
         }
       }
     } catch (e) {
@@ -90,20 +90,20 @@ class DataManager {
       resultSubmitted = await webAPI
           .insertScan(scanData)
           .timeout(const Duration(seconds: 10));
-      print("API Scan Data Submitted: " + resultSubmitted.toString());
+      print("DataManager: API Scan Data Submitted: " + resultSubmitted.toString());
     } on SocketException {
       webAPI.setOffline(true);
       scanData.offline = 1;
       insertID = await localDB.insertScan(scanData);
       if (insertID != null) {
         if (kDebugMode) {
-          print("Unable to upload scanData to API");
-          print("Offline Record inserted: " + insertID.toString());
+          print("DataManager: Unable to upload scanData to API");
+          print("DataManager: Offline Record inserted: " + insertID.toString());
         }
         resultSubmitted = true;
       } else {
         if (kDebugMode) {
-          print("Unable to upload Sign in to API or LocalDB");
+          print("DataManager: Unable to upload Sign in to API or LocalDB");
         }
       }
     }
@@ -113,13 +113,13 @@ class DataManager {
       insertID = await localDB.insertScan(scanData);
       if (insertID != null) {
         if (kDebugMode) {
-          print("Unable to upload scanData to API - TIMEOUT");
-          print("Offline Record inserted: " + insertID.toString());
+          print("DataManager: Unable to upload scanData to API - TIMEOUT");
+          print("DataManager: Offline Record inserted: " + insertID.toString());
         }
         resultSubmitted = true;
       } else {
         if (kDebugMode) {
-          print("Unable to upload Sign in to API or LocalDB");
+          print("DataManager: Unable to upload Sign in to API or LocalDB");
         }
       }
     }
@@ -146,14 +146,14 @@ class DataManager {
         insertID = await localDB.insertPatrolSignIn(patrolSignIn);
         if (insertID != null) {
           if (kDebugMode) {
-            print("Unable to upload Sign in to API: SocketException");
-            print("Offline Record inserted: " + insertID.toString());
+            print("DataManager: Unable to upload Sign in to API: SocketException");
+            print("DataManager: Offline Record inserted: " + insertID.toString());
           }
           signedIn = true;
         } else {
           signedIn = false;
           if (kDebugMode) {
-            print("Unable to upload Sign in to API or LocalDB");
+            print("DataManager: Unable to upload Sign in to API or LocalDB");
           }
         }
       }
@@ -164,14 +164,14 @@ class DataManager {
         insertID = await localDB.insertPatrolSignIn(patrolSignIn);
         if (insertID != null) {
           if (kDebugMode) {
-            print("Unable to upload Sign in to API: TimeoutException");
-            print("Offline Record inserted: " + insertID.toString());
+            print("DataManager: Unable to upload Sign in to API: TimeoutException");
+            print("DataManager: Offline Record inserted: " + insertID.toString());
           }
           signedIn = true;
         } else {
           signedIn = false;
           if (kDebugMode) {
-            print("Unable to upload Sign in to API or LocalDB");
+            print("DataManager: Unable to upload Sign in to API or LocalDB");
           }
         }
       }
@@ -202,7 +202,7 @@ class DataManager {
   Future<bool> uploadOfflineScans() async {
     if (!kIsWeb && !webAPI.getOffLine) {
       List<ScanData> offlineData = await localDB.listScanDataOfflineRecords();
-      print("offline Scan Data Records: " + offlineData.length.toString());
+      print("DataManager: offline Scan Data Records: " + offlineData.length.toString());
       if (offlineData.isNotEmpty) {
         List<dynamic> response =
             await webAPI.uploadOfflineScanData(offlineData);
@@ -214,19 +214,19 @@ class DataManager {
             int? updateCount = await localDB.updateOfflineScanData(
                 response[i]["GameTag"], response[i]["ScanTime"], 0);
             if (updateCount == 0) {
-              print("Update to offline record FAILED!");
+              print("DataManager: Update to offline record FAILED!");
             }
           }
           if (response[i]["Uploaded"] == false) {
             int? updateCount = await localDB.updateOfflineScanData(
                 response[i]["GameTag"], response[i]["ScanTime"], 3);
-            print("Offline Record error: Record marked as conflicted!");
+            print("DataManager: Offline Record error: Record marked as conflicted!");
             if (updateCount == 0) {
-              print("Update to offline record FAILED!");
+              print("DataManager: Update to offline record FAILED!");
             }
           }
         }
-        print("Offline Records Submitted: " + response.length.toString());
+        print("DataManager: Offline Records Submitted: " + response.length.toString());
         return true;
       }
     }
@@ -238,14 +238,14 @@ class DataManager {
     List<PatrolSignIn> patrolsSignIn = [];
     await isAPIOnline();
     try {
-      print("Getting Patrols Signed in");
-      print("API Offline: " + webAPI.getOffLine.toString());
-      print("Web App: " + kIsWeb.toString());
+      print("DataManager: Getting Patrols Signed in");
+      print("DataManager: API Offline: " + webAPI.getOffLine.toString());
+      print("DataManager: Web App: " + kIsWeb.toString());
       // check for offline patrols and sync data to local DB
       if (!kIsWeb && !webAPI.getOffLine) {
         List<PatrolSignIn> offlineData =
             await localDB.listPatrolSignInOfflineRecords();
-        print("offline Base Sign in Data: " + offlineData.length.toString());
+        print("DataManager: offline Base Sign in Data: " + offlineData.length.toString());
         //print(offlineData);
 
         if (offlineData.isNotEmpty) {
@@ -277,7 +277,7 @@ class DataManager {
       webAPI.setOffline(true);
 
       if (kDebugMode) {
-        print("Unable to get signed in Patrols from API.");
+        print("DataManager: Unable to get signed in Patrols from API.");
       }
     } catch (e) {
       if (kDebugMode) {
@@ -299,7 +299,7 @@ class DataManager {
         listBankData = await webAPI.getBankConfig();
       } on SocketException {
         if (kDebugMode) {
-          print("Unable to get Bank Config from API.");
+          print("DataManager: Unable to get Bank Config from API.");
         }
       } catch (e) {
         if (kDebugMode) {
@@ -311,7 +311,7 @@ class DataManager {
     if (listBankData != null) {
       if (!kIsWeb && !webAPI.getOffLine) {
         if (kDebugMode) {
-          print("Saving Bank data to local DB");
+          print("DataManager: Saving Bank data to local DB");
         }
         await localDB.clearBankData();
         for (BankData bankData in listBankData) {
@@ -325,7 +325,7 @@ class DataManager {
       return listBankData;
     } else {
       if (kDebugMode) {
-        print("Loading games from local DB");
+        print("DataManager: Loading games from local DB");
       }
       listBankData = await localDB.listBankData();
       //print(games.data);
@@ -341,7 +341,7 @@ class DataManager {
         games = await webAPI.getGames();
       } on SocketException {
         if (kDebugMode) {
-          print("Unable to get games from API.");
+          print("DataManager: Unable to get games from API.");
         }
       } catch (e) {
         if (kDebugMode) {
@@ -353,7 +353,7 @@ class DataManager {
     if (games.data != null) {
       if (!kIsWeb && !webAPI.getOffLine) {
         if (kDebugMode) {
-          print("Saving Games data to local DB");
+          print("DataManager: Saving Games data to local DB");
         }
         await localDB.clearGamesData();
         for (GamesData gamesData in games.data!) {
@@ -367,7 +367,7 @@ class DataManager {
       return games.data;
     } else {
       if (kDebugMode) {
-        print("Loading games from local DB");
+        print("DataManager: Loading games from local DB");
       }
       games.data = await localDB.listGamesData();
       //print(games.data);
@@ -383,7 +383,7 @@ class DataManager {
         groups = await webAPI.getGroups();
       } on SocketException {
         if (kDebugMode) {
-          print("Unable to get groups from API.");
+          print("DataManager: Unable to get groups from API.");
         }
       } catch (e) {
         if (kDebugMode) {
@@ -395,7 +395,7 @@ class DataManager {
     if (groups.data != null) {
       if (!kIsWeb && !webAPI.getOffLine) {
         if (kDebugMode) {
-          print("Saving Groups data to local DB");
+          print("DataManager: Saving Groups data to local DB");
         }
         await localDB.clearGroupData();
         for (GroupData groupData in groups.data!) {
@@ -409,7 +409,7 @@ class DataManager {
       return groups.data;
     } else {
       if (kDebugMode) {
-        print("Loading groups from local DB");
+        print("DataManager: Loading groups from local DB");
       }
       groups.data = await localDB.listGroupData();
       //print(groups.data);
@@ -425,7 +425,7 @@ class DataManager {
       } on SocketException {
         webAPI.setOffline(true);
         if (kDebugMode) {
-          print("Unable to get Bases from API.");
+          print("DataManager: Unable to get Bases from API.");
         }
       } catch (e) {
         if (kDebugMode) {
@@ -437,7 +437,7 @@ class DataManager {
     if (bases.data != null) {
       if (!kIsWeb && !webAPI.getOffLine) {
         if (kDebugMode) {
-          print("Saving Base data to local DB");
+          print("DataManager: Saving Base data to local DB");
         }
         await localDB.clearBaseData();
         for (BaseData baseData in bases.data!) {
@@ -451,7 +451,7 @@ class DataManager {
       return bases.data;
     } else {
       if (kDebugMode) {
-        print("Loading bases from local DB");
+        print("DataManager: Loading bases from local DB");
       }
       bases.data = await localDB.listBaseData();
       //print(bases.data);
@@ -467,7 +467,7 @@ class DataManager {
       } on SocketException {
         webAPI.setOffline(true);
         if (kDebugMode) {
-          print("Unable to get fractions from API.");
+          print("DataManager: Unable to get fractions from API.");
         }
       } catch (e) {
         if (kDebugMode) {
@@ -479,7 +479,7 @@ class DataManager {
     if (fractions.data != null) {
       if (!kIsWeb && !webAPI.getOffLine) {
         if (kDebugMode) {
-          print("Saving fractions data to local DB");
+          print("DataManager: Saving fractions data to local DB");
         }
         await localDB.clearBaseData();
         for (FractionData fractionData in fractions.data!) {
@@ -493,7 +493,7 @@ class DataManager {
       return fractions.data;
     } else {
       if (kDebugMode) {
-        print("Loading factions from local DB");
+        print("DataManager: Loading factions from local DB");
       }
       fractions.data = await localDB.listFractionData();
       //print(bases.data);
