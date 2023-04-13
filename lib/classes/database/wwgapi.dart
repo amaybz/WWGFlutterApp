@@ -81,7 +81,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String jsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + jsonData);
+        print("WWG_API: Games json data: " + jsonData);
       }
       games = GamesResults.fromJson(json.decode(jsonData));
     } else {
@@ -129,7 +129,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String jsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + jsonData);
+        print("WWG_API: Bank json data: " + jsonData);
       }
       bankConfig = BankResults.fromJson(json.decode(jsonData));
     } else {
@@ -163,7 +163,7 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print("Bases results: " + bases.message!);
+      print("WWG_API: Bases results: " + bases.message!);
     }
     return bases;
   }
@@ -187,7 +187,7 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print("Fractions results: " + fractions.message!);
+      print("WWG_API: Fractions results: " + fractions.message!);
     }
     return fractions;
   }
@@ -212,7 +212,7 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print("Activity Results: " + activities.message!);
+      print("WWG_API: Activity Results: " + activities.message!);
     }
     return activities;
   }
@@ -233,11 +233,11 @@ class WebAPI {
       patrolResults = PatrolResults.fromJson(json.decode(jsonData));
     } else {
       if (kDebugMode) {
-        print(response.reasonPhrase);
+        //print(response.reasonPhrase);
       }
     }
     if (kDebugMode) {
-      print("Patrol Results: " + patrolResults.message!);
+      print("WWG_API: Patrol Results: " + patrolResults.message!);
     }
     return patrolResults;
   }
@@ -264,7 +264,7 @@ class WebAPI {
         }
       } else {
         if (kDebugMode) {
-          print(response.reasonPhrase);
+          //print(response.reasonPhrase);
         }
       }
     }
@@ -282,7 +282,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String strJsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + strJsonData);
+        print("WWG_API: OfflineScan json data: " + strJsonData);
         //print(response.reasonPhrase);
       }
       List<dynamic> jsonData = json.decode(strJsonData);
@@ -290,7 +290,7 @@ class WebAPI {
         return jsonData;
       } else {
         if (kDebugMode) {
-          print(response.reasonPhrase);
+          //print(response.reasonPhrase);
         }
         return jsonData;
       }
@@ -309,7 +309,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String strJsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + strJsonData);
+        print("WWG_API: SignInPatrolsOfflineUpload json data: " + strJsonData);
         //print(response.reasonPhrase);
       }
       List<dynamic> jsonData = json.decode(strJsonData);
@@ -345,7 +345,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String strJsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + strJsonData);
+        print("WWG_API: PatrolSignIn json data: " + strJsonData);
       }
       Map<String, dynamic> jsonData = json.decode(strJsonData);
       if (jsonData['data']['SignedIn'] == "true") {
@@ -389,7 +389,7 @@ class WebAPI {
         return true;
       } else {
         if (kDebugMode) {
-          print(response.reasonPhrase);
+          //print(response.reasonPhrase);
         }
       }
     }
@@ -445,12 +445,12 @@ class WebAPI {
         return true;
       } else {
         if (kDebugMode) {
-          print(response.reasonPhrase);
+          //print(response.reasonPhrase);
         }
       }
     }
     if (kDebugMode) {
-      print(scanData);
+      //print(scanData);
     }
     return false;
   }
@@ -484,7 +484,7 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print(apiValidateToken.message);
+      print("WWG_API: ValidateToken - " + apiValidateToken.message.toString());
     }
     return apiValidateToken;
   }
