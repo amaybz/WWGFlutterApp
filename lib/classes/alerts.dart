@@ -1,10 +1,4 @@
-import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
-import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
-import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
-import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
 import 'package:wwgnfcscoringsystem/classes/scan_results.dart';
 
 class Alerts {

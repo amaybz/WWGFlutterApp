@@ -54,6 +54,8 @@ class MySharedPrefs {
   saveBool(String key, bool data) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool(key, data);
-    print('saved: $key Value: $data');
+    if (kDebugMode) {
+      print('saved: $key Value: $data');
+    }
   }
 }

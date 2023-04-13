@@ -69,7 +69,9 @@ class _BaseState extends State<Base> {
     scanData.iDBaseCode = widget.base.baseCode;
     dataManager.uploadOfflineScans();
     if (widget.base.bank == 1) {
-      print("getting bank data.");
+      if (kDebugMode) {
+        print("Base.Dart: getting bank data.");
+      }
       getBankConfig();
     }
   }
@@ -112,7 +114,7 @@ class _BaseState extends State<Base> {
 
     if (kDebugMode) {
       print(widget.activityData);
-      print("#Filtered");
+      print("Base.Dart: #Filtered");
       print(filteredList.length);
     }
   }
@@ -129,19 +131,19 @@ class _BaseState extends State<Base> {
     switch (value) {
       case 'Work Offline':
         if (kDebugMode) {
-          print("Work Offline Selected");
+          print("Base.Dart: Work Offline Selected");
         }
         //showAlertDialogClearMatch(context);
         break;
       case 'Settings':
         if (kDebugMode) {
-          print("Settings Selected");
+          print("Base.Dart: Settings Selected");
         }
         //_navigateToSettings(context);
         break;
       case 'Login':
         if (kDebugMode) {
-          print("Login Selected");
+          print("Base.Dart: Login Selected");
         }
         _navigateToLogin(context);
         break;
@@ -375,7 +377,7 @@ class _BaseState extends State<Base> {
     //verify data and submit to API
     dataManager.uploadOfflineScans();
     if (kDebugMode) {
-      print("Reset scanData: " + scanData.toString());
+      print("Base.Dart: Reset scanData: " + scanData.toString());
     }
   }
 
@@ -454,7 +456,9 @@ class _BaseState extends State<Base> {
     if (activityData.valueResultField == 1) {
       if (activityData.successFailResultField == 0) {
         scanData.result = "Success";
-        print("Setting Result to " + scanData.result.toString());
+        if (kDebugMode) {
+          print("Base.Dart: Setting Result to " + scanData.result.toString());
+        }
       }
       if (scanData.resultValue == null) {
         error = "Please enter a value for " +

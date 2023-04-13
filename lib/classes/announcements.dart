@@ -62,17 +62,17 @@ class AnnouncementsData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['AlertID'] = this.alertID;
-    data['Time'] = this.time;
-    data['AlertType'] = this.alertType;
-    data['TabletID'] = this.tabletID;
-    data['GameTag'] = this.gameTag;
-    data['AlertMsg'] = this.alertMsg;
-    data['offline'] = this.offline;
-    data['GameID'] = this.gameID;
-    data['SendToUsername'] = this.sendToUsername;
-    data['Status'] = this.status;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['AlertID'] = alertID;
+    data['Time'] = time;
+    data['AlertType'] = alertType;
+    data['TabletID'] = tabletID;
+    data['GameTag'] = gameTag;
+    data['AlertMsg'] = alertMsg;
+    data['offline'] = offline;
+    data['GameID'] = gameID;
+    data['SendToUsername'] = sendToUsername;
+    data['Status'] = status;
     return data;
   }
 }

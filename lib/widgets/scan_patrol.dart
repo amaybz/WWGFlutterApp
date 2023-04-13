@@ -1,12 +1,8 @@
 import 'dart:convert';
-
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfc_manager/nfc_manager.dart';
-import 'package:nfc_manager/platform_tags.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/utils.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -77,7 +73,9 @@ class _ScanPatrolState extends State<ScanPatrol> {
     }
     else
       {
-        print("NFC not supported on WEB");
+        if (kDebugMode) {
+          print("NFC not supported on WEB");
+        }
       }
   }
 
@@ -123,7 +121,9 @@ class _ScanPatrolState extends State<ScanPatrol> {
     await nfcAvailable();
     if (isAvailable) {
       nfcResult = tag.data;
-      print(nfcResult);
+      if (kDebugMode) {
+        print(nfcResult);
+      }
       var ndef = Ndef.from(tag);
 
       ndefMessage = await ndef?.read();
@@ -307,7 +307,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
             )),
       );
     } else {
-      return FractionallySizedBox(widthFactor: 0.99);
+      return const FractionallySizedBox(widthFactor: 0.99);
     }
   }
 
