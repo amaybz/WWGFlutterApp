@@ -26,6 +26,8 @@
 /build/nfc_manager/
 /build/flutter_plugin_android_lifecycle/
 /build/flutter_barcode_scanner/
+/build/a1cd694c193bff1475337a5c640e7c62/
+/build/permission_handler_android/
 
 
 # The .vscode folder contains launch configuration and tasks you configure in
@@ -55,3 +57,4 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
