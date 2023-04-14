@@ -33,6 +33,10 @@ class ScanData {
   String? comment;
   int? offline;
   int? resultValue;
+  int? resultValue2;
+  int? resultValue3;
+  int? resultValue4;
+  int? resultValue5;
   String? result;
   String? iDOpponent;
   String? iDFaction;
@@ -45,7 +49,11 @@ class ScanData {
       this.iDActivityCode,
       this.comment,
       this.offline,
-      this.resultValue,
+      this.resultValue = 0,
+      this.resultValue2 = 0,
+      this.resultValue3 = 0,
+      this.resultValue4 = 0,
+      this.resultValue5 = 0,
       this.result,
       this.iDOpponent,
       this.iDFaction});
@@ -59,6 +67,10 @@ class ScanData {
     comment = json['Comment'];
     offline = json['Offline'];
     resultValue = json['ResultValue'];
+    resultValue2 = json['ResultValue2'];
+    resultValue3 = json['ResultValue3'];
+    resultValue4 = json['ResultValue4'];
+    resultValue5 = json['ResultValue5'];
     result = json['Result'];
     iDOpponent = json['IDOpponent'];
     iDFaction = json['IDFaction'];
@@ -74,6 +86,10 @@ class ScanData {
     data['Comment'] = comment;
     data['Offline'] = offline;
     data['ResultValue'] = resultValue;
+    data['ResultValue2'] = resultValue2;
+    data['ResultValue3'] = resultValue3;
+    data['ResultValue4'] = resultValue4;
+    data['ResultValue5'] = resultValue5;
     data['Result'] = result;
     data['IDOpponent'] = iDOpponent;
     data['IDFaction'] = iDFaction;
@@ -88,6 +104,10 @@ class ScanData {
         'IDActivityCode: $iDActivityCode, '
         'ScanTime: $scanTime, '
         'ResultValue: $resultValue, '
+        'ResultValue2: $resultValue2, '
+        'ResultValue3: $resultValue3, '
+        'ResultValue4: $resultValue4, '
+        'ResultValue5: $resultValue5, '
         'Result: $result, ';
   }
 }

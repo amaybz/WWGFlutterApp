@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../classes/fractions.dart';
 import '../classes/groups.dart';
 import '../classes/patrol_results.dart';
 import '../classes/scan_results.dart';
@@ -11,11 +12,13 @@ class InfoScoutDetails extends StatefulWidget {
     required this.scanData,
     required this.patrols,
     required this.groups,
+    required this.fractions,
   }) : super(key: key);
 
   final ScanData scanData;
   final List<PatrolData> patrols;
   final List<GroupData> groups;
+  final List<FractionData> fractions;
 
   @override
   State<InfoScoutDetails> createState() => _InfoScoutDetailsState();
@@ -68,12 +71,15 @@ class _InfoScoutDetailsState extends State<InfoScoutDetails> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Fraction: ", style: Theme.of(context).textTheme.titleSmall),
+            Text("Faction: ", style: Theme.of(context).textTheme.titleSmall),
             Text(Utils()
-                .getPatrolDataByGameTag(
-                    widget.scanData.gameTag as String, widget.patrols)
-                .iDFaction
-                .toString()),
+                .getFractionDataByID(
+                    Utils()
+                        .getPatrolDataByGameTag(
+                            widget.scanData.gameTag as String, widget.patrols)
+                        .iDFaction!,
+                    widget.fractions)
+                .factionName!),
           ],
         ),
       ]);

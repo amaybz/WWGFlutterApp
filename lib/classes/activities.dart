@@ -34,6 +34,12 @@ class ActivityData {
   int? valueResultMax;
   String? valueResultName2;
   int? valueResultField2;
+  String? valueResult3Name;
+  int? valueResult3Field;
+  String? valueResult4Name;
+  int? valueResult4Field;
+  String? valueResult5Name;
+  int? valueResult5Field;
   int? successFailResultField;
   int? successPartialFailResultField;
   int? commentField;
@@ -73,10 +79,16 @@ class ActivityData {
       this.activityName,
       this.activityCode,
       this.valueResultName,
-      this.valueResultField,
+      this.valueResultField = 0,
       this.valueResultMax,
       this.valueResultName2,
-      this.valueResultField2,
+      this.valueResultField2 = 0,
+      this.valueResult3Name,
+      this.valueResult3Field = 0,
+      this.valueResult4Name,
+      this.valueResult4Field = 0,
+      this.valueResult5Name,
+      this.valueResult5Field = 0,
       this.successFailResultField,
       this.successPartialFailResultField,
       this.commentField,
@@ -120,6 +132,12 @@ class ActivityData {
     valueResultMax = json['ValueResultMax'];
     valueResultName2 = json['ValueResultName2'];
     valueResultField2 = json['ValueResultField2'];
+    valueResult3Name = json['ValueResult3Name'];
+    valueResult3Field = json['ValueResult3Field'];
+    valueResult4Name = json['ValueResult4Name'];
+    valueResult4Field = json['ValueResult4Field'];
+    valueResult5Name = json['ValueResult5Name'];
+    valueResult5Field = json['ValueResult5Field'];
     successFailResultField = json['SuccessFailResultField'];
     successPartialFailResultField = json['SuccessPartialFailResultField'];
     commentField = json['CommentField'];
@@ -165,6 +183,12 @@ class ActivityData {
     data['ValueResultMax'] = valueResultMax;
     data['ValueResultName2'] = valueResultName2;
     data['ValueResultField2'] = valueResultField2;
+    data['ValueResult3Name'] = valueResult3Name;
+    data['ValueResult3Field'] = valueResult3Field;
+    data['ValueResult4Name'] = valueResult4Name;
+    data['ValueResult4Field'] = valueResult4Field;
+    data['ValueResult5Name'] = valueResult5Name;
+    data['ValueResult5Field'] = valueResult5Field;
     data['SuccessFailResultField'] = successFailResultField;
     data['SuccessPartialFailResultField'] = successPartialFailResultField;
     data['CommentField'] = commentField;

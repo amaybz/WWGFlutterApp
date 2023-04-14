@@ -3,6 +3,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
+import 'package:wwgnfcscoringsystem/classes/fractions.dart';
 import 'package:wwgnfcscoringsystem/classes/games_results.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
@@ -14,7 +15,7 @@ import '../activities.dart';
 class LocalDB {
   static const _databaseName = "local_database.db";
   // Increment this version when you need to change the schema.
-  static const _databaseVersion = 13;
+  static const _databaseVersion = 16;
 
   final String tblBases = "tblbases";
   final String tblGameConfig = "tblgameconfig";
@@ -74,7 +75,8 @@ class LocalDB {
             "RandomListID INTEGER,"
             "level INTEGER,"
             "IDFaction INTEGER,"
-            "Bank INTEGER)";
+            "Bank INTEGER,"
+            "Details TEXT)";
 
     final String createTblGameConfig = "CREATE TABLE IF NOT EXISTS " +
         tblGameConfig +
@@ -97,6 +99,12 @@ class LocalDB {
             "ValueResultMax INTEGER,"
             "ValueResultName2 TEXT,"
             "ValueResultField2 INTEGER,"
+            "ValueResult3Name TEXT,"
+            "ValueResult3Field INTEGER,"
+            "ValueResult4Name TEXT,"
+            "ValueResult4Field INTEGER,"
+            "ValueResult5Name TEXT,"
+            "ValueResult5Field INTEGER,"
             "SuccessFailResultField INTEGER,"
             "SuccessPartialFailResultField INTEGER,"
             "CommentField INTEGER,"
@@ -168,6 +176,10 @@ class LocalDB {
             "Comment TEXT,"
             "Offline INTEGER,"
             "ResultValue INTEGER,"
+            "ResultValue2 INTEGER,"
+            "ResultValue3 INTEGER,"
+            "ResultValue4 INTEGER,"
+            "ResultValue5 INTEGER,"
             "Result TEXT,"
             "IDOpponent TEXT,"
             "IDFaction TEXT,"
@@ -235,6 +247,17 @@ class LocalDB {
     int? insertedID = await db?.insert(
       tblGroup,
       groupData.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    return insertedID;
+  }
+
+  Future<int?> insertFractionData(FractionData fractionData) async {
+    // Get a reference to the database.
+    final Database? db = await database;
+    int? insertedID = await db?.insert(
+      tblFaction,
+      fractionData.toJson(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
     return insertedID;
@@ -405,6 +428,19 @@ class LocalDB {
     });
   }
 
+  Future<List<FractionData>> listFractionData() async {
+    // Get a reference to the database.
+    final Database? db = await database;
+
+    // Query the table for all records.
+    final List<Map<dynamic, dynamic>>? maps = await db?.query(tblFaction);
+
+    // Convert the List<Map<String, dynamic> into a List<Dog>.
+    return List.generate(maps!.length, (i) {
+      return FractionData.fromJson(maps[i] as Map<String, dynamic>);
+    });
+  }
+
   Future<List<BankData>> listBankData() async {
     // Get a reference to the database.
     final Database? db = await database;
@@ -488,6 +524,13 @@ class LocalDB {
     final Database? db = await database;
     //delete all teams in DB
     await db?.execute("delete from " + tblGroup);
+  }
+
+  Future<void> clearFractionData() async {
+    // Get a reference to the database.
+    final Database? db = await database;
+    //delete all teams in DB
+    await db?.execute("delete from " + tblFaction);
   }
 
   Future<void> clearBaseData() async {

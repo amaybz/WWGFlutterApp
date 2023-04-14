@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/database/datamanager.dart';
+import 'package:wwgnfcscoringsystem/classes/fractions.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/database/wwgapi.dart';
@@ -111,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<ActivityData> listActivities = [];
   List<PatrolData> listPatrols = [];
   List<GroupData> listGroups = [];
+  List<FractionData> listFractions = [];
 
   @override
   void initState() {
@@ -137,14 +137,22 @@ class _MyHomePageState extends State<MyHomePage> {
       print("API Offline: " + isAPIOffline.toString());
     }
     if (!isAPIOffline && !loggedIn) {
-      _navigateToLogin(context);
+     await _navigateToLogin(context);
     }
-
+    dataManager.uploadOfflineScans();
     await getGames();
+    int userGameID = dataManager.getUserBaseID();
+    if(userGameID > 0)
+    {
+      setState(() {
+        selectedGame = userGameID.toString();
+      });
+    }
     getBases(selectedGame!);
     getActivities(selectedGame!);
     getPatrols(selectedGame!);
     getGroups();
+    getFractions(selectedGame!);
   }
 
   Future<String?> getGames() async {
@@ -204,6 +212,23 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void getFractions(String gameID) async {
+    List<FractionData>? listFractionData =
+        await dataManager.getFractionsByGameID(gameID);
+    if (listFractionData != null) {
+      List<FractionData> dataList = listFractionData;
+      setState(() {
+        listFractions = dataList;
+      });
+    }
+    if(listFractions.isEmpty){
+      List<FractionData> dataList = [FractionData(iDFaction: 0, factionName: "None", gameID: 0)];
+      setState(() {
+        listFractions = dataList;
+      });
+    }
+  }
+
   void getGroups() async {
     List<GroupData>? listGroupData = await dataManager.getGroups();
     if (listGroupData != null) {
@@ -228,6 +253,22 @@ class _MyHomePageState extends State<MyHomePage> {
       // Create the SelectionScreen in the next step.
       MaterialPageRoute(builder: (context) => const Login()),
     );
+    await getGames();
+    int userGameID = dataManager.getUserBaseID();
+    if(userGameID > 0)
+      {
+        setState(() {
+          selectedGame = userGameID.toString();
+
+        });
+
+      }
+    getBases(selectedGame!);
+    getActivities(selectedGame!);
+    getPatrols(selectedGame!);
+    getGroups();
+    getFractions(selectedGame!);
+
   }
 
   _navigateToGameBases(BuildContext context, int gameID, BaseData base) async {
@@ -241,6 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 activityData: listActivities,
                 patrols: listPatrols,
                 groups: listGroups,
+                fractions: listFractions,
               )),
     );
   }
@@ -249,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     if (kDebugMode) {
-      print("Screen Size: " + width.toString());
+      //print("Screen Size: " + width.toString());
     }
 
     return Scaffold(
@@ -300,7 +342,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
                   'Welcome to Weekend Wide Game Scoring System to start select a Game.',
                   style: Theme.of(context).textTheme.titleMedium),
@@ -317,29 +359,32 @@ class _MyHomePageState extends State<MyHomePage> {
                       onChanged: (item) {
                         setState(() {
                           selectedGame = item as String;
+                          if (kDebugMode) {
+                            print("Main.Dart: Updating Data for Selected Game: " + selectedGame!);
+                          }
                           getBases(selectedGame!);
                           getActivities(selectedGame!);
                           getPatrols(selectedGame!);
                           getGroups();
+                          getFractions(selectedGame!);
                         });
-                        if (kDebugMode) {
-                          print("Selected Game: " + selectedGame!);
-                        }
+
                       }),
-                  Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 0, horizontal: 10),
-                      child: ElevatedButton(
-                          onPressed: () {
-                            loadData();
-                          },
-                          child: const Text("Refresh"))),
+
                 ],
               ),
             ),
             Expanded(
               child: _buildListViewBases(),
             ),
+            Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 0, horizontal: 10),
+                child: ElevatedButton(
+                    onPressed: () {
+                      loadData();
+                    },
+                    child: const Text("Sync Data with Server"))),
 
             //FutureBuilder<APIValidateToken>(
             //    future: validateAPIToken(),

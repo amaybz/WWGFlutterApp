@@ -60,15 +60,15 @@ class PatrolData {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['IDPatrol'] = this.iDPatrol;
-    data['IDGroup'] = this.iDGroup;
-    data['GameID'] = this.gameID;
-    data['PatrolName'] = this.patrolName;
-    data['GameTag'] = this.gameTag;
-    data['AgeScore'] = this.ageScore;
-    data['SizeScore'] = this.sizeScore;
-    data['Handicap'] = this.handicap;
-    data['IDFaction'] = this.iDFaction;
+    data['IDPatrol'] = iDPatrol;
+    data['IDGroup'] = iDGroup;
+    data['GameID'] = gameID;
+    data['PatrolName'] = patrolName;
+    data['GameTag'] = gameTag;
+    data['AgeScore'] = ageScore;
+    data['SizeScore'] = sizeScore;
+    data['Handicap'] = handicap;
+    data['IDFaction'] = iDFaction;
     return data;
   }
 }

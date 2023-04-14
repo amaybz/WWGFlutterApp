@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
+import 'package:wwgnfcscoringsystem/classes/fractions.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
@@ -23,6 +24,7 @@ class WebAPI {
   bool _offLine = false;
   int _accessLevel = 10;
   int _manSignIn = 0;
+  int _gameID = 0;
 
   get getApiKey => _apiKey;
   get getAccessLevel => _accessLevel;
@@ -30,6 +32,7 @@ class WebAPI {
   get getLoggedIn => _loggedIn;
   get getOffLine => _offLine;
   get getManSignIn => _manSignIn;
+  get getGameID=> _gameID;
 
   void setApiKey(newValue) {
     _apiKey = newValue;
@@ -45,6 +48,10 @@ class WebAPI {
 
   void setOffline(bool newValue) {
     _offLine = newValue;
+  }
+
+  void setGameID(int newValue) {
+    _gameID = newValue;
   }
 
   Future<bool> checkConnection(apiToken) async {
@@ -74,7 +81,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String jsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + jsonData);
+        print("WWG_API: Games json data: " + jsonData);
       }
       games = GamesResults.fromJson(json.decode(jsonData));
     } else {
@@ -122,7 +129,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String jsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + jsonData);
+        print("WWG_API: Bank json data: " + jsonData);
       }
       bankConfig = BankResults.fromJson(json.decode(jsonData));
     } else {
@@ -156,9 +163,33 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print("Bases results: " + bases.message!);
+      print("WWG_API: Bases results: " + bases.message!);
     }
     return bases;
+  }
+
+  Future<Fractions> getFractionsByGameID(String gameID) async {
+    Fractions fractions = Fractions();
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request('POST', Uri.parse(_apiLink! + 'fractions/'));
+    request.body = '{"GameID" : "' + gameID + '"}';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String jsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        //print("json data: " + jsonData);
+      }
+      fractions = Fractions.fromJson(json.decode(jsonData));
+    } else {
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
+    }
+    if (kDebugMode) {
+      print("WWG_API: Fractions results: " + fractions.message!);
+    }
+    return fractions;
   }
 
   Future<Activities> getActivitiesByGameID(String gameID) async {
@@ -181,7 +212,7 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print("Activity Results: " + activities.message!);
+      print("WWG_API: Activity Results: " + activities.message!);
     }
     return activities;
   }
@@ -202,11 +233,11 @@ class WebAPI {
       patrolResults = PatrolResults.fromJson(json.decode(jsonData));
     } else {
       if (kDebugMode) {
-        print(response.reasonPhrase);
+        //print(response.reasonPhrase);
       }
     }
     if (kDebugMode) {
-      print("Patrol Results: " + patrolResults.message!);
+      print("WWG_API: Patrol Results: " + patrolResults.message!);
     }
     return patrolResults;
   }
@@ -233,7 +264,7 @@ class WebAPI {
         }
       } else {
         if (kDebugMode) {
-          print(response.reasonPhrase);
+          //print(response.reasonPhrase);
         }
       }
     }
@@ -251,7 +282,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String strJsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + strJsonData);
+        print("WWG_API: OfflineScan json data: " + strJsonData);
         //print(response.reasonPhrase);
       }
       List<dynamic> jsonData = json.decode(strJsonData);
@@ -259,7 +290,7 @@ class WebAPI {
         return jsonData;
       } else {
         if (kDebugMode) {
-          print(response.reasonPhrase);
+          //print(response.reasonPhrase);
         }
         return jsonData;
       }
@@ -278,7 +309,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String strJsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + strJsonData);
+        print("WWG_API: SignInPatrolsOfflineUpload json data: " + strJsonData);
         //print(response.reasonPhrase);
       }
       List<dynamic> jsonData = json.decode(strJsonData);
@@ -314,7 +345,7 @@ class WebAPI {
     if (response.statusCode == 200) {
       String strJsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + strJsonData);
+        print("WWG_API: PatrolSignIn json data: " + strJsonData);
       }
       Map<String, dynamic> jsonData = json.decode(strJsonData);
       if (jsonData['data']['SignedIn'] == "true") {
@@ -358,7 +389,7 @@ class WebAPI {
         return true;
       } else {
         if (kDebugMode) {
-          print(response.reasonPhrase);
+          //print(response.reasonPhrase);
         }
       }
     }
@@ -388,6 +419,14 @@ class WebAPI {
         scanData.offline.toString() +
         '","ResultValue" : "' +
         scanData.resultValue.toString() +
+        '","ResultValue2" : "' +
+        scanData.resultValue2.toString() +
+        '","ResultValue3" : "' +
+        scanData.resultValue3.toString() +
+        '","ResultValue4" : "' +
+        scanData.resultValue4.toString() +
+        '","ResultValue5" : "' +
+        scanData.resultValue5.toString() +
         '","Result" : "' +
         scanData.result! +
         '","IDOpponent" : "' +
@@ -406,12 +445,12 @@ class WebAPI {
         return true;
       } else {
         if (kDebugMode) {
-          print(response.reasonPhrase);
+          //print(response.reasonPhrase);
         }
       }
     }
     if (kDebugMode) {
-      print(scanData);
+      //print(scanData);
     }
     return false;
   }
@@ -435,6 +474,7 @@ class WebAPI {
       _loggedIn = true;
       _accessLevel = apiValidateToken.data?.access! as int;
       _manSignIn = apiValidateToken.data?.manSignIn as int;
+      _gameID = apiValidateToken.data?.gameID as int;
     } else {
       _apiKey = "";
       apiValidateToken.message = "Unauthorized";
@@ -444,7 +484,7 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print(apiValidateToken.message);
+      print("WWG_API: ValidateToken - " + apiValidateToken.message.toString());
     }
     return apiValidateToken;
   }
@@ -465,6 +505,7 @@ class WebAPI {
       _accessLevel = wwgAPILogin.access!;
       _manSignIn = wwgAPILogin.manSignIn!;
       _loggedIn = true;
+      _gameID = wwgAPILogin.gameID!;
     } else {
       if (kDebugMode) {
         print(response.reasonPhrase);

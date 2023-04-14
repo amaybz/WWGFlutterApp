@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/utils.dart';
 import 'package:wwgnfcscoringsystem/widgets/widget_info_scout_details.dart';
 import '../classes/activities.dart';
 import '../classes/database/datamanager.dart';
+import '../classes/fractions.dart';
 import '../classes/groups.dart';
 import '../classes/patrol_sign_in.dart';
 import '../classes/scan_results.dart';
@@ -20,6 +20,7 @@ class Info extends StatefulWidget {
     required this.baseData,
     required this.patrols,
     required this.groups,
+    required this.fractions,
   }) : super(key: key);
 
   final List<ActivityData> activitiesData;
@@ -29,6 +30,7 @@ class Info extends StatefulWidget {
   final ValueChanged<ScanData> onChange;
   final List<PatrolSignIn> patrolsSignedIn;
   final List<GroupData> groups;
+  final List<FractionData> fractions;
 
   @override
   State<Info> createState() => _InfoState();
@@ -104,9 +106,12 @@ class _InfoState extends State<Info> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Fraction: ",
+                        Text("Faction: ",
                             style: Theme.of(context).textTheme.titleSmall),
-                        Text(widget.baseData.iDFaction.toString()),
+                        Text(Utils()
+                            .getFractionDataByID(
+                                widget.baseData.iDFaction!, widget.fractions)
+                            .factionName!),
                       ],
                     ),
                     Row(
@@ -115,7 +120,12 @@ class _InfoState extends State<Info> {
                       children: [
                         Text("Details: ",
                             style: Theme.of(context).textTheme.titleSmall),
-                        const Text("Sit Back and have a Coffee or 2."),
+                        Expanded(
+                          child: Text(widget.baseData.details!,
+                              softWrap: false,
+                              maxLines: 7,
+                              overflow: TextOverflow.ellipsis),
+                        ),
                       ],
                     ),
                   ],
@@ -169,6 +179,7 @@ class _InfoState extends State<Info> {
                       scanData: widget.scanData,
                       patrols: widget.patrols,
                       groups: widget.groups,
+                      fractions: widget.fractions,
                     ),
                   ],
                 )),

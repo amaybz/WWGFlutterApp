@@ -1,12 +1,8 @@
 import 'dart:convert';
-
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfc_manager/nfc_manager.dart';
-import 'package:nfc_manager/platform_tags.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/utils.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -53,26 +49,34 @@ class _ScanPatrolState extends State<ScanPatrol> {
     if (kDebugMode) {
       print("NFC: Starting Session");
     }
-    NfcManager.instance.startSession(
-      onDiscovered: (tag) async {
-        try {
-          final result = await handleTag(tag);
-          if (result == null) return;
-          setState(() => ndefText = result);
-          final splitData = ndefText?.split(':');
-          if (kDebugMode) {
-            print(splitData);
-          } // [Hello, world!];
-          widget.onSignIn(splitData![0]);
-        } catch (e) {
-          await NfcManager.instance.stopSession().catchError((_) {
-            /* no op */
-          });
-          setState(() => ndefText = '$e');
+    if(!kIsWeb ) {
+      NfcManager.instance.startSession(
+        onDiscovered: (tag) async {
+          try {
+            final result = await handleTag(tag);
+            if (result == null) return;
+            setState(() => ndefText = result);
+            final splitData = ndefText?.split(':');
+            if (kDebugMode) {
+              print(splitData);
+            } // [Hello, world!];
+            widget.onSignIn(splitData![0]);
+          } catch (e) {
+            await NfcManager.instance.stopSession().catchError((_) {
+              /* no op */
+            });
+            setState(() => ndefText = '$e');
+          }
+        },
+      ).catchError((e) => setState(() => ndefText = '$e'));
+      nfcAvailable();
+    }
+    else
+      {
+        if (kDebugMode) {
+          print("NFC not supported on WEB");
         }
-      },
-    ).catchError((e) => setState(() => ndefText = '$e'));
-    nfcAvailable();
+      }
   }
 
   @override
@@ -117,7 +121,9 @@ class _ScanPatrolState extends State<ScanPatrol> {
     await nfcAvailable();
     if (isAvailable) {
       nfcResult = tag.data;
-      print(nfcResult);
+      if (kDebugMode) {
+        print(nfcResult);
+      }
       var ndef = Ndef.from(tag);
 
       ndefMessage = await ndef?.read();
@@ -301,7 +307,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
             )),
       );
     } else {
-      return FractionallySizedBox(widthFactor: 0.99);
+      return const FractionallySizedBox(widthFactor: 0.99);
     }
   }
 

@@ -3,6 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MySharedPrefs {
+
+
+
+
+
+
+
   Future<String> readStr(String key) async {
     final prefs = await SharedPreferences.getInstance();
     final value = prefs.getString(key) ?? "";
@@ -47,6 +54,8 @@ class MySharedPrefs {
   saveBool(String key, bool data) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool(key, data);
-    print('saved: $key Value: $data');
+    if (kDebugMode) {
+      print('saved: $key Value: $data');
+    }
   }
 }
