@@ -80276,7 +80276,7 @@ r.border="none"
 A.aui(s,"load",new A.YT(p,this),!1)
 $.aEQ()
 $.G1().akH(o,new A.YU(s),!0)
-return A.ab8(A.Yw(q,this.x,A.bi("Scan barcode/qrcode",q,q,q,q,q,q,q)),new A.xC(o,q),q,q)}}
+return A.ab8(A.Yw(q,this.x,A.bi(this.w,q,q,q,q,q,q,q)),new A.xC(o,q),q,q)}}
 A.YT.prototype={
 $1(a){return this.Uw(a)},
 Uw(a){var s=0,r=A.C(t.H),q=this
@@ -80296,7 +80296,7 @@ A.YU.prototype={
 $1(a){return this.a},
 $S:451}
 A.tF.prototype={
-H(a){return new A.Gy(new A.acn(a),null,null,null)}}
+H(a){return new A.Gy(new A.acn(a),"Scan Patrol Tag",null,null)}}
 A.acn.prototype={
 $1(a){A.dZ(this.a,!1).q0(a)},
 $S:104}
@@ -89183,7 +89183,7 @@ B.e0=new A.iw(null,null)
 B.JS=new A.Ad(1333)
 B.lR=new A.Ad(2222)
 B.JT=new A.MQ(null,null)
-B.Ty=new A.MT(1,"barcode")
+B.Ty=new A.MT(0,"qr")
 B.d4=new A.mL(0,"idle")
 B.JU=new A.mL(1,"transientCallbacks")
 B.JV=new A.mL(2,"midFrameMicrotasks")

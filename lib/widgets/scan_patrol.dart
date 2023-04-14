@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:simple_barcode_scanner/enum.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/utils.dart';
@@ -161,7 +162,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
         var res = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const SimpleBarcodeScannerPage(),
+              builder: (context) => const SimpleBarcodeScannerPage(scanType: ScanType.qr,appBarTitle: "Scan Patrol Tag",),
             ));
         setState(() {
           if (res is String) {
