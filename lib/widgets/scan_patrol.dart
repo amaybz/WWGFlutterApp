@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:simple_barcode_scanner/enum.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/utils.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -153,16 +155,36 @@ class _ScanPatrolState extends State<ScanPatrol> {
   }
 
   Future<void> scanQR() async {
-    String barcodeScanRes;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-          '#ff6666', 'Cancel', true, ScanMode.QR);
-      if (kDebugMode) {
-        print(barcodeScanRes);
+    String barcodeScanRes = "";
+
+    if (kIsWeb) {
+      try {
+        var res = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SimpleBarcodeScannerPage(scanType: ScanType.qr,appBarTitle: "Scan Patrol Tag",),
+            ));
+        setState(() {
+          if (res is String) {
+            barcodeScanRes = res;
+          }
+        });
       }
-    } on PlatformException {
-      barcodeScanRes = 'Failed to get platform version.';
+      on PlatformException {
+        barcodeScanRes = 'Failed to get platform version.';
+      }
+    }
+    else {
+      // Platform messages may fail, so we use a try/catch PlatformException.
+      try {
+        barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+            '#ff6666', 'Cancel', true, ScanMode.QR);
+        if (kDebugMode) {
+          print(barcodeScanRes);
+        }
+      } on PlatformException {
+        barcodeScanRes = 'Failed to get platform version.';
+      }
     }
 
     // If the widget was removed from the tree while the asynchronous platform

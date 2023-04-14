@@ -90,7 +90,9 @@ class DataManager {
       resultSubmitted = await webAPI
           .insertScan(scanData)
           .timeout(const Duration(seconds: 10));
-      print("DataManager: API Scan Data Submitted: " + resultSubmitted.toString());
+      if (kDebugMode) {
+        print("DataManager: API Scan Data Submitted: " + resultSubmitted.toString());
+      }
     } on SocketException {
       webAPI.setOffline(true);
       scanData.offline = 1;
