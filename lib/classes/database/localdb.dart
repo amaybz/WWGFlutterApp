@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
-import 'package:wwgnfcscoringsystem/classes/fractions.dart';
+import 'package:wwgnfcscoringsystem/classes/factions.dart';
 import 'package:wwgnfcscoringsystem/classes/games_results.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
@@ -257,7 +257,7 @@ class LocalDB {
     return insertedID;
   }
 
-  Future<int?> insertFractionData(FractionData fractionData) async {
+  Future<int?> insertFractionData(FactionData fractionData) async {
     // Get a reference to the database.
     final Database? db = await database;
     int? insertedID = await db?.insert(
@@ -433,7 +433,7 @@ class LocalDB {
     });
   }
 
-  Future<List<FractionData>> listFractionData() async {
+  Future<List<FactionData>> listFractionData() async {
     // Get a reference to the database.
     final Database? db = await database;
 
@@ -442,7 +442,7 @@ class LocalDB {
 
     // Convert the List<Map<String, dynamic> into a List<Dog>.
     return List.generate(maps!.length, (i) {
-      return FractionData.fromJson(maps[i] as Map<String, dynamic>);
+      return FactionData.fromJson(maps[i] as Map<String, dynamic>);
     });
   }
 

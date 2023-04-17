@@ -5,7 +5,7 @@ import 'package:wwgnfcscoringsystem/classes/utils.dart';
 import 'package:wwgnfcscoringsystem/widgets/widget_info_scout_details.dart';
 import '../classes/activities.dart';
 import '../classes/database/datamanager.dart';
-import '../classes/fractions.dart';
+import '../classes/factions.dart';
 import '../classes/groups.dart';
 import '../classes/patrol_sign_in.dart';
 import '../classes/scan_results.dart';
@@ -30,7 +30,7 @@ class Info extends StatefulWidget {
   final ValueChanged<ScanData> onChange;
   final List<PatrolSignIn> patrolsSignedIn;
   final List<GroupData> groups;
-  final List<FractionData> fractions;
+  final List<FactionData> fractions;
 
   @override
   State<Info> createState() => _InfoState();
