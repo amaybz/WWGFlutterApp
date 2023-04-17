@@ -14,8 +14,9 @@ import '../activities.dart';
 
 class LocalDB {
   static const _databaseName = "local_database.db";
+
   // Increment this version when you need to change the schema.
-  static const _databaseVersion = 16;
+  static const _databaseVersion = 17;
 
   final String tblBases = "tblbases";
   final String tblGameConfig = "tblgameconfig";
@@ -29,9 +30,11 @@ class LocalDB {
 
   // Make this a singleton class.
   LocalDB._privateConstructor();
+
   static final LocalDB instance = LocalDB._privateConstructor();
 
   static Database? _database;
+
   Future<Database?> get database async {
     if (_database != null) return _database;
     _database = await _initDatabase();
@@ -171,7 +174,9 @@ class LocalDB {
             "GameTag TEXT NOT NULL, "
             "ScanTime TEXT NOT NULL, "
             "GameID INTEGER, "
+            "BaseID INTEGER, "
             "IDBaseCode TEXT,"
+            "ActivityID INTEGER, "
             "IDActivityCode TEXT,"
             "Comment TEXT,"
             "Offline INTEGER,"

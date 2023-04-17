@@ -27,12 +27,18 @@ class WebAPI {
   int _gameID = 0;
 
   get getApiKey => _apiKey;
+
   get getAccessLevel => _accessLevel;
+
   get getApiLink => _apiLink;
+
   get getLoggedIn => _loggedIn;
+
   get getOffLine => _offLine;
+
   get getManSignIn => _manSignIn;
-  get getGameID=> _gameID;
+
+  get getGameID => _gameID;
 
   void setApiKey(newValue) {
     _apiKey = newValue;
@@ -409,27 +415,31 @@ class WebAPI {
         scanData.scanTime! +
         '", "GameID" : "' +
         scanData.gameID.toString() +
-        '", "IDBaseCode" : "' +
+        '", "BaseID" : ' +
+        scanData.baseID.toString() +
+        ', "IDBaseCode" : "' +
         scanData.iDBaseCode! +
-        '","IDActivityCode" : "' +
+        '", "ActivityID" : ' +
+        scanData.activityID.toString() +
+        ', "IDActivityCode" : "' +
         scanData.iDActivityCode! +
-        '","Comment" : "' +
+        '", "Comment" : "' +
         scanData.comment.toString() +
-        '","Offline" : "' +
+        '", "Offline" : "' +
         scanData.offline.toString() +
-        '","ResultValue" : "' +
+        '", "ResultValue" : "' +
         scanData.resultValue.toString() +
-        '","ResultValue2" : "' +
+        '", "ResultValue2" : "' +
         scanData.resultValue2.toString() +
-        '","ResultValue3" : "' +
+        '", "ResultValue3" : "' +
         scanData.resultValue3.toString() +
-        '","ResultValue4" : "' +
+        '", "ResultValue4" : "' +
         scanData.resultValue4.toString() +
-        '","ResultValue5" : "' +
+        '", "ResultValue5" : "' +
         scanData.resultValue5.toString() +
-        '","Result" : "' +
+        '", "Result" : "' +
         scanData.result! +
-        '","IDOpponent" : "' +
+        '", "IDOpponent" : "' +
         scanData.iDOpponent.toString() +
         '"}';
     //print(request.body);

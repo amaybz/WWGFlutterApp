@@ -36,6 +36,7 @@ class Base extends StatefulWidget {
   final List<PatrolData> patrols;
   final List<GroupData> groups;
   final List<FractionData> fractions;
+
   @override
   State<Base> createState() => _BaseState();
 }
@@ -66,6 +67,7 @@ class _BaseState extends State<Base> {
     updateActivitiesDropDown();
     getSignedInPatrols();
     scanData.gameID = widget.base.gameID;
+    scanData.baseID = widget.base.baseID;
     scanData.iDBaseCode = widget.base.baseCode;
     dataManager.uploadOfflineScans();
     if (widget.base.bank == 1) {
@@ -268,7 +270,6 @@ class _BaseState extends State<Base> {
           setState(() {
             scanData = updatedScanData;
           });
-
         },
       );
     }
@@ -345,7 +346,6 @@ class _BaseState extends State<Base> {
       if (!resultSubmitted) {
         error = "Upload Failed";
       }
-
     }
     if (resultSubmitted) {
       AlertData alertData = AlertData(alert: false, alertMessage: "Submitted");
