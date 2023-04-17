@@ -38,7 +38,6 @@ class RecordResults extends StatefulWidget {
   final TextEditingController txtValueResult4;
   final TextEditingController txtValueResult5;
 
-
   @override
   State<RecordResults> createState() => _RecordResultsState();
 }
@@ -80,7 +79,7 @@ class _RecordResultsState extends State<RecordResults> {
     //DateTime now = DateTime.now();
     widget.scanData.scanTime = Utils().getCurrentDateSQL();
     if (kDebugMode) {
-      print("Scan Time:" + widget.scanData.scanTime.toString());
+      print("Scan Time:${widget.scanData.scanTime}");
     }
     //widget.scanData.result = "Success";
     widget.onSubmit(widget.scanData, getSelectedActivity());
@@ -93,6 +92,7 @@ class _RecordResultsState extends State<RecordResults> {
       for (ActivityData activities in filteredList) {
         setState(() {
           widget.scanData.iDActivityCode = activities.activityCode;
+          widget.scanData.activityID = activities.activityID;
         });
       }
     }
@@ -100,7 +100,7 @@ class _RecordResultsState extends State<RecordResults> {
 
   ActivityData getSelectedActivity() {
     return widget.activitiesData.firstWhere(
-            (element) => element.activityID.toString() == selectedActivityId,
+        (element) => element.activityID.toString() == selectedActivityId,
         orElse: () => ActivityData());
   }
 
@@ -131,8 +131,16 @@ class _RecordResultsState extends State<RecordResults> {
                           setState(() {
                             selectedActivityId = item.toString();
                             widget.scanData.result = null;
-                            widget.scanData.resultValue = null;
+                            widget.scanData.resultValue = 0;
+                            widget.scanData.resultValue2 = 0;
+                            widget.scanData.resultValue3 = 0;
+                            widget.scanData.resultValue4 = 0;
+                            widget.scanData.resultValue5 = 0;
                             widget.txtValueResult.text = "";
+                            widget.txtValueResult2.text = "";
+                            widget.txtValueResult3.text = "";
+                            widget.txtValueResult4.text = "";
+                            widget.txtValueResult5.text = "";
                             try {
                               setActivityCode(int.parse(selectedActivityId!));
                               selectedActivity = getSelectedActivity();
@@ -172,7 +180,7 @@ class _RecordResultsState extends State<RecordResults> {
               ),
               const Text("Results: "),
               SuccessFailField(
-                activityData: getSelectedActivity(),
+                activityData: selectedActivity,
                 onChange: (updatedScanData) {
                   setState(() {
                     widget.scanData.result = updatedScanData.result;
@@ -206,7 +214,6 @@ class _RecordResultsState extends State<RecordResults> {
                     widget.onChange(widget.scanData);
                   });
                 },
-
               ),
               ValueResult(
                 active: selectedActivity.valueResult3Field!,
@@ -258,6 +265,4 @@ class _RecordResultsState extends State<RecordResults> {
       ],
     );
   }
-
-
 }

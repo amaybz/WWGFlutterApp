@@ -28,7 +28,9 @@ class ScanData {
   String? gameTag;
   String? scanTime;
   int? gameID;
+  int? baseID;
   String? iDBaseCode;
+  int? activityID;
   String? iDActivityCode;
   String? comment;
   int? offline;
@@ -45,7 +47,9 @@ class ScanData {
       {this.gameTag,
       this.scanTime,
       this.gameID,
+      this.baseID,
       this.iDBaseCode,
+      this.activityID,
       this.iDActivityCode,
       this.comment,
       this.offline,
@@ -62,7 +66,9 @@ class ScanData {
     gameTag = json['GameTag'];
     scanTime = json['ScanTime'];
     gameID = json['GameID'];
+    baseID = json['BaseID'];
     iDBaseCode = json['IDBaseCode'];
+    activityID = json['ActivityID'];
     iDActivityCode = json['IDActivityCode'];
     comment = json['Comment'];
     offline = json['Offline'];
@@ -81,7 +87,9 @@ class ScanData {
     data['GameTag'] = gameTag;
     data['ScanTime'] = scanTime;
     data['GameID'] = gameID;
+    data['BaseID'] = baseID;
     data['IDBaseCode'] = iDBaseCode;
+    data['ActivityID'] = activityID;
     data['IDActivityCode'] = iDActivityCode;
     data['Comment'] = comment;
     data['Offline'] = offline;
@@ -101,6 +109,9 @@ class ScanData {
     return 'ScanData{'
         'GameID: $gameID, '
         'gameTag: $gameTag, '
+        'BaseID: $baseID, '
+        'IDBaseCode: $iDBaseCode, '
+        'ActivityID: $activityID, '
         'IDActivityCode: $iDActivityCode, '
         'ScanTime: $scanTime, '
         'ResultValue: $resultValue, '

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/database/datamanager.dart';
-import 'package:wwgnfcscoringsystem/classes/fractions.dart';
+import 'package:wwgnfcscoringsystem/classes/factions.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/database/wwgapi.dart';
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<ActivityData> listActivities = [];
   List<PatrolData> listPatrols = [];
   List<GroupData> listGroups = [];
-  List<FractionData> listFractions = [];
+  List<FactionData> listFractions = [];
 
   @override
   void initState() {
@@ -133,17 +133,16 @@ class _MyHomePageState extends State<MyHomePage> {
     bool isAPIOffline = await dataManager.isAPIOnline();
     loggedIn = await webAPI.getLoggedIn;
     if (kDebugMode) {
-      print("Logged in: " + loggedIn.toString());
-      print("API Offline: " + isAPIOffline.toString());
+      print("Logged in: $loggedIn");
+      print("API Offline: $isAPIOffline");
     }
     if (!isAPIOffline && !loggedIn) {
-     await _navigateToLogin(context);
+      await _navigateToLogin(context);
     }
     dataManager.uploadOfflineScans();
     await getGames();
     int userGameID = dataManager.getUserBaseID();
-    if(userGameID > 0)
-    {
+    if (userGameID > 0) {
       setState(() {
         selectedGame = userGameID.toString();
       });
@@ -213,16 +212,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void getFractions(String gameID) async {
-    List<FractionData>? listFractionData =
+    List<FactionData>? listFractionData =
         await dataManager.getFractionsByGameID(gameID);
     if (listFractionData != null) {
-      List<FractionData> dataList = listFractionData;
+      List<FactionData> dataList = listFractionData;
       setState(() {
         listFractions = dataList;
       });
     }
-    if(listFractions.isEmpty){
-      List<FractionData> dataList = [FractionData(iDFaction: 0, factionName: "None", gameID: 0)];
+    if (listFractions.isEmpty) {
+      List<FactionData> dataList = [
+        FactionData(iDFaction: 0, factionName: "None", gameID: 0)
+      ];
       setState(() {
         listFractions = dataList;
       });
@@ -255,20 +256,16 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     await getGames();
     int userGameID = dataManager.getUserBaseID();
-    if(userGameID > 0)
-      {
-        setState(() {
-          selectedGame = userGameID.toString();
-
-        });
-
-      }
+    if (userGameID > 0) {
+      setState(() {
+        selectedGame = userGameID.toString();
+      });
+    }
     getBases(selectedGame!);
     getActivities(selectedGame!);
     getPatrols(selectedGame!);
     getGroups();
     getFractions(selectedGame!);
-
   }
 
   _navigateToGameBases(BuildContext context, int gameID, BaseData base) async {
@@ -303,15 +300,16 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
+              decoration:
+                  BoxDecoration(color: Theme.of(context).primaryColorDark),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Weekend Wide Game'),
-                  Text('Version: ' + versionName),
+                  const Text('Scoring System'),
+                  Text('Version: $versionName'),
                 ],
               ),
-              decoration:
-                  BoxDecoration(color: Theme.of(context).primaryColorDark),
             ),
             ListTile(
               title: const Text('Login'),
@@ -360,7 +358,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         setState(() {
                           selectedGame = item as String;
                           if (kDebugMode) {
-                            print("Main.Dart: Updating Data for Selected Game: " + selectedGame!);
+                            print(
+                                "Main.Dart: Updating Data for Selected Game: ${selectedGame!}");
                           }
                           getBases(selectedGame!);
                           getActivities(selectedGame!);
@@ -368,9 +367,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           getGroups();
                           getFractions(selectedGame!);
                         });
-
                       }),
-
                 ],
               ),
             ),
@@ -378,8 +375,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: _buildListViewBases(),
             ),
             Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 0, horizontal: 10),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                 child: ElevatedButton(
                     onPressed: () {
                       loadData();

@@ -3,11 +3,10 @@ import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/scan_results.dart';
 
 class SuccessFailField extends StatefulWidget {
-  const SuccessFailField(
-      {Key? key,
-      required this.activityData,
-      required this.scanData,
-      required this.onChange})
+  const SuccessFailField({Key? key,
+    required this.activityData,
+    required this.scanData,
+    required this.onChange})
       : super(key: key);
   final ActivityData activityData;
   final ScanData scanData;
@@ -26,6 +25,7 @@ class _SuccessFailFieldState extends State<SuccessFailField> {
 
   @override
   Widget build(BuildContext context) {
+    show = false;
     if (widget.activityData.successPartialFailResultField == 1) {
       listSuccessFail.clear();
       listSuccessFail.addAll([
@@ -43,6 +43,7 @@ class _SuccessFailFieldState extends State<SuccessFailField> {
       ]);
       show = true;
     }
+
     if (show) {
       return Row(
         children: [

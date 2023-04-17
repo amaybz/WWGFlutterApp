@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
-import 'package:wwgnfcscoringsystem/classes/fractions.dart';
+import 'package:wwgnfcscoringsystem/classes/factions.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
@@ -38,12 +38,11 @@ class Utils {
     return group;
   }
 
-  FractionData getFractionDataByID(
-      int idFraction, List<FractionData> fractions) {
-    FractionData fraction = FractionData();
+  FactionData getFractionDataByID(int idFraction, List<FactionData> fractions) {
+    FactionData fraction = FactionData();
     fraction = fractions.firstWhere(
         (element) => element.iDFaction == idFraction,
-        orElse: () => FractionData());
+        orElse: () => FactionData());
     return fraction;
   }
 

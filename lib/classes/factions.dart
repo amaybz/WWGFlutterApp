@@ -1,15 +1,15 @@
-class Fractions {
+class Factions {
   String? message;
-  List<FractionData>? data;
+  List<FactionData>? data;
 
-  Fractions({this.message, this.data});
+  Factions({this.message, this.data});
 
-  Fractions.fromJson(Map<String, dynamic> json) {
+  Factions.fromJson(Map<String, dynamic> json) {
     message = json['message'];
     if (json['data'] != null) {
-      data = <FractionData>[];
+      data = <FactionData>[];
       json['data'].forEach((v) {
-        data!.add(FractionData.fromJson(v));
+        data!.add(FactionData.fromJson(v));
       });
     }
   }
@@ -24,14 +24,14 @@ class Fractions {
   }
 }
 
-class FractionData {
+class FactionData {
   int? iDFaction;
   String? factionName;
   int? gameID;
 
-  FractionData({this.iDFaction, this.factionName, this.gameID});
+  FactionData({this.iDFaction, this.factionName, this.gameID});
 
-  FractionData.fromJson(Map<String, dynamic> json) {
+  FactionData.fromJson(Map<String, dynamic> json) {
     iDFaction = json['IDFaction'];
     factionName = json['FactionName'];
     gameID = json['GameID'];

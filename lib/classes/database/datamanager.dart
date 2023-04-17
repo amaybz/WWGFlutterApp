@@ -7,7 +7,7 @@ import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
 import 'package:wwgnfcscoringsystem/classes/database/sharedprefs.dart';
 import 'package:wwgnfcscoringsystem/classes/database/wwgapi.dart';
-import 'package:wwgnfcscoringsystem/classes/fractions.dart';
+import 'package:wwgnfcscoringsystem/classes/factions.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
@@ -48,7 +48,7 @@ class DataManager {
   }
 
   int getUserBaseID() {
-      return webAPI.getGameID;
+    return webAPI.getGameID;
   }
 
   Future<bool> signOutPatrol(PatrolSignIn patrolSignIn) async {
@@ -91,7 +91,8 @@ class DataManager {
           .insertScan(scanData)
           .timeout(const Duration(seconds: 10));
       if (kDebugMode) {
-        print("DataManager: API Scan Data Submitted: " + resultSubmitted.toString());
+        print("DataManager: API Scan Data Submitted: " +
+            resultSubmitted.toString());
       }
     } on SocketException {
       webAPI.setOffline(true);
@@ -108,8 +109,7 @@ class DataManager {
           print("DataManager: Unable to upload Sign in to API or LocalDB");
         }
       }
-    }
-    on TimeoutException {
+    } on TimeoutException {
       webAPI.setOffline(true);
       scanData.offline = 1;
       insertID = await localDB.insertScan(scanData);
@@ -124,8 +124,7 @@ class DataManager {
           print("DataManager: Unable to upload Sign in to API or LocalDB");
         }
       }
-    }
-    catch (e) {
+    } catch (e) {
       webAPI.setOffline(true);
       if (kDebugMode) {
         print(e);
@@ -148,8 +147,10 @@ class DataManager {
         insertID = await localDB.insertPatrolSignIn(patrolSignIn);
         if (insertID != null) {
           if (kDebugMode) {
-            print("DataManager: Unable to upload Sign in to API: SocketException");
-            print("DataManager: Offline Record inserted: " + insertID.toString());
+            print(
+                "DataManager: Unable to upload Sign in to API: SocketException");
+            print(
+                "DataManager: Offline Record inserted: " + insertID.toString());
           }
           signedIn = true;
         } else {
@@ -166,8 +167,10 @@ class DataManager {
         insertID = await localDB.insertPatrolSignIn(patrolSignIn);
         if (insertID != null) {
           if (kDebugMode) {
-            print("DataManager: Unable to upload Sign in to API: TimeoutException");
-            print("DataManager: Offline Record inserted: " + insertID.toString());
+            print(
+                "DataManager: Unable to upload Sign in to API: TimeoutException");
+            print(
+                "DataManager: Offline Record inserted: " + insertID.toString());
           }
           signedIn = true;
         } else {
@@ -204,7 +207,8 @@ class DataManager {
   Future<bool> uploadOfflineScans() async {
     if (!kIsWeb && !webAPI.getOffLine) {
       List<ScanData> offlineData = await localDB.listScanDataOfflineRecords();
-      print("DataManager: offline Scan Data Records: " + offlineData.length.toString());
+      print("DataManager: offline Scan Data Records: " +
+          offlineData.length.toString());
       if (offlineData.isNotEmpty) {
         List<dynamic> response =
             await webAPI.uploadOfflineScanData(offlineData);
@@ -222,13 +226,15 @@ class DataManager {
           if (response[i]["Uploaded"] == false) {
             int? updateCount = await localDB.updateOfflineScanData(
                 response[i]["GameTag"], response[i]["ScanTime"], 3);
-            print("DataManager: Offline Record error: Record marked as conflicted!");
+            print(
+                "DataManager: Offline Record error: Record marked as conflicted!");
             if (updateCount == 0) {
               print("DataManager: Update to offline record FAILED!");
             }
           }
         }
-        print("DataManager: Offline Records Submitted: " + response.length.toString());
+        print("DataManager: Offline Records Submitted: " +
+            response.length.toString());
         return true;
       }
     }
@@ -247,7 +253,8 @@ class DataManager {
       if (!kIsWeb && !webAPI.getOffLine) {
         List<PatrolSignIn> offlineData =
             await localDB.listPatrolSignInOfflineRecords();
-        print("DataManager: offline Base Sign in Data: " + offlineData.length.toString());
+        print("DataManager: offline Base Sign in Data: " +
+            offlineData.length.toString());
         //print(offlineData);
 
         if (offlineData.isNotEmpty) {
@@ -461,8 +468,8 @@ class DataManager {
     }
   }
 
-  Future<List<FractionData>?> getFractionsByGameID(String gameID) async {
-    Fractions fractions = Fractions();
+  Future<List<FactionData>?> getFractionsByGameID(String gameID) async {
+    Factions fractions = Factions();
     if (!webAPI.getOffLine) {
       try {
         fractions = await webAPI.getFractionsByGameID(gameID);
@@ -484,7 +491,7 @@ class DataManager {
           print("DataManager: Saving fractions data to local DB");
         }
         await localDB.clearBaseData();
-        for (FractionData fractionData in fractions.data!) {
+        for (FactionData fractionData in fractions.data!) {
           int? insertId = await localDB.insertFractionData(fractionData);
           if (kDebugMode) {
             //print(insertId);

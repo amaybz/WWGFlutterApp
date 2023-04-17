@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
-import 'package:wwgnfcscoringsystem/classes/fractions.dart';
+import 'package:wwgnfcscoringsystem/classes/factions.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_sign_in.dart';
@@ -27,12 +27,18 @@ class WebAPI {
   int _gameID = 0;
 
   get getApiKey => _apiKey;
+
   get getAccessLevel => _accessLevel;
+
   get getApiLink => _apiLink;
+
   get getLoggedIn => _loggedIn;
+
   get getOffLine => _offLine;
+
   get getManSignIn => _manSignIn;
-  get getGameID=> _gameID;
+
+  get getGameID => _gameID;
 
   void setApiKey(newValue) {
     _apiKey = newValue;
@@ -74,14 +80,14 @@ class WebAPI {
   Future<GamesResults> getGames() async {
     GamesResults games = GamesResults();
     var headers = {'Authorization': _apiKey!};
-    var request = http.Request('POST', Uri.parse(_apiLink! + 'games/'));
+    var request = http.Request('POST', Uri.parse('${_apiLink!}games/'));
     request.body = '';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       String jsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("WWG_API: Games json data: " + jsonData);
+        print("WWG_API: Games json data: $jsonData");
       }
       games = GamesResults.fromJson(json.decode(jsonData));
     } else {
@@ -98,7 +104,7 @@ class WebAPI {
   Future<Groups> getGroups() async {
     Groups groups = Groups();
     var headers = {'Authorization': _apiKey!};
-    var request = http.Request('POST', Uri.parse(_apiLink! + 'groups/'));
+    var request = http.Request('POST', Uri.parse('${_apiLink!}groups/'));
     request.body = '';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -122,14 +128,14 @@ class WebAPI {
   Future<List<BankData>?> getBankConfig() async {
     BankResults bankConfig = BankResults();
     var headers = {'Authorization': _apiKey!};
-    var request = http.Request('POST', Uri.parse(_apiLink! + 'bank/'));
+    var request = http.Request('POST', Uri.parse('${_apiLink!}bank/'));
     request.body = '';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       String jsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("WWG_API: Bank json data: " + jsonData);
+        print("WWG_API: Bank json data: $jsonData");
       }
       bankConfig = BankResults.fromJson(json.decode(jsonData));
     } else {
@@ -147,8 +153,8 @@ class WebAPI {
     BasesResults bases = BasesResults();
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
-        'POST', Uri.parse(_apiLink! + 'bases/GetAllBasesByGameID.php'));
-    request.body = '{"GameID" : "' + gameID + '"}';
+        'POST', Uri.parse('${_apiLink!}bases/GetAllBasesByGameID.php'));
+    request.body = '{"GameID" : "$gameID"}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -163,16 +169,16 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print("WWG_API: Bases results: " + bases.message!);
+      print("WWG_API: Bases results: ${bases.message!}");
     }
     return bases;
   }
 
-  Future<Fractions> getFractionsByGameID(String gameID) async {
-    Fractions fractions = Fractions();
+  Future<Factions> getFractionsByGameID(String gameID) async {
+    Factions fractions = Factions();
     var headers = {'Authorization': _apiKey!};
-    var request = http.Request('POST', Uri.parse(_apiLink! + 'fractions/'));
-    request.body = '{"GameID" : "' + gameID + '"}';
+    var request = http.Request('POST', Uri.parse('${_apiLink!}fractions/'));
+    request.body = '{"GameID" : "$gameID"}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -180,14 +186,14 @@ class WebAPI {
       if (kDebugMode) {
         //print("json data: " + jsonData);
       }
-      fractions = Fractions.fromJson(json.decode(jsonData));
+      fractions = Factions.fromJson(json.decode(jsonData));
     } else {
       if (kDebugMode) {
         print(response.reasonPhrase);
       }
     }
     if (kDebugMode) {
-      print("WWG_API: Fractions results: " + fractions.message!);
+      print("WWG_API: Fractions results: ${fractions.message!}");
     }
     return fractions;
   }
@@ -196,8 +202,8 @@ class WebAPI {
     Activities activities = Activities();
     var headers = {'Authorization': _apiKey!};
     var request = http.Request('POST',
-        Uri.parse(_apiLink! + 'activities/GetAllActivitiesByGameID.php'));
-    request.body = '{"GameID" : ' + gameID + '}';
+        Uri.parse('${_apiLink!}activities/GetAllActivitiesByGameID.php'));
+    request.body = '{"GameID" : $gameID}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -212,7 +218,7 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print("WWG_API: Activity Results: " + activities.message!);
+      print("WWG_API: Activity Results: ${activities.message!}");
     }
     return activities;
   }
@@ -221,8 +227,8 @@ class WebAPI {
     PatrolResults patrolResults = PatrolResults();
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
-        'POST', Uri.parse(_apiLink! + 'patrols/GetAllPatrolsByGameID.php'));
-    request.body = '{"GameID" : ' + gameID + '}';
+        'POST', Uri.parse('${_apiLink!}patrols/GetAllPatrolsByGameID.php'));
+    request.body = '{"GameID" : $gameID}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -237,7 +243,7 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print("WWG_API: Patrol Results: " + patrolResults.message!);
+      print("WWG_API: Patrol Results: ${patrolResults.message!}");
     }
     return patrolResults;
   }
@@ -247,9 +253,8 @@ class WebAPI {
     List<PatrolSignIn> patrolSignIn = [];
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
-        'POST', Uri.parse(_apiLink! + 'basesignin/all_patrols_signed_in.php'));
-    request.body =
-        '{"IDBaseCode" : "' + baseCode + '","GameID" : ' + gameID + '}';
+        'POST', Uri.parse('${_apiLink!}basesignin/all_patrols_signed_in.php'));
+    request.body = '{"IDBaseCode" : "$baseCode","GameID" : $gameID}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -275,14 +280,14 @@ class WebAPI {
       List<ScanData> offlineData) async {
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
-        'POST', Uri.parse(_apiLink! + 'scan/UploadOfflineResults.php'));
+        'POST', Uri.parse('${_apiLink!}scan/UploadOfflineResults.php'));
     request.body = jsonEncode(offlineData);
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       String strJsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("WWG_API: OfflineScan json data: " + strJsonData);
+        print("WWG_API: OfflineScan json data: $strJsonData");
         //print(response.reasonPhrase);
       }
       List<dynamic> jsonData = json.decode(strJsonData);
@@ -302,14 +307,14 @@ class WebAPI {
       List<PatrolSignIn> offlinePatrols) async {
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
-        'POST', Uri.parse(_apiLink! + 'basesignin/UploadOfflineResults.php'));
+        'POST', Uri.parse('${_apiLink!}basesignin/UploadOfflineResults.php'));
     request.body = jsonEncode(offlinePatrols);
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       String strJsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("WWG_API: SignInPatrolsOfflineUpload json data: " + strJsonData);
+        print("WWG_API: SignInPatrolsOfflineUpload json data: $strJsonData");
         //print(response.reasonPhrase);
       }
       List<dynamic> jsonData = json.decode(strJsonData);
@@ -328,24 +333,18 @@ class WebAPI {
   Future<bool> setPatrolSignIn(PatrolSignIn patrolSignIn) async {
     var headers = {'Authorization': _apiKey!};
     var request =
-        http.Request('POST', Uri.parse(_apiLink! + 'basesignin/sign_in.php'));
-    request.body = '{"IDPatrol" : "' +
-        patrolSignIn.iDPatrol! +
-        '", "IDBaseCode" : "' +
-        patrolSignIn.iDBaseCode! +
-        '", "GameID" : "' +
-        patrolSignIn.gameID.toString() +
-        '", "ScanIn" : "' +
-        patrolSignIn.scanIn.toString() +
-        '","offline" : "' +
-        patrolSignIn.offline.toString() +
-        '"}';
+        http.Request('POST', Uri.parse('${_apiLink!}basesignin/sign_in.php'));
+    request.body = '{"IDPatrol" : "${patrolSignIn.iDPatrol!}",'
+        ' "IDBaseCode" : "${patrolSignIn.iDBaseCode!}",'
+        ' "GameID" : "${patrolSignIn.gameID}",'
+        ' "ScanIn" : "${patrolSignIn.scanIn}",'
+        ' "offline" : "${patrolSignIn.offline}"}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       String strJsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("WWG_API: PatrolSignIn json data: " + strJsonData);
+        print("WWG_API: PatrolSignIn json data: $strJsonData");
       }
       Map<String, dynamic> jsonData = json.decode(strJsonData);
       if (jsonData['data']['SignedIn'] == "true") {
@@ -365,24 +364,18 @@ class WebAPI {
   Future<bool> setPatrolSignOut(PatrolSignIn patrolSignIn) async {
     var headers = {'Authorization': _apiKey!};
     var request =
-        http.Request('POST', Uri.parse(_apiLink! + 'basesignin/sign_out.php'));
-    request.body = '{"IDPatrol" : "' +
-        patrolSignIn.iDPatrol! +
-        '", "IDBaseCode" : "' +
-        patrolSignIn.iDBaseCode! +
-        '", "GameID" : "' +
-        patrolSignIn.gameID.toString() +
-        '", "ScanOut" : "' +
-        patrolSignIn.scanOut.toString() +
-        '","offline" : "' +
-        patrolSignIn.offline.toString() +
-        '"}';
+        http.Request('POST', Uri.parse('${_apiLink!}basesignin/sign_out.php'));
+    request.body = '{"IDPatrol" : "${patrolSignIn.iDPatrol!}",'
+        ' "IDBaseCode" : "${patrolSignIn.iDBaseCode!}",'
+        ' "GameID" : "${patrolSignIn.gameID}",'
+        ' "ScanOut" : "${patrolSignIn.scanOut}",'
+        ' "offline" : "${patrolSignIn.offline}"}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       String strJsonData = await response.stream.bytesToString();
       if (kDebugMode) {
-        print("json data: " + strJsonData);
+        print("json data: $strJsonData");
       }
       Map<String, dynamic> jsonData = json.decode(strJsonData);
       if (jsonData['data']['SignedOut'] == "true") {
@@ -402,36 +395,23 @@ class WebAPI {
   Future<bool> insertScan(ScanData scanData) async {
     var headers = {'Authorization': _apiKey!};
     var request =
-        http.Request('POST', Uri.parse(_apiLink! + 'scan/insertScan.php'));
-    request.body = '{"GameTag" : "' +
-        scanData.gameTag! +
-        '", "ScanTime" : "' +
-        scanData.scanTime! +
-        '", "GameID" : "' +
-        scanData.gameID.toString() +
-        '", "IDBaseCode" : "' +
-        scanData.iDBaseCode! +
-        '","IDActivityCode" : "' +
-        scanData.iDActivityCode! +
-        '","Comment" : "' +
-        scanData.comment.toString() +
-        '","Offline" : "' +
-        scanData.offline.toString() +
-        '","ResultValue" : "' +
-        scanData.resultValue.toString() +
-        '","ResultValue2" : "' +
-        scanData.resultValue2.toString() +
-        '","ResultValue3" : "' +
-        scanData.resultValue3.toString() +
-        '","ResultValue4" : "' +
-        scanData.resultValue4.toString() +
-        '","ResultValue5" : "' +
-        scanData.resultValue5.toString() +
-        '","Result" : "' +
-        scanData.result! +
-        '","IDOpponent" : "' +
-        scanData.iDOpponent.toString() +
-        '"}';
+        http.Request('POST', Uri.parse('${_apiLink!}scan/insertScan.php'));
+    request.body = '{"GameTag" : "${scanData.gameTag!}",'
+        ' "ScanTime" : "${scanData.scanTime!}",'
+        ' "GameID" : "${scanData.gameID}",'
+        ' "BaseID" : ${scanData.baseID},'
+        ' "IDBaseCode" : "${scanData.iDBaseCode!}",'
+        ' "ActivityID" : ${scanData.activityID},'
+        ' "IDActivityCode" : "${scanData.iDActivityCode!}",'
+        ' "Comment" : "${scanData.comment}",'
+        ' "Offline" : "${scanData.offline}",'
+        ' "ResultValue" : "${scanData.resultValue}",'
+        ' "ResultValue2" : "${scanData.resultValue2}",'
+        ' "ResultValue3" : "${scanData.resultValue3}",'
+        ' "ResultValue4" : "${scanData.resultValue4}",'
+        ' "ResultValue5" : "${scanData.resultValue5}",'
+        ' "Result" : "${scanData.result!}",'
+        ' "IDOpponent" : "${scanData.iDOpponent}"}';
     //print(request.body);
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -459,7 +439,7 @@ class WebAPI {
     APIValidateToken apiValidateToken = APIValidateToken();
     var headers = {'Authorization': token};
     var request =
-        http.Request('POST', Uri.parse(_apiLink! + 'validate_token.php'));
+        http.Request('POST', Uri.parse('${_apiLink!}validate_token.php'));
     request.body = '';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -484,15 +464,15 @@ class WebAPI {
       }
     }
     if (kDebugMode) {
-      print("WWG_API: ValidateToken - " + apiValidateToken.message.toString());
+      print("WWG_API: ValidateToken - ${apiValidateToken.message}");
     }
     return apiValidateToken;
   }
 
   Future<APILogin> login(String user, String pass) async {
     APILogin wwgAPILogin = APILogin();
-    var request = http.Request('POST', Uri.parse(_apiLink! + 'login.php'));
-    request.body = '{"username" : "' + user + '","password" : "' + pass + '"}';
+    var request = http.Request('POST', Uri.parse('${_apiLink!}login.php'));
+    request.body = '{"username" : "$user","password" : "$pass"}';
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       String loginJson = await response.stream.bytesToString();

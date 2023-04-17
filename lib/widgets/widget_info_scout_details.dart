@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../classes/fractions.dart';
+import '../classes/factions.dart';
 import '../classes/groups.dart';
 import '../classes/patrol_results.dart';
 import '../classes/scan_results.dart';
@@ -18,7 +18,7 @@ class InfoScoutDetails extends StatefulWidget {
   final ScanData scanData;
   final List<PatrolData> patrols;
   final List<GroupData> groups;
-  final List<FractionData> fractions;
+  final List<FactionData> fractions;
 
   @override
   State<InfoScoutDetails> createState() => _InfoScoutDetailsState();

@@ -12,7 +12,7 @@ import 'package:wwgnfcscoringsystem/widgets/record_results.dart';
 import 'package:wwgnfcscoringsystem/widgets/scan_patrol.dart';
 import 'package:wwgnfcscoringsystem/widgets/widget_bank.dart';
 import 'package:wwgnfcscoringsystem/widgets/widget_info.dart';
-import 'classes/fractions.dart';
+import 'classes/factions.dart';
 import 'classes/patrol_sign_in.dart';
 import 'classes/scan_results.dart';
 import 'classes/utils.dart';
@@ -35,7 +35,8 @@ class Base extends StatefulWidget {
   final List<ActivityData> activityData;
   final List<PatrolData> patrols;
   final List<GroupData> groups;
-  final List<FractionData> fractions;
+  final List<FactionData> fractions;
+
   @override
   State<Base> createState() => _BaseState();
 }
@@ -66,6 +67,7 @@ class _BaseState extends State<Base> {
     updateActivitiesDropDown();
     getSignedInPatrols();
     scanData.gameID = widget.base.gameID;
+    scanData.baseID = widget.base.baseID;
     scanData.iDBaseCode = widget.base.baseCode;
     dataManager.uploadOfflineScans();
     if (widget.base.bank == 1) {
@@ -268,7 +270,6 @@ class _BaseState extends State<Base> {
           setState(() {
             scanData = updatedScanData;
           });
-
         },
       );
     }
@@ -345,7 +346,6 @@ class _BaseState extends State<Base> {
       if (!resultSubmitted) {
         error = "Upload Failed";
       }
-
     }
     if (resultSubmitted) {
       AlertData alertData = AlertData(alert: false, alertMessage: "Submitted");
