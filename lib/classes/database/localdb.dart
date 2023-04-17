@@ -55,31 +55,27 @@ class LocalDB {
   }
 
   void _createTables(Database db, int version) async {
-    final String createTblBankConfig = "CREATE TABLE IF NOT EXISTS " +
-        tblBankConfig +
-        "("
-            "IDAccount INTEGER PRIMARY KEY, "
-            "AccountName TEXT, "
-            "Dep INTEGER,"
-            "Withdraw INTEGER,"
-            "DisplayPatrolBalance INTEGER,"
-            "DisplayBaseBalance INTEGER"
-            ")";
+    final String createTblBankConfig =
+        "CREATE TABLE IF NOT EXISTS $tblBankConfig("
+        "IDAccount INTEGER PRIMARY KEY,"
+        "AccountName TEXT,"
+        "Dep INTEGER,"
+        "Withdraw INTEGER,"
+        "DisplayPatrolBalance INTEGER,"
+        "DisplayBaseBalance INTEGER)";
 
-    final String createTblBases = "CREATE TABLE IF NOT EXISTS " +
-        tblBases +
-        "("
-            "BaseID INTEGER PRIMARY KEY, "
-            "GameID INTEGER, "
-            "BaseName TEXT,"
-            "BaseCode TEXT,"
-            "RandomEvents INTEGER,"
-            "RandomChance INTEGER,"
-            "RandomListID INTEGER,"
-            "level INTEGER,"
-            "IDFaction INTEGER,"
-            "Bank INTEGER,"
-            "Details TEXT)";
+    final String createTblBases = "CREATE TABLE IF NOT EXISTS $tblBases("
+        "BaseID INTEGER PRIMARY KEY, "
+        "GameID INTEGER, "
+        "BaseName TEXT,"
+        "BaseCode TEXT,"
+        "RandomEvents INTEGER,"
+        "RandomChance INTEGER,"
+        "RandomListID INTEGER,"
+        "level INTEGER,"
+        "IDFaction INTEGER,"
+        "Bank INTEGER,"
+        "Details TEXT)";
 
     final String createTblGameConfig = "CREATE TABLE IF NOT EXISTS " +
         tblGameConfig +
@@ -90,126 +86,121 @@ class LocalDB {
             "Remote INTEGER,"
             "DefaultGame INTEGER)";
 
-    final String createTblActivities = "CREATE TABLE IF NOT EXISTS " +
-        tblActivities +
+    final String createTblActivities =
+        "CREATE TABLE IF NOT EXISTS $tblActivities"
         "("
-            "ActivityID INTEGER PRIMARY KEY,"
-            "BaseID INTEGER,"
-            "ActivityName TEXT,"
-            "ActivityCode TEXT,"
-            "ValueResultName TEXT,"
-            "ValueResultField INTEGER,"
-            "ValueResultMax INTEGER,"
-            "ValueResultName2 TEXT,"
-            "ValueResultField2 INTEGER,"
-            "ValueResult3Name TEXT,"
-            "ValueResult3Field INTEGER,"
-            "ValueResult4Name TEXT,"
-            "ValueResult4Field INTEGER,"
-            "ValueResult5Name TEXT,"
-            "ValueResult5Field INTEGER,"
-            "SuccessFailResultField INTEGER,"
-            "SuccessPartialFailResultField INTEGER,"
-            "CommentField INTEGER,"
-            "ActivityType INTEGER,"
-            "RandomGen INTEGER,"
-            "RandomGenListID INTEGER,"
-            "Trade INTEGER,"
-            "HideSubmitButton INTEGER,"
-            "Bank INTEGER,"
-            "Alert INTEGER,"
-            "AlertRule INTEGER,"
-            "AlertCount INTEGER,"
-            "AlertMessage TEXT,"
-            "AlertMessagePartial TEXT,"
-            "AlertMessageFail TEXT,"
-            "Reward INTEGER,"
-            "RewardValue INTEGER,"
-            "Upgrades INTEGER,"
-            "ItemCrafting INTEGER,"
-            "Ranking INTEGER,"
-            "DisableWithdrawal INTEGER,"
-            "DropDownField INTEGER,"
-            "Scoring_type INTEGER,"
-            "Scoring_Success INTEGER,"
-            "Scoring_Partial INTEGER,"
-            "Scoring_Fail INTEGER,"
-            "Scoring_Value INTEGER,"
-            "DropDownFieldListID INTEGER,"
-            "PassBasedonValueResult INTEGER,"
-            "PassValue INTEGER,"
-            "BaseControl INTEGER,"
-            "GameID INTEGER"
-            ")";
+        "ActivityID INTEGER PRIMARY KEY,"
+        "BaseID INTEGER,"
+        "ActivityName TEXT,"
+        "ActivityCode TEXT,"
+        "ValueResultName TEXT,"
+        "ValueResultField INTEGER,"
+        "ValueResultMax INTEGER,"
+        "ValueResultName2 TEXT,"
+        "ValueResultField2 INTEGER,"
+        "ValueResult3Name TEXT,"
+        "ValueResult3Field INTEGER,"
+        "ValueResult4Name TEXT,"
+        "ValueResult4Field INTEGER,"
+        "ValueResult5Name TEXT,"
+        "ValueResult5Field INTEGER,"
+        "SuccessFailResultField INTEGER,"
+        "SuccessPartialFailResultField INTEGER,"
+        "CommentField INTEGER,"
+        "ActivityType INTEGER,"
+        "RandomGen INTEGER,"
+        "RandomGenListID INTEGER,"
+        "Trade INTEGER,"
+        "HideSubmitButton INTEGER,"
+        "Bank INTEGER,"
+        "Alert INTEGER,"
+        "AlertRule INTEGER,"
+        "AlertCount INTEGER,"
+        "AlertMessage TEXT,"
+        "AlertMessagePartial TEXT,"
+        "AlertMessageFail TEXT,"
+        "Reward INTEGER,"
+        "RewardValue INTEGER,"
+        "Upgrades INTEGER,"
+        "ItemCrafting INTEGER,"
+        "Ranking INTEGER,"
+        "DisableWithdrawal INTEGER,"
+        "DropDownField INTEGER,"
+        "Scoring_type INTEGER,"
+        "Scoring_Success INTEGER,"
+        "Scoring_Partial INTEGER,"
+        "Scoring_Fail INTEGER,"
+        "Scoring_Value INTEGER,"
+        "DropDownFieldListID INTEGER,"
+        "PassBasedonValueResult INTEGER,"
+        "PassValue INTEGER,"
+        "BaseControl INTEGER,"
+        "GameID INTEGER"
+        ")";
 
-    final String createTblPatrols = "CREATE TABLE IF NOT EXISTS " +
-        tblPatrols +
+    final String createTblPatrols = "CREATE TABLE IF NOT EXISTS $tblPatrols"
         "("
-            "IDPatrol INTEGER PRIMARY KEY, "
-            "IDGroup INTEGER, "
-            "GameID INTEGER, "
-            "PatrolName TEXT,"
-            "GameTag TEXT,"
-            "AgeScore INTEGER,"
-            "SizeScore INTEGER,"
-            "Handicap INTEGER,"
-            "IDFaction INTEGER)";
+        "IDPatrol INTEGER PRIMARY KEY, "
+        "IDGroup INTEGER, "
+        "GameID INTEGER, "
+        "PatrolName TEXT,"
+        "GameTag TEXT,"
+        "AgeScore INTEGER,"
+        "SizeScore INTEGER,"
+        "Handicap INTEGER,"
+        "IDFaction INTEGER)";
 
-    final String createTblBaseSignIn = "CREATE TABLE IF NOT EXISTS " +
-        tblBaseSignIn +
+    final String createTblBaseSignIn = "CREATE TABLE IF NOT EXISTS $tblBaseSignIn"
         "("
-            "IDSignIn INTEGER PRIMARY KEY, "
-            "IDPatrol TEXT, "
-            "IDBaseCode TEXT, "
-            "ScanIn TEXT,"
-            "ScanOut TEXT,"
-            "Status INTEGER,"
-            "GameID INTEGER,"
-            "offline INTEGER"
-            ")";
+        "IDSignIn INTEGER PRIMARY KEY, "
+        "IDPatrol TEXT, "
+        "IDBaseCode TEXT, "
+        "ScanIn TEXT,"
+        "ScanOut TEXT,"
+        "Status INTEGER,"
+        "GameID INTEGER,"
+        "offline INTEGER"
+        ")";
 
-    final String createTblScan = "CREATE TABLE IF NOT EXISTS " +
-        tblScan +
+    final String createTblScan = "CREATE TABLE IF NOT EXISTS $tblScan"
         "("
-            "GameTag TEXT NOT NULL, "
-            "ScanTime TEXT NOT NULL, "
-            "GameID INTEGER, "
-            "BaseID INTEGER, "
-            "IDBaseCode TEXT,"
-            "ActivityID INTEGER, "
-            "IDActivityCode TEXT,"
-            "Comment TEXT,"
-            "Offline INTEGER,"
-            "ResultValue INTEGER,"
-            "ResultValue2 INTEGER,"
-            "ResultValue3 INTEGER,"
-            "ResultValue4 INTEGER,"
-            "ResultValue5 INTEGER,"
-            "Result TEXT,"
-            "IDOpponent TEXT,"
-            "IDFaction TEXT,"
-            "PRIMARY KEY (GameTag, ScanTime)"
-            ")";
+        "GameTag TEXT NOT NULL, "
+        "ScanTime TEXT NOT NULL, "
+        "GameID INTEGER, "
+        "BaseID INTEGER, "
+        "IDBaseCode TEXT,"
+        "ActivityID INTEGER, "
+        "IDActivityCode TEXT,"
+        "Comment TEXT,"
+        "Offline INTEGER,"
+        "ResultValue INTEGER,"
+        "ResultValue2 INTEGER,"
+        "ResultValue3 INTEGER,"
+        "ResultValue4 INTEGER,"
+        "ResultValue5 INTEGER,"
+        "Result TEXT,"
+        "IDOpponent TEXT,"
+        "IDFaction TEXT,"
+        "PRIMARY KEY (GameTag, ScanTime)"
+        ")";
 
-    final String createTblFaction = "CREATE TABLE IF NOT EXISTS " +
-        tblFaction +
+    final String createTblFaction = "CREATE TABLE IF NOT EXISTS $tblFaction"
         "("
-            "IDFaction INTEGER PRIMARY KEY, "
-            "FactionName TEXT, "
-            "GameID INTEGER"
-            ")";
+        "IDFaction INTEGER PRIMARY KEY, "
+        "FactionName TEXT, "
+        "GameID INTEGER"
+        ")";
 
-    final String createTblGroup = "CREATE TABLE IF NOT EXISTS " +
-        tblGroup +
+    final String createTblGroup = "CREATE TABLE IF NOT EXISTS $tblGroup"
         "("
-            "IDGroup INTEGER PRIMARY KEY, "
-            "GroupName TEXT, "
-            "ContactName TEXT, "
-            "ContactPhone TEXT, "
-            "ContactEmail TEXT, "
-            "IDUser INTEGER, "
-            "Comments TEXT"
-            ")";
+        "IDGroup INTEGER PRIMARY KEY, "
+        "GroupName TEXT, "
+        "ContactName TEXT, "
+        "ContactPhone TEXT, "
+        "ContactEmail TEXT, "
+        "IDUser INTEGER, "
+        "Comments TEXT"
+        ")";
 
     await db.execute(createTblBases);
     await db.execute(createTblGameConfig);
@@ -340,7 +331,7 @@ class LocalDB {
 
     // Query the table for all records.
     final List<Map<dynamic, dynamic>>? maps =
-        await db?.query(tblBaseSignIn, where: 'Status=?', whereArgs: [1]);
+    await db?.query(tblBaseSignIn, where: 'Status=?', whereArgs: [1]);
 
     // Convert the List<Map<String, dynamic> into a List<Dog>.
     return List.generate(maps!.length, (i) {
@@ -388,7 +379,7 @@ class LocalDB {
     final Database? db = await database;
     // Query the table for all records.
     final List<Map<String, dynamic>>? maps =
-        await db?.query(tblBaseSignIn, where: 'offline=?', whereArgs: [1]);
+    await db?.query(tblBaseSignIn, where: 'offline=?', whereArgs: [1]);
     // Convert the List<Map<String, dynamic> into a List<Dog>.
     return List.generate(maps!.length, (i) {
       return PatrolSignIn.fromJson(maps[i]);
@@ -400,15 +391,15 @@ class LocalDB {
     final Database? db = await database;
     // Query the table for all records.
     final List<Map<String, dynamic>>? maps =
-        await db?.query(tblScan, where: 'offline=?', whereArgs: [1]);
+    await db?.query(tblScan, where: 'offline=?', whereArgs: [1]);
     // Convert the List<Map<String, dynamic> into a List<Dog>.
     return List.generate(maps!.length, (i) {
       return ScanData.fromJson(maps[i]);
     });
   }
 
-  Future<int?> updateOfflineScanData(
-      String gameTag, String scanTime, int status) async {
+  Future<int?> updateOfflineScanData(String gameTag, String scanTime,
+      int status) async {
     // Get a reference to the database.
     final Database? db = await database;
 

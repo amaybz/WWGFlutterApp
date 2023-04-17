@@ -79,7 +79,7 @@ class _RecordResultsState extends State<RecordResults> {
     //DateTime now = DateTime.now();
     widget.scanData.scanTime = Utils().getCurrentDateSQL();
     if (kDebugMode) {
-      print("Scan Time:" + widget.scanData.scanTime.toString());
+      print("Scan Time:${widget.scanData.scanTime}");
     }
     //widget.scanData.result = "Success";
     widget.onSubmit(widget.scanData, getSelectedActivity());
