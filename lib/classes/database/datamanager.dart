@@ -194,7 +194,7 @@ class DataManager {
   Future<bool> validateAPIToken() async {
     webAPI.setApiKey(await mySharedPrefs.readStr('apikey'));
     APIValidateToken apiValidateToken =
-        await webAPI.validateToken(webAPI.getApiKey);
+    await webAPI.validateToken(webAPI.getApiKey);
     if (apiValidateToken.message == "Unauthorized") {
       return false;
     }
@@ -211,7 +211,7 @@ class DataManager {
           offlineData.length.toString());
       if (offlineData.isNotEmpty) {
         List<dynamic> response =
-            await webAPI.uploadOfflineScanData(offlineData);
+        await webAPI.uploadOfflineScanData(offlineData);
         if (kDebugMode) {
           print(response);
         }
@@ -241,8 +241,8 @@ class DataManager {
     return false;
   }
 
-  Future<List<PatrolSignIn>?> getSignedInPatrols(
-      String gameID, String baseCode) async {
+  Future<List<PatrolSignIn>?> getSignedInPatrols(String gameID,
+      String baseCode) async {
     List<PatrolSignIn> patrolsSignIn = [];
     await isAPIOnline();
     try {
@@ -252,14 +252,14 @@ class DataManager {
       // check for offline patrols and sync data to local DB
       if (!kIsWeb && !webAPI.getOffLine) {
         List<PatrolSignIn> offlineData =
-            await localDB.listPatrolSignInOfflineRecords();
+        await localDB.listPatrolSignInOfflineRecords();
         print("DataManager: offline Base Sign in Data: " +
             offlineData.length.toString());
         //print(offlineData);
 
         if (offlineData.isNotEmpty) {
           List<dynamic> response =
-              await webAPI.signedInPatrolsUploadOffline(offlineData);
+          await webAPI.signedInPatrolsUploadOffline(offlineData);
           print(response);
           if (response[0]["Uploaded"] == true) {
             await localDB.clearPatrolSignIn();
@@ -501,17 +501,24 @@ class DataManager {
       //print(bases.data);
       return fractions.data;
     } else {
-      if (kDebugMode) {
-        print("DataManager: Loading factions from local DB");
+      if (kIsWeb) {
+        fractions.data = [
+          FactionData(iDFaction: 0, factionName: "None", gameID: 0)
+        ];
       }
-      fractions.data = await localDB.listFractionData();
-      //print(bases.data);
+      else {
+        if (kDebugMode) {
+          print("DataManager: Loading factions from local DB");
+        }
+        fractions.data = await localDB.listFractionData();
+        //print(fractions.data);
+      }
       return fractions.data;
     }
   }
 
-  Future<List<ActivityData>?> getActivitiesByGameID(
-      String gameID, bool offline) async {
+  Future<List<ActivityData>?> getActivitiesByGameID(String gameID,
+      bool offline) async {
     Activities activities = Activities();
     if (!offline) {
       try {
@@ -553,8 +560,8 @@ class DataManager {
     }
   }
 
-  Future<List<PatrolData>?> getPatrolsByGameID(
-      String gameID, bool offline) async {
+  Future<List<PatrolData>?> getPatrolsByGameID(String gameID,
+      bool offline) async {
     PatrolResults patrolResults = PatrolResults();
     if (!offline) {
       try {

@@ -220,14 +220,6 @@ class _MyHomePageState extends State<MyHomePage> {
         listFractions = dataList;
       });
     }
-    if (listFractions.isEmpty) {
-      List<FactionData> dataList = [
-        FactionData(iDFaction: 0, factionName: "None", gameID: 0)
-      ];
-      setState(() {
-        listFractions = dataList;
-      });
-    }
   }
 
   void getGroups() async {
