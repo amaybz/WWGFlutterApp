@@ -337,6 +337,8 @@ class DataManager {
             }
           }
         }
+        //connect to API and get latest data
+        patrolsSignIn = await webAPI.getSignedInPatrols(gameID, baseCode);
       }
     } on SocketException {
       webAPI.setOffline(true);
