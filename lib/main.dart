@@ -8,7 +8,9 @@ import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/database/wwgapi.dart';
 import 'package:wwgnfcscoringsystem/base.dart';
+import 'package:wwgnfcscoringsystem/classes/scan_results.dart';
 import 'package:wwgnfcscoringsystem/login.dart';
+import 'package:wwgnfcscoringsystem/widgets/widget_admin_menu.dart';
 import 'classes/base_results.dart';
 import 'classes/database/localdb.dart';
 import 'classes/games_results.dart';
@@ -100,6 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
   LocalDB localDB = LocalDB.instance;
   String versionName = "";
   String versionCode = "";
+  String loginMenuText = "Login";
   WebAPI webAPI = WebAPI();
   List<DropdownMenuItem<String>> listGamesDropdown = [
     const DropdownMenuItem(value: "0", child: Text("None Loaded")),
@@ -111,6 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<PatrolData> listPatrols = [];
   List<GroupData> listGroups = [];
   List<FactionData> listFractions = [];
+  int accessLevel = 10;
 
   @override
   void initState() {
@@ -132,13 +136,26 @@ class _MyHomePageState extends State<MyHomePage> {
     //check connection to API
     bool isAPIOffline = await dataManager.isAPIOnline();
     loggedIn = await webAPI.getLoggedIn;
+    setState(() {
+      accessLevel = dataManager.getUserAccessLevel();
+    });
+    if (loggedIn) {
+      setState(() {
+        loginMenuText = "Change User";
+      });
+    } else {
+      setState(() {
+        loginMenuText = "Login";
+      });
+    }
     if (kDebugMode) {
       print("Logged in: $loggedIn");
       print("API Offline: $isAPIOffline");
     }
     if (!isAPIOffline && !loggedIn) {
-      await _navigateToLogin(context);
+      _navigateToLogin(context);
     }
+
     dataManager.uploadOfflineScans();
     await getGames();
     int userGameID = dataManager.getUserBaseID();
@@ -147,11 +164,13 @@ class _MyHomePageState extends State<MyHomePage> {
         selectedGame = userGameID.toString();
       });
     }
-    getBases(selectedGame!);
+    getBases(int.parse(selectedGame!));
     getActivities(selectedGame!);
     getPatrols(selectedGame!);
     getGroups();
-    getFractions(selectedGame!);
+    getFactions(int.parse(selectedGame!));
+    getScanData(int.parse(selectedGame!));
+    dataManager.getBaseLevels();
   }
 
   Future<String?> getGames() async {
@@ -175,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return selectedGame;
   }
 
-  void getBases(String gameID) async {
+  void getBases(int gameID) async {
     List<BaseData>? bases = await dataManager.getBasesByGameID(gameID);
     if (bases != null) {
       List<BaseData> basesDataList = bases;
@@ -187,6 +206,10 @@ class _MyHomePageState extends State<MyHomePage> {
         listBases = [];
       });
     }
+  }
+
+  void getScanData(int gameID) async {
+    dataManager.getScanData(gameID);
   }
 
   void getActivities(String gameID) async {
@@ -211,11 +234,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void getFractions(String gameID) async {
-    List<FactionData>? listFractionData =
+  void getFactions(int gameID) async {
+    List<FactionData>? listFactionData =
         await dataManager.getFractionsByGameID(gameID);
-    if (listFractionData != null) {
-      List<FactionData> dataList = listFractionData;
+    if (listFactionData != null) {
+      List<FactionData> dataList = listFactionData;
       setState(() {
         listFractions = dataList;
       });
@@ -253,11 +276,24 @@ class _MyHomePageState extends State<MyHomePage> {
         selectedGame = userGameID.toString();
       });
     }
-    getBases(selectedGame!);
+    getBases(int.parse(selectedGame!));
     getActivities(selectedGame!);
     getPatrols(selectedGame!);
     getGroups();
-    getFractions(selectedGame!);
+    getFactions(int.parse(selectedGame!));
+    getScanData(int.parse(selectedGame!));
+    loggedIn = await webAPI.getLoggedIn;
+    if (loggedIn) {
+      setState(() {
+        loginMenuText = "Change User";
+        accessLevel = dataManager.getUserAccessLevel();
+      });
+    } else {
+      setState(() {
+        loginMenuText = "Login";
+        accessLevel = dataManager.getUserAccessLevel();
+      });
+    }
   }
 
   _navigateToGameBases(BuildContext context, int gameID, BaseData base) async {
@@ -304,7 +340,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             ListTile(
-              title: const Text('Login'),
+              title: Text(loginMenuText),
               onTap: () {
                 Navigator.pop(context);
                 _navigateToLogin(context);
@@ -325,6 +361,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
+            AdminMenu(accessLevel: accessLevel),
           ],
         ),
       ),
@@ -353,11 +390,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             print(
                                 "Main.Dart: Updating Data for Selected Game: ${selectedGame!}");
                           }
-                          getBases(selectedGame!);
+                          getBases(int.parse(selectedGame!));
                           getActivities(selectedGame!);
                           getPatrols(selectedGame!);
                           getGroups();
-                          getFractions(selectedGame!);
+                          getFactions(int.parse(selectedGame!));
+                          getScanData(int.parse(selectedGame!));
                         });
                       }),
                 ],

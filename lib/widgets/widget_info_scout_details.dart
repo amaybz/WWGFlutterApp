@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../classes/database/datamanager.dart';
 import '../classes/factions.dart';
 import '../classes/groups.dart';
 import '../classes/patrol_results.dart';
@@ -7,15 +8,17 @@ import '../classes/scan_results.dart';
 import '../classes/utils.dart';
 
 class InfoScoutDetails extends StatefulWidget {
-  const InfoScoutDetails({
-    Key? key,
-    required this.scanData,
-    required this.patrols,
-    required this.groups,
-    required this.fractions,
-  }) : super(key: key);
+  const InfoScoutDetails(
+      {Key? key,
+      required this.scanData,
+      required this.patrols,
+      required this.groups,
+      required this.fractions,
+      required this.bankBalance})
+      : super(key: key);
 
   final ScanData scanData;
+  final int bankBalance;
   final List<PatrolData> patrols;
   final List<GroupData> groups;
   final List<FactionData> fractions;
@@ -25,6 +28,11 @@ class InfoScoutDetails extends StatefulWidget {
 }
 
 class _InfoScoutDetailsState extends State<InfoScoutDetails> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.scanData.gameTag != null) {
@@ -65,6 +73,15 @@ class _InfoScoutDetailsState extends State<InfoScoutDetails> {
                     widget.scanData.gameTag as String, widget.patrols)
                 .sizeScore
                 .toString()),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Bank Balance: ",
+                style: Theme.of(context).textTheme.titleSmall),
+            Text(widget.bankBalance.toString()),
           ],
         ),
         Row(

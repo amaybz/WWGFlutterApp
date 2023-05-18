@@ -35,6 +35,7 @@ class BaseData {
   int? level;
   int? iDFaction;
   int? bank;
+  int? bankLevels;
   String? details;
 
   BaseData(
@@ -48,6 +49,7 @@ class BaseData {
       this.level,
       this.iDFaction,
       this.bank,
+      this.bankLevels,
       this.details});
 
   BaseData.fromJson(Map<String, dynamic> json) {
@@ -61,6 +63,7 @@ class BaseData {
     level = json['level'];
     iDFaction = json['IDFaction'];
     bank = json['Bank'];
+    bankLevels = json['BankLevels'];
     details = json['Details'];
   }
 
@@ -76,6 +79,7 @@ class BaseData {
     data['level'] = level;
     data['IDFaction'] = iDFaction;
     data['Bank'] = bank;
+    data['BankLevels'] = bankLevels;
     data['Details'] = details;
     return data;
   }
@@ -90,6 +94,7 @@ class BaseData {
         'level: $level, '
         'IDFaction: $iDFaction, '
         'bank: $bank,'
+        'bankLevels: $bankLevels,'
         'Details: $details, ';
   }
 }
