@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
+import 'package:wwgnfcscoringsystem/classes/base_levels.dart';
 import 'package:wwgnfcscoringsystem/classes/factions.dart';
 import 'package:wwgnfcscoringsystem/classes/groups.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
@@ -149,7 +150,7 @@ class WebAPI {
     return bankConfig.data;
   }
 
-  Future<BasesResults> getBasesByGameID(String gameID) async {
+  Future<BasesResults> getBasesByGameID(int gameID) async {
     BasesResults bases = BasesResults();
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
@@ -174,7 +175,7 @@ class WebAPI {
     return bases;
   }
 
-  Future<Factions> getFractionsByGameID(String gameID) async {
+  Future<Factions> getFractionsByGameID(int gameID) async {
     Factions fractions = Factions();
     var headers = {'Authorization': _apiKey!};
     var request = http.Request('POST', Uri.parse('${_apiLink!}fractions/'));
@@ -196,6 +197,55 @@ class WebAPI {
       print("WWG_API: Fractions results: ${fractions.message!}");
     }
     return fractions;
+  }
+
+  Future<BaseLevels> getBaseLevels() async {
+    BaseLevels baseLevels = BaseLevels();
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request('POST', Uri.parse('${_apiLink!}baselevels/'));
+    request.body = '';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String jsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        //print("json data: " + jsonData);
+      }
+      baseLevels = BaseLevels.fromJson(json.decode(jsonData));
+    } else {
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
+    }
+    if (kDebugMode) {
+      print("WWG_API: Fractions results: ${baseLevels.message!}");
+    }
+    return baseLevels;
+  }
+
+  Future<ScanResults> getScanResults(int gameID) async {
+    ScanResults scanResults = ScanResults();
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request(
+        'POST', Uri.parse('${_apiLink!}scan/GetAllScanResultsbyGameID.php'));
+    request.body = '{"GameID" : $gameID}';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String jsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        //print("SCAN: json data: " + jsonData);
+      }
+      scanResults = ScanResults.fromJson(json.decode(jsonData));
+    } else {
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
+    }
+    if (kDebugMode) {
+      print("WWG_API: Scan Results: ${scanResults.message!}");
+    }
+    return scanResults;
   }
 
   Future<Activities> getActivitiesByGameID(String gameID) async {
@@ -357,6 +407,33 @@ class WebAPI {
     }
     if (kDebugMode) {
       print(patrolSignIn);
+    }
+    return false;
+  }
+
+  Future<bool> setBaseLevel(BaseData baseData) async {
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request('POST', Uri.parse('${_apiLink!}bases/levelup/'));
+    request.body = '{"BaseID" : "${baseData.baseID!}",'
+        ' "level" : "${baseData.level!}"}';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      String strJsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        print("WWG_API: Base Level json data: $strJsonData");
+      }
+      Map<String, dynamic> jsonData = json.decode(strJsonData);
+      if (jsonData['data']['message'] == "true") {
+        return true;
+      } else {
+        if (kDebugMode) {
+          print(response.reasonPhrase);
+        }
+      }
+    }
+    if (kDebugMode) {
+      print(baseData);
     }
     return false;
   }

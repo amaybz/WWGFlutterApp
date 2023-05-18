@@ -309,12 +309,24 @@ class _BaseState extends State<Base> {
       resultSubmitted = await dataManager.insertScan(scanData);
     }
     if (resultSubmitted) {
-      DialogBuilder(context).showAlertOKDialog("Result", "Submitted");
+      AlertData alertData = AlertData(alert: false, alertMessage: "Submitted");
+      alertData = await alerts
+          .checkAlerts(
+              ActivityData(alert: 0, alertRule: 0, baseID: widget.base.baseID),
+              scanData)
+          .timeout(const Duration(seconds: 15));
+      if (!alertData.alert!) {
+        alertData.alertMessage = "Submitted";
+      }
+      DialogBuilder(context)
+          .showAlertOKDialog("Result", alertData.alertMessage!);
       setState(() {
         scanData.result = null;
         scanData.gameTag = null;
+        scanData.iDActivityCode = null;
         scanData.resultValue = 0;
         txtValueResult.text = "";
+        scanData.comment = null;
       });
     } else {
       DialogBuilder(context).showAlertOKDialog("Result", "Error: " + error);
@@ -348,14 +360,19 @@ class _BaseState extends State<Base> {
       }
     }
     if (resultSubmitted) {
+      print("Base: Result Submitted Checking Alerts.");
       AlertData alertData = AlertData(alert: false, alertMessage: "Submitted");
-      alertData = alerts.checkAlerts(selectedActivity, scanData);
+      alertData = await alerts
+          .checkAlerts(selectedActivity, scanData)
+          .timeout(const Duration(seconds: 15));
       if (!alertData.alert!) {
         alertData.alertMessage = "Submitted";
       }
 
       DialogBuilder(context)
           .showAlertOKDialog("Result", alertData.alertMessage!);
+
+      //reset scan data
       setState(() {
         scanData.result = null;
         scanData.gameTag = null;
@@ -373,12 +390,14 @@ class _BaseState extends State<Base> {
     } else {
       DialogBuilder(context).showAlertOKDialog("Result", "Error: " + error);
     }
-    //getSignedInPatrols();
-    //verify data and submit to API
-    dataManager.uploadOfflineScans();
+
     if (kDebugMode) {
       print("Base.Dart: Reset scanData: " + scanData.toString());
     }
+    //getSignedInPatrols();
+    //verify data and submit to API
+    dataManager.uploadOfflineScans();
+    dataManager.getScanData(widget.gameID);
   }
 
   Future<void> signInPatrol(gameTag) async {
@@ -416,6 +435,7 @@ class _BaseState extends State<Base> {
       DialogBuilder(context).showAlertOKDialog("FAILED to Sign in Patrol",
           patrol.gameTag! + " " + patrol.patrolName!);
     }
+    dataManager.getScanData(widget.gameID);
 
     if (kDebugMode) {
       //print(patrolSignIn);

@@ -41,7 +41,7 @@ class ScanData {
   int? resultValue5;
   String? result;
   String? iDOpponent;
-  String? iDFaction;
+  int? iDFaction;
 
   ScanData(
       {this.gameTag,
@@ -119,6 +119,7 @@ class ScanData {
         'ResultValue3: $resultValue3, '
         'ResultValue4: $resultValue4, '
         'ResultValue5: $resultValue5, '
+        'Comment: $comment, '
         'Result: $result, ';
   }
 }

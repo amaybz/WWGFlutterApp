@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:wwgnfcscoringsystem/classes/activities.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
+import 'package:wwgnfcscoringsystem/classes/base_levels.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
 import 'package:wwgnfcscoringsystem/classes/database/sharedprefs.dart';
 import 'package:wwgnfcscoringsystem/classes/database/wwgapi.dart';
@@ -49,6 +50,10 @@ class DataManager {
 
   int getUserBaseID() {
     return webAPI.getGameID;
+  }
+
+  int getUserAccessLevel() {
+    return webAPI.getAccessLevel;
   }
 
   Future<bool> signOutPatrol(PatrolSignIn patrolSignIn) async {
@@ -207,8 +212,7 @@ class DataManager {
   Future<bool> uploadOfflineScans() async {
     if (!kIsWeb && !webAPI.getOffLine) {
       List<ScanData> offlineData = await localDB.listScanDataOfflineRecords();
-      print("DataManager: offline Scan Data Records: " +
-          offlineData.length.toString());
+      print("DataManager: offline Scan Data Records: ${offlineData.length}");
       if (offlineData.isNotEmpty) {
         List<dynamic> response =
             await webAPI.uploadOfflineScanData(offlineData);
@@ -233,12 +237,60 @@ class DataManager {
             }
           }
         }
-        print("DataManager: Offline Records Submitted: " +
-            response.length.toString());
+        print("DataManager: Offline Records Submitted: ${response.length}");
         return true;
       }
     }
     return false;
+  }
+
+  Future<ScanResults> getScanData(int gameID) async {
+    ScanResults scanResults = ScanResults();
+    await isAPIOnline();
+    if (kDebugMode) {
+      print("DataManager: Getting ScanData");
+    }
+    try {
+      if (!kIsWeb && !webAPI.getOffLine) {
+        List<ScanData> offlineData = await localDB.listScanDataOfflineRecords();
+        if (kDebugMode) {
+          print("DataManager: offline ScanData: ${offlineData.length}");
+        }
+
+        if (offlineData.isNotEmpty) {
+          List<dynamic> response =
+              await webAPI.uploadOfflineScanData(offlineData);
+          if (kDebugMode) {
+            print("DataManager: $response");
+          }
+        }
+        //Download Scan Data > Check if any offline results and Update
+
+        scanResults = await webAPI.getScanResults(gameID);
+        print(scanResults.data?.length);
+        //print(scanResults.data);
+        if (offlineData.isEmpty && !kIsWeb) {
+          //await localDB.clearScanData();
+          for (ScanData scanData in scanResults.data!) {
+            int? insertId = await localDB.insertScan(scanData);
+            if (kDebugMode) {
+              //print(insertId);
+            }
+          }
+        }
+      }
+    } on SocketException {
+      webAPI.setOffline(true);
+
+      if (kDebugMode) {
+        print("DataManager: Unable to get ScanData from API.");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+    return scanResults;
   }
 
   Future<List<PatrolSignIn>?> getSignedInPatrols(
@@ -246,21 +298,28 @@ class DataManager {
     List<PatrolSignIn> patrolsSignIn = [];
     await isAPIOnline();
     try {
-      print("DataManager: Getting Patrols Signed in");
-      print("DataManager: API Offline: " + webAPI.getOffLine.toString());
-      print("DataManager: Web App: " + kIsWeb.toString());
+      if (kDebugMode) {
+        print("DataManager: Getting Patrols Signed in");
+        //print("DataManager: API Offline: " + webAPI.getOffLine.toString());
+        //print("DataManager: Web App: " + kIsWeb.toString());
+      }
+
       // check for offline patrols and sync data to local DB
       if (!kIsWeb && !webAPI.getOffLine) {
         List<PatrolSignIn> offlineData =
             await localDB.listPatrolSignInOfflineRecords();
-        print("DataManager: offline Base Sign in Data: " +
-            offlineData.length.toString());
+        if (kDebugMode) {
+          print(
+              "DataManager: offline Base Sign in Data: ${offlineData.length}");
+        }
         //print(offlineData);
 
         if (offlineData.isNotEmpty) {
           List<dynamic> response =
               await webAPI.signedInPatrolsUploadOffline(offlineData);
-          print(response);
+          if (kDebugMode) {
+            print(response);
+          }
           if (response[0]["Uploaded"] == true) {
             await localDB.clearPatrolSignIn();
           }
@@ -278,9 +337,6 @@ class DataManager {
             }
           }
         }
-      } else {
-        //connect to API and get latest data
-        patrolsSignIn = await webAPI.getSignedInPatrols(gameID, baseCode);
       }
     } on SocketException {
       webAPI.setOffline(true);
@@ -426,7 +482,37 @@ class DataManager {
     }
   }
 
-  Future<List<BaseData>?> getBasesByGameID(String gameID) async {
+  Future<bool> setBaseLevel(BaseData baseData) async {
+    if (!webAPI.getOffLine) {
+      try {
+        await webAPI.setBaseLevel(baseData);
+      } on SocketException {
+        webAPI.setOffline(true);
+        if (kDebugMode) {
+          print("DataManager: Unable to update base Level from API.");
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
+      }
+    }
+    //update local DB with base data
+
+    if (!kIsWeb && !webAPI.getOffLine) {
+      if (kDebugMode) {
+        print("DataManager: Updating Base Level to local DB");
+      }
+      int? insertId = await localDB.insertBaseData(baseData);
+      if (kDebugMode) {
+        print("DataManager: updated Offline base record: $insertId");
+      }
+    }
+    getBasesByGameID(baseData.gameID!);
+    return true;
+  }
+
+  Future<List<BaseData>?> getBasesByGameID(int gameID) async {
     BasesResults bases = BasesResults();
     if (!webAPI.getOffLine) {
       try {
@@ -468,7 +554,7 @@ class DataManager {
     }
   }
 
-  Future<List<FactionData>?> getFractionsByGameID(String gameID) async {
+  Future<List<FactionData>?> getFractionsByGameID(int gameID) async {
     Factions fractions = Factions();
     if (!webAPI.getOffLine) {
       try {
@@ -501,12 +587,67 @@ class DataManager {
       //print(bases.data);
       return fractions.data;
     } else {
-      if (kDebugMode) {
-        print("DataManager: Loading factions from local DB");
+      if (kIsWeb) {
+        fractions.data = [
+          FactionData(iDFaction: 0, factionName: "None", gameID: 0)
+        ];
+      } else {
+        if (kDebugMode) {
+          print("DataManager: Loading factions from local DB");
+        }
+        fractions.data = await localDB.listFractionData();
+        //print(fractions.data);
       }
-      fractions.data = await localDB.listFractionData();
-      //print(bases.data);
       return fractions.data;
+    }
+  }
+
+  Future<List<BaseLevelData>?> getBaseLevels() async {
+    BaseLevels baseLevels = BaseLevels();
+    if (!webAPI.getOffLine) {
+      try {
+        baseLevels = await webAPI.getBaseLevels();
+      } on SocketException {
+        webAPI.setOffline(true);
+        if (kDebugMode) {
+          print("DataManager: Unable to get Base Levels from API.");
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print(e);
+        }
+      }
+    }
+    //update local DB with latest data
+    if (baseLevels.data != null) {
+      if (!kIsWeb && !webAPI.getOffLine) {
+        if (kDebugMode) {
+          print("DataManager: Saving Base Levels data to local DB");
+        }
+        await localDB.clearBaseData();
+        for (BaseLevelData baseData in baseLevels.data!) {
+          int? insertId = await localDB.insertBaseLevel(baseData);
+          if (kDebugMode) {
+            //print(insertId);
+          }
+        }
+      }
+      //print(bases.data);
+      return baseLevels.data;
+    } else {
+      if (kIsWeb) {
+        baseLevels.data = [
+          BaseLevelData(
+              idlevel: 0, levelDisplayValue: "None", levelRequirement: 0)
+        ];
+      } else {
+        if (kDebugMode) {
+          print("DataManager: Loading Base Levels from local DB");
+        }
+        baseLevels.data = await localDB.listBaseLevelData();
+        //print(fractions.data);
+      }
+      return baseLevels.data;
     }
   }
 

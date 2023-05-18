@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:wwgnfcscoringsystem/classes/bank_class.dart';
+import 'package:wwgnfcscoringsystem/classes/base_levels.dart';
 import 'package:wwgnfcscoringsystem/classes/base_results.dart';
 import 'package:wwgnfcscoringsystem/classes/factions.dart';
 import 'package:wwgnfcscoringsystem/classes/games_results.dart';
@@ -16,7 +17,7 @@ class LocalDB {
   static const _databaseName = "local_database.db";
 
   // Increment this version when you need to change the schema.
-  static const _databaseVersion = 17;
+  static const _databaseVersion = 21;
 
   final String tblBases = "tblbases";
   final String tblGameConfig = "tblgameconfig";
@@ -25,6 +26,7 @@ class LocalDB {
   final String tblBaseSignIn = "tblbasesignin";
   final String tblScan = "tblscan";
   final String tblBankConfig = "tblbankconfig";
+  final String tblBaseLevels = "tblbaselevels";
   final String tblFaction = "tblFaction";
   final String tblGroup = "tblgroup";
 
@@ -64,6 +66,12 @@ class LocalDB {
         "DisplayPatrolBalance INTEGER,"
         "DisplayBaseBalance INTEGER)";
 
+    final String createTblBankLevels =
+        "CREATE TABLE IF NOT EXISTS $tblBaseLevels("
+        "idlevel INTEGER PRIMARY KEY,"
+        "LevelDisplayValue TEXT,"
+        "LevelRequirement INTEGER)";
+
     final String createTblBases = "CREATE TABLE IF NOT EXISTS $tblBases("
         "BaseID INTEGER PRIMARY KEY, "
         "GameID INTEGER, "
@@ -75,16 +83,16 @@ class LocalDB {
         "level INTEGER,"
         "IDFaction INTEGER,"
         "Bank INTEGER,"
+        "BankLevels INTEGER,"
         "Details TEXT)";
 
-    final String createTblGameConfig = "CREATE TABLE IF NOT EXISTS " +
-        tblGameConfig +
-        "("
-            "GameID INTEGER PRIMARY KEY, "
-            "GameName TEXT, "
-            "DeviceName TEXT, "
-            "Remote INTEGER,"
-            "DefaultGame INTEGER)";
+    final String createTblGameConfig =
+        "CREATE TABLE IF NOT EXISTS $tblGameConfig"
+        "(GameID INTEGER PRIMARY KEY,"
+        " GameName TEXT,"
+        " DeviceName TEXT,"
+        " Remote INTEGER,"
+        "DefaultGame INTEGER)";
 
     final String createTblActivities =
         "CREATE TABLE IF NOT EXISTS $tblActivities"
@@ -150,7 +158,8 @@ class LocalDB {
         "Handicap INTEGER,"
         "IDFaction INTEGER)";
 
-    final String createTblBaseSignIn = "CREATE TABLE IF NOT EXISTS $tblBaseSignIn"
+    final String createTblBaseSignIn =
+        "CREATE TABLE IF NOT EXISTS $tblBaseSignIn"
         "("
         "IDSignIn INTEGER PRIMARY KEY, "
         "IDPatrol TEXT, "
@@ -180,7 +189,7 @@ class LocalDB {
         "ResultValue5 INTEGER,"
         "Result TEXT,"
         "IDOpponent TEXT,"
-        "IDFaction TEXT,"
+        "IDFaction INTEGER,"
         "PRIMARY KEY (GameTag, ScanTime)"
         ")";
 
@@ -209,6 +218,7 @@ class LocalDB {
     await db.execute(createTblBaseSignIn);
     await db.execute(createTblScan);
     await db.execute(createTblBankConfig);
+    await db.execute(createTblBankLevels);
     await db.execute(createTblFaction);
     await db.execute(createTblGroup);
   }
@@ -221,6 +231,7 @@ class LocalDB {
     await db.execute("DROP TABLE IF EXISTS $tblBaseSignIn");
     await db.execute("DROP TABLE IF EXISTS $tblScan");
     await db.execute("DROP TABLE IF EXISTS $tblBankConfig");
+    await db.execute("DROP TABLE IF EXISTS $tblBaseLevels");
     await db.execute("DROP TABLE IF EXISTS $tblFaction");
     await db.execute("DROP TABLE IF EXISTS $tblGroup");
     _createTables(db, newVersion);
@@ -254,6 +265,17 @@ class LocalDB {
     int? insertedID = await db?.insert(
       tblFaction,
       fractionData.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    return insertedID;
+  }
+
+  Future<int?> insertBaseLevel(BaseLevelData data) async {
+    // Get a reference to the database.
+    final Database? db = await database;
+    int? insertedID = await db?.insert(
+      tblBaseLevels,
+      data.toJson(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
     return insertedID;
@@ -331,7 +353,7 @@ class LocalDB {
 
     // Query the table for all records.
     final List<Map<dynamic, dynamic>>? maps =
-    await db?.query(tblBaseSignIn, where: 'Status=?', whereArgs: [1]);
+        await db?.query(tblBaseSignIn, where: 'Status=?', whereArgs: [1]);
 
     // Convert the List<Map<String, dynamic> into a List<Dog>.
     return List.generate(maps!.length, (i) {
@@ -379,7 +401,7 @@ class LocalDB {
     final Database? db = await database;
     // Query the table for all records.
     final List<Map<String, dynamic>>? maps =
-    await db?.query(tblBaseSignIn, where: 'offline=?', whereArgs: [1]);
+        await db?.query(tblBaseSignIn, where: 'offline=?', whereArgs: [1]);
     // Convert the List<Map<String, dynamic> into a List<Dog>.
     return List.generate(maps!.length, (i) {
       return PatrolSignIn.fromJson(maps[i]);
@@ -391,15 +413,15 @@ class LocalDB {
     final Database? db = await database;
     // Query the table for all records.
     final List<Map<String, dynamic>>? maps =
-    await db?.query(tblScan, where: 'offline=?', whereArgs: [1]);
+        await db?.query(tblScan, where: 'offline=?', whereArgs: [1]);
     // Convert the List<Map<String, dynamic> into a List<Dog>.
     return List.generate(maps!.length, (i) {
       return ScanData.fromJson(maps[i]);
     });
   }
 
-  Future<int?> updateOfflineScanData(String gameTag, String scanTime,
-      int status) async {
+  Future<int?> updateOfflineScanData(
+      String gameTag, String scanTime, int status) async {
     // Get a reference to the database.
     final Database? db = await database;
 
@@ -421,6 +443,19 @@ class LocalDB {
     // Convert the List<Map<String, dynamic> into a List<Dog>.
     return List.generate(maps!.length, (i) {
       return BaseData.fromJson(maps[i] as Map<String, dynamic>);
+    });
+  }
+
+  Future<List<BaseLevelData>> listBaseLevelData() async {
+    // Get a reference to the database.
+    final Database? db = await database;
+
+    // Query the table for all records.
+    final List<Map<dynamic, dynamic>>? maps = await db?.query(tblBaseLevels);
+
+    // Convert the List<Map<String, dynamic> into a List<Dog>.
+    return List.generate(maps!.length, (i) {
+      return BaseLevelData.fromJson(maps[i] as Map<String, dynamic>);
     });
   }
 
@@ -512,35 +547,42 @@ class LocalDB {
     // Get a reference to the database.
     final Database? db = await database;
     //delete all teams in DB
-    await db?.execute("delete from " + tblGameConfig);
+    await db?.execute("delete from $tblGameConfig");
   }
 
   Future<void> clearGroupData() async {
     // Get a reference to the database.
     final Database? db = await database;
     //delete all teams in DB
-    await db?.execute("delete from " + tblGroup);
+    await db?.execute("delete from $tblGroup");
+  }
+
+  Future<void> clearScanData() async {
+    // Get a reference to the database.
+    final Database? db = await database;
+    //delete all teams in DB
+    await db?.execute("delete from $tblScan");
   }
 
   Future<void> clearFractionData() async {
     // Get a reference to the database.
     final Database? db = await database;
     //delete all teams in DB
-    await db?.execute("delete from " + tblFaction);
+    await db?.execute("delete from $tblFaction");
   }
 
   Future<void> clearBaseData() async {
     // Get a reference to the database.
     final Database? db = await database;
     //delete all teams in DB
-    await db?.execute("delete from " + tblBases);
+    await db?.execute("delete from $tblBases");
   }
 
   Future<void> clearActivitiesData() async {
     // Get a reference to the database.
     final Database? db = await database;
     //delete all teams in DB
-    await db?.execute("delete from " + tblActivities);
+    await db?.execute("delete from $tblActivities");
   }
 
   Future<void> clearPatrolsData() async {

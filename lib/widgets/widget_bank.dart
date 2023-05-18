@@ -9,15 +9,14 @@ import '../classes/scan_results.dart';
 import '../classes/utils.dart';
 
 class Banking extends StatefulWidget {
-  const Banking(
-      {Key? key,
-      required this.activitiesData,
-      required this.scanData,
-      required this.onChange,
-      required this.patrolsSignedIn,
-      required this.txtValueAmount,
-      required this.listBankData,
-      required this.onSubmit(ScanData scanData)})
+  const Banking({Key? key,
+    required this.activitiesData,
+    required this.scanData,
+    required this.onChange,
+    required this.patrolsSignedIn,
+    required this.txtValueAmount,
+    required this.listBankData,
+    required this.onSubmit(ScanData scanData)})
       : super(key: key);
 
   final List<ActivityData> activitiesData;
@@ -181,8 +180,10 @@ class _BankingState extends State<Banking> {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: ElevatedButton(
               onPressed: () {
-                widget.scanData.scanTime = Utils().getCurrentDateSQL();
-                widget.onSubmit(widget.scanData);
+                setState(() {
+                  widget.scanData.scanTime = Utils().getCurrentDateSQL();
+                  widget.onSubmit(widget.scanData);
+                });
               },
               child: const Text("Submit"),
             ),

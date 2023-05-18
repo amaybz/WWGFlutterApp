@@ -39,6 +39,8 @@ class Info extends StatefulWidget {
 class _InfoState extends State<Info> {
   DataManager dataManager = DataManager();
   Utils utils = Utils();
+  int patrolBalance = 0;
+  int baseBalance = 0;
   List<DropdownMenuItem<String>> listPatrolsDropdown = [
     const DropdownMenuItem(value: "0", child: Text("Please Sign in a Patrol"))
   ];
@@ -48,6 +50,9 @@ class _InfoState extends State<Info> {
     super.initState();
     updatePatrolsDropDown();
     dataManager.uploadOfflineScans();
+    getBaseBalance(Utils()
+        .getFractionDataByID(widget.baseData.iDFaction!, widget.fractions)
+        .factionName!);
   }
 
   void updatePatrolsDropDown() {
@@ -63,6 +68,42 @@ class _InfoState extends State<Info> {
     listPatrolsDropdown.clear();
     listPatrolsDropdown
         .addAll(utils.convertPatrolsListToDropDownList(widget.patrolsSignedIn));
+  }
+
+  Future<int> getPatrolBalance(String gameTag, account) async {
+    DataManager dataManager = DataManager();
+    ScanResults scanResults = ScanResults();
+    setState(() {
+      patrolBalance = 0;
+    });
+    int balance = 0;
+    Utils utils = Utils();
+    if (widget.scanData.gameTag != null) {
+      scanResults = await dataManager.getScanData(widget.scanData.gameID!);
+      balance = utils.getBankBalancePatrol(
+          scanResults, gameTag, account, widget.scanData.gameID!);
+      setState(() {
+        patrolBalance = balance;
+      });
+    }
+
+    return balance;
+  }
+
+  Future<int> getBaseBalance(String account) async {
+    DataManager dataManager = DataManager();
+    ScanResults scanResults = ScanResults();
+    int balance = 0;
+    Utils utils = Utils();
+
+    scanResults = await dataManager.getScanData(widget.scanData.gameID!);
+    balance = utils.getBankBalanceBase(
+        scanResults, widget.baseData.baseID!, account, widget.scanData.gameID!);
+    setState(() {
+      baseBalance = balance;
+    });
+
+    return balance;
   }
 
   @override
@@ -112,6 +153,24 @@ class _InfoState extends State<Info> {
                             .getFractionDataByID(
                                 widget.baseData.iDFaction!, widget.fractions)
                             .factionName!),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Base Balance: ",
+                            style: Theme.of(context).textTheme.titleSmall),
+                        Text(baseBalance.toString()),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Base Level: ",
+                            style: Theme.of(context).textTheme.titleSmall),
+                        Text(widget.baseData.level.toString()),
                       ],
                     ),
                     Row(
@@ -169,6 +228,13 @@ class _InfoState extends State<Info> {
                               setState(() {
                                 widget.scanData.gameTag = item.toString();
                                 updatePatrolsDropDown();
+                                getPatrolBalance(
+                                    widget.scanData.gameTag!, "Patrol");
+                                getBaseBalance(Utils()
+                                    .getFractionDataByID(
+                                        widget.baseData.iDFaction!,
+                                        widget.fractions)
+                                    .factionName!);
                               });
                             },
                           ),
@@ -180,6 +246,7 @@ class _InfoState extends State<Info> {
                       patrols: widget.patrols,
                       groups: widget.groups,
                       fractions: widget.fractions,
+                      bankBalance: patrolBalance,
                     ),
                   ],
                 )),
