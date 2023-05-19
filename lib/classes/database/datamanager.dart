@@ -392,17 +392,19 @@ class DataManager {
             //print(insertId);
           }
         }
+      } else {
+        if (!kIsWeb) {
+          listBankData = await localDB.listBankData();
+        }
       }
-      else {
-        listBankData = await localDB.listBankData();
-      }
-
       return listBankData;
     } else {
-      if (kDebugMode) {
-        print("DataManager: Loading Bank Config from local DB");
+      if (!kIsWeb) {
+        if (kDebugMode) {
+          print("DataManager: Loading Bank Config from local DB");
+        }
+        listBankData = await localDB.listBankData();
       }
-      listBankData = await localDB.listBankData();
       return listBankData;
     }
   }
