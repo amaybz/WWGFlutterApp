@@ -101,12 +101,17 @@ class Utils {
         baseScanResults.data?.where((i) => i.comment == "Withdrawal").toList();
 
     var deposits = 0;
-    for (var i = 0; i < baseDeposits.data!.length; i++) {
+    int? bankDepositsLength = 0;
+    bankDepositsLength = baseDeposits.data?.length;
+    bankDepositsLength ??= 0;
+    for (var i = 0; i < bankDepositsLength; i++) {
       deposits += baseDeposits.data![i].resultValue!;
     }
-
+    int? bankWithdrawalsLength = 0;
+    bankWithdrawalsLength = baseWithdrawals.data?.length;
+    bankWithdrawalsLength ??= 0;
     var withdrawals = 0;
-    for (var i = 0; i < baseWithdrawals.data!.length; i++) {
+    for (var i = 0; i < bankWithdrawalsLength; i++) {
       withdrawals += baseWithdrawals.data![i].resultValue!;
     }
 

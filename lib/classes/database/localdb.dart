@@ -433,6 +433,19 @@ class LocalDB {
     return updateCount;
   }
 
+  Future<List<ScanData>> listScanData() async {
+    // Get a reference to the database.
+    final Database? db = await database;
+
+    // Query the table for all records.
+    final List<Map<dynamic, dynamic>>? maps = await db?.query(tblScan);
+
+    // Convert the List<Map<String, dynamic> into a List<Dog>.
+    return List.generate(maps!.length, (i) {
+      return ScanData.fromJson(maps[i] as Map<String, dynamic>);
+    });
+  }
+
   Future<List<BaseData>> listBaseData() async {
     // Get a reference to the database.
     final Database? db = await database;
