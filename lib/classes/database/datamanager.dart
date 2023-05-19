@@ -199,7 +199,7 @@ class DataManager {
   Future<bool> validateAPIToken() async {
     webAPI.setApiKey(await mySharedPrefs.readStr('apikey'));
     APIValidateToken apiValidateToken =
-    await webAPI.validateToken(webAPI.getApiKey);
+        await webAPI.validateToken(webAPI.getApiKey);
     if (apiValidateToken.message == "Unauthorized") {
       return false;
     }
@@ -210,35 +210,42 @@ class DataManager {
   }
 
   Future<bool> uploadOfflineScans() async {
-    if (!kIsWeb && !webAPI.getOffLine) {
-      List<ScanData> offlineData = await localDB.listScanDataOfflineRecords();
-      print("DataManager: offline Scan Data Records: ${offlineData.length}");
-      if (offlineData.isNotEmpty) {
-        List<dynamic> response =
-        await webAPI.uploadOfflineScanData(offlineData);
-        if (kDebugMode) {
-          print(response);
-        }
-        for (var i = 0; i < response.length; i++) {
-          if (response[i]["Uploaded"] == true) {
-            int? updateCount = await localDB.updateOfflineScanData(
-                response[i]["GameTag"], response[i]["ScanTime"], 0);
-            if (updateCount == 0) {
-              print("DataManager: Update to offline record FAILED!");
+    await isAPIOnline();
+    try {
+      if (!kIsWeb && !webAPI.getOffLine) {
+        List<ScanData> offlineData = await localDB.listScanDataOfflineRecords();
+        print("DataManager: offline Scan Data Records: ${offlineData.length}");
+        if (offlineData.isNotEmpty) {
+          List<dynamic> response =
+              await webAPI.uploadOfflineScanData(offlineData);
+          if (kDebugMode) {
+            print(response);
+          }
+          for (var i = 0; i < response.length; i++) {
+            if (response[i]["Uploaded"] == true) {
+              int? updateCount = await localDB.updateOfflineScanData(
+                  response[i]["GameTag"], response[i]["ScanTime"], 0);
+              if (updateCount == 0) {
+                print("DataManager: Update to offline record FAILED!");
+              }
+            }
+            if (response[i]["Uploaded"] == false) {
+              int? updateCount = await localDB.updateOfflineScanData(
+                  response[i]["GameTag"], response[i]["ScanTime"], 3);
+              print(
+                  "DataManager: Offline Record error: Record marked as conflicted!");
+              if (updateCount == 0) {
+                print("DataManager: Update to offline record FAILED!");
+              }
             }
           }
-          if (response[i]["Uploaded"] == false) {
-            int? updateCount = await localDB.updateOfflineScanData(
-                response[i]["GameTag"], response[i]["ScanTime"], 3);
-            print(
-                "DataManager: Offline Record error: Record marked as conflicted!");
-            if (updateCount == 0) {
-              print("DataManager: Update to offline record FAILED!");
-            }
-          }
+          print("DataManager: Offline Records Submitted: ${response.length}");
+          return true;
         }
-        print("DataManager: Offline Records Submitted: ${response.length}");
-        return true;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
       }
     }
     return false;
@@ -248,7 +255,7 @@ class DataManager {
     ScanResults scanResults = ScanResults();
     await isAPIOnline();
     if (kDebugMode) {
-      print("DataManager: Getting ScanData");
+      print("DataManager: Getting Scan Data");
     }
     try {
       if (!kIsWeb && !webAPI.getOffLine) {
@@ -259,7 +266,7 @@ class DataManager {
 
         if (offlineData.isNotEmpty) {
           List<dynamic> response =
-          await webAPI.uploadOfflineScanData(offlineData);
+              await webAPI.uploadOfflineScanData(offlineData);
           if (kDebugMode) {
             print("DataManager: $response");
           }
@@ -279,13 +286,29 @@ class DataManager {
           }
         }
       }
+      if (kIsWeb) {
+        scanResults = await webAPI.getScanResults(gameID);
+      }
+      if (!kIsWeb && webAPI.getOffLine) {
+        scanResults.data = await localDB.listScanData();
+        if (kDebugMode) {
+          print("DataManager: API Offline: Loading Local Data.");
+        }
+      }
     } on SocketException {
+      webAPI.setOffline(true);
+      //get data from local DB
+      scanResults.data = await localDB.listScanData();
+      if (kDebugMode) {
+        print("DataManager: SocketException: Loading Local Data.");
+      }
+    } on TimeoutException {
       webAPI.setOffline(true);
       //get data from local DB
       scanResults.data = await localDB.listScanData();
 
       if (kDebugMode) {
-        print("DataManager: Unable to get ScanData from API.");
+        print("DataManager: TimeoutException: Loading Local Data.");
       }
     } catch (e) {
       if (kDebugMode) {
@@ -295,8 +318,8 @@ class DataManager {
     return scanResults;
   }
 
-  Future<List<PatrolSignIn>?> getSignedInPatrols(String gameID,
-      String baseCode) async {
+  Future<List<PatrolSignIn>?> getSignedInPatrols(
+      String gameID, String baseCode) async {
     List<PatrolSignIn> patrolsSignIn = [];
     await isAPIOnline();
     try {
@@ -309,7 +332,7 @@ class DataManager {
       // check for offline patrols and sync data to local DB
       if (!kIsWeb && !webAPI.getOffLine) {
         List<PatrolSignIn> offlineData =
-        await localDB.listPatrolSignInOfflineRecords();
+            await localDB.listPatrolSignInOfflineRecords();
         if (kDebugMode) {
           print(
               "DataManager: offline Base Sign in Data: ${offlineData.length}");
@@ -318,7 +341,7 @@ class DataManager {
 
         if (offlineData.isNotEmpty) {
           List<dynamic> response =
-          await webAPI.signedInPatrolsUploadOffline(offlineData);
+              await webAPI.signedInPatrolsUploadOffline(offlineData);
           if (kDebugMode) {
             print(response);
           }
@@ -675,8 +698,8 @@ class DataManager {
     return baseLevels.data;
   }
 
-  Future<List<ActivityData>?> getActivitiesByGameID(String gameID,
-      bool offline) async {
+  Future<List<ActivityData>?> getActivitiesByGameID(
+      String gameID, bool offline) async {
     Activities activities = Activities();
     if (!offline) {
       try {
@@ -718,8 +741,8 @@ class DataManager {
     }
   }
 
-  Future<List<PatrolData>?> getPatrolsByGameID(String gameID,
-      bool offline) async {
+  Future<List<PatrolData>?> getPatrolsByGameID(
+      String gameID, bool offline) async {
     PatrolResults patrolResults = PatrolResults();
     if (!offline) {
       try {
