@@ -171,6 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getFactions(int.parse(selectedGame!));
     getScanData(int.parse(selectedGame!));
     dataManager.getBaseLevels();
+    dataManager.getBankData();
   }
 
   Future<String?> getGames() async {
@@ -283,6 +284,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getFactions(int.parse(selectedGame!));
     getScanData(int.parse(selectedGame!));
     loggedIn = await webAPI.getLoggedIn;
+    dataManager.getBankData();
     if (loggedIn) {
       setState(() {
         loginMenuText = "Change User";
