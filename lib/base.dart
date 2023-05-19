@@ -306,6 +306,7 @@ class _BaseState extends State<Base> {
       scanData.offline ??= 0;
       scanData.resultValue ??= 0;
       scanData.result = "Success";
+      scanData.baseID = widget.base.baseID;
       resultSubmitted = await dataManager.insertScan(scanData);
     }
     if (resultSubmitted) {
@@ -354,6 +355,7 @@ class _BaseState extends State<Base> {
       scanData.comment ??= "";
       scanData.offline ??= 0;
       scanData.resultValue ??= 0;
+      scanData.baseID = widget.base.baseID;
       resultSubmitted = await dataManager.insertScan(scanData);
       if (!resultSubmitted) {
         error = "Upload Failed";
