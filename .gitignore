@@ -16,6 +16,7 @@
 .idea/
 /build/app/
 /build/kotlin/
+/build/ios/
 /build/package_info_plus/
 /build/shared_preferences_android/
 /build/6ac7e3556c178af6e3e303b5d6ac7d62/
@@ -58,3 +59,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+/build/17f84896788e1f3fe52c875e0782b01d/
+/build/058da3547cf3b90fafce886fc49fc1fd.cache.dill.track.dill
