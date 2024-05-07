@@ -61,3 +61,7 @@ app.*.map.json
 
 /build/17f84896788e1f3fe52c875e0782b01d/
 /build/058da3547cf3b90fafce886fc49fc1fd.cache.dill.track.dill
+/build/166e0478a0c604b85b0b362a0cfb10b2/_composite.stamp
+/build/166e0478a0c604b85b0b362a0cfb10b2/gen_dart_plugin_registrant.stamp
+/build/166e0478a0c604b85b0b362a0cfb10b2/gen_localizations.stamp
+/build/a46f85df11ed3d278105635939097b84.cache.dill.track.dill
