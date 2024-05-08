@@ -328,6 +328,7 @@ class _BaseState extends State<Base> {
         scanData.resultValue = 0;
         txtValueResult.text = "";
         scanData.comment = null;
+        txtValueAmount.text = "";
       });
     } else {
       DialogBuilder(context).showAlertOKDialog("Result", "Error: " + error);

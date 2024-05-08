@@ -9,14 +9,15 @@ import '../classes/scan_results.dart';
 import '../classes/utils.dart';
 
 class Banking extends StatefulWidget {
-  const Banking({Key? key,
-    required this.activitiesData,
-    required this.scanData,
-    required this.onChange,
-    required this.patrolsSignedIn,
-    required this.txtValueAmount,
-    required this.listBankData,
-    required this.onSubmit(ScanData scanData)})
+  const Banking(
+      {Key? key,
+      required this.activitiesData,
+      required this.scanData,
+      required this.onChange,
+      required this.patrolsSignedIn,
+      required this.txtValueAmount,
+      required this.listBankData,
+      required this.onSubmit(ScanData scanData)})
       : super(key: key);
 
   final List<ActivityData> activitiesData;
@@ -81,6 +82,30 @@ class _BankingState extends State<Banking> {
     widget.scanData.comment = null;
   }
 
+  void updateTransactionType() {
+    for (int i = 0; i < widget.listBankData.length; i++) {
+      if (widget.listBankData[i].accountName ==
+          widget.scanData.iDActivityCode) {
+        if (widget.listBankData[i].withdraw == 0) {
+          widget.scanData.comment = null;
+          listTransactionTypes.clear();
+          listTransactionTypes.add(
+              const DropdownMenuItem(value: "Deposit", child: Text("Deposit")));
+        } else {
+          widget.scanData.comment = null;
+          listTransactionTypes.clear();
+          listTransactionTypes.add(
+            const DropdownMenuItem(value: "Deposit", child: Text("Deposit")),
+          );
+          listTransactionTypes.add(
+            const DropdownMenuItem(
+                value: "Withdrawal", child: Text("Withdrawal")),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     //Patrol
@@ -128,6 +153,7 @@ class _BankingState extends State<Banking> {
                   onChanged: (item) {
                     setState(() {
                       widget.scanData.iDActivityCode = item.toString();
+                      updateTransactionType();
                     });
                   },
                 ),
