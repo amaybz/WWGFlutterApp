@@ -567,12 +567,13 @@ class DataManager {
       if (!kIsWeb && !webAPI.getOffLine) {
         if (kDebugMode) {
           print("DataManager: Saving Base data to local DB");
+          print(bases.data);
         }
-        await localDB.clearBaseData();
+        //await localDB.clearBaseData();
         for (BaseData baseData in bases.data!) {
           int? insertId = await localDB.insertBaseData(baseData);
           if (kDebugMode) {
-            //print(insertId);
+            print(insertId);
           }
         }
       }

@@ -73,6 +73,7 @@ class _BankingState extends State<Banking> {
 
   void updateAccountsDropDown() {
     widget.scanData.iDActivityCode = null;
+    widget.scanData.activityID = null;
     listAccountsDropdown.clear();
     listAccountsDropdown.addAll(
         utils.convertListBankDataToAccountsDropDownList(widget.listBankData));

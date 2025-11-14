@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nfc_manager/ndef_record.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:nfc_manager/nfc_manager_android.dart';
 import 'package:simple_barcode_scanner/enum.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:wwgnfcscoringsystem/classes/patrol_results.dart';
 import 'package:wwgnfcscoringsystem/classes/utils.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 import '../classes/database/datamanager.dart';
 import '../classes/patrol_sign_in.dart';
@@ -51,8 +52,13 @@ class _ScanPatrolState extends State<ScanPatrol> {
     if (kDebugMode) {
       print("NFC: Starting Session");
     }
-    if(!kIsWeb ) {
+    if (!kIsWeb) {
       NfcManager.instance.startSession(
+        pollingOptions: {
+          NfcPollingOption.iso14443,
+          NfcPollingOption.iso15693,
+          NfcPollingOption.iso18092
+        },
         onDiscovered: (tag) async {
           try {
             final result = await handleTag(tag);
@@ -72,13 +78,11 @@ class _ScanPatrolState extends State<ScanPatrol> {
         },
       ).catchError((e) => setState(() => ndefText = '$e'));
       nfcAvailable();
-    }
-    else
-      {
-        if (kDebugMode) {
-          print("NFC not supported on WEB");
-        }
+    } else {
+      if (kDebugMode) {
+        print("NFC not supported on WEB");
       }
+    }
   }
 
   @override
@@ -122,17 +126,19 @@ class _ScanPatrolState extends State<ScanPatrol> {
   Future<String?> handleTag(NfcTag tag) async {
     await nfcAvailable();
     if (isAvailable) {
-      nfcResult = tag.data;
+      //nfcResult = tag.data;
+
       if (kDebugMode) {
+        tag.toString();
         print(nfcResult);
       }
-      var ndef = Ndef.from(tag);
+      var ndef = NdefAndroid.from(tag);
 
-      ndefMessage = await ndef?.read();
+      ndefMessage = await ndef?.getNdefMessage();
       NdefRecord? ndefRecord = ndefMessage?.records.first;
 
       //decode identifier
-      final Uint8List ndefTagId = ndef?.additionalData["identifier"];
+      final Uint8List? ndefTagId = ndef?.tag.id;
       ndefId = ndefTagId.toString();
       //decode Message
       final languageCodeLength = ndefRecord?.payload.first;
@@ -162,26 +168,35 @@ class _ScanPatrolState extends State<ScanPatrol> {
         var res = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const SimpleBarcodeScannerPage(scanType: ScanType.qr,appBarTitle: "Scan Patrol Tag",),
+              builder: (context) => const SimpleBarcodeScannerPage(
+                scanType: ScanType.qr,
+                appBarTitle: "Scan Patrol Tag",
+              ),
             ));
         setState(() {
           if (res is String) {
             barcodeScanRes = res;
           }
         });
-      }
-      on PlatformException {
+      } on PlatformException {
         barcodeScanRes = 'Failed to get platform version.';
       }
-    }
-    else {
+    } else {
       // Platform messages may fail, so we use a try/catch PlatformException.
       try {
-        barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
-            '#ff6666', 'Cancel', true, ScanMode.QR);
-        if (kDebugMode) {
-          print(barcodeScanRes);
-        }
+        var res = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SimpleBarcodeScannerPage(
+                scanType: ScanType.qr,
+                appBarTitle: "Scan Patrol Tag",
+              ),
+            ));
+        setState(() {
+          if (res is String) {
+            barcodeScanRes = res;
+          }
+        });
       } on PlatformException {
         barcodeScanRes = 'Failed to get platform version.';
       }
@@ -214,52 +229,7 @@ class _ScanPatrolState extends State<ScanPatrol> {
             ),
           ),
           NFCScan(ndefText: ndefText, isAvailable: isAvailable),
-          FractionallySizedBox(
-            widthFactor: 0.99,
-            child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
-                  //color: Colors.red,
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10)),
-                ),
-                margin: const EdgeInsets.all(5.0),
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Image.asset(
-                          'assets/img/barcode.jpg',
-                          scale: 1,
-                        ),
-                        const Text("  Scan the Patrols barcode"),
-                        Expanded(
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                ElevatedButton(
-                                    onPressed: () {
-                                      scanQR();
-                                    },
-                                    child: const Text("Scan Barcode")),
-                              ]),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(_scanBarcode),
-                      ],
-                    ),
-                  ],
-                )),
-          ),
+          buildBarcodeSignIn(false),
           buildManSignIn(),
           Container(
             margin: const EdgeInsets.all(2.0),
@@ -274,6 +244,59 @@ class _ScanPatrolState extends State<ScanPatrol> {
             child: _buildListView(),
           ),
         ]);
+  }
+
+  Widget buildBarcodeSignIn(bool enabled) {
+    if (enabled) {
+      return FractionallySizedBox(
+        widthFactor: 0.99,
+        child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              //color: Colors.red,
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10)),
+            ),
+            margin: const EdgeInsets.all(5.0),
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      'assets/img/barcode.jpg',
+                      scale: 1,
+                    ),
+                    const Text("  Scan the Patrols barcode"),
+                    Expanded(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ElevatedButton(
+                                onPressed: () {
+                                  scanQR();
+                                },
+                                child: const Text("Scan Barcode")),
+                          ]),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(_scanBarcode),
+                  ],
+                ),
+              ],
+            )),
+      );
+    } else {
+      return const FractionallySizedBox(widthFactor: 0.99);
+    }
   }
 
   Widget buildManSignIn() {

@@ -177,7 +177,7 @@ class Utils {
     ];
 
     if (kDebugMode) {
-      print("#Accountss");
+      print("#Accounts");
       print(listBankData.length);
     }
 

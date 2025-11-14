@@ -41,6 +41,8 @@ class _InfoState extends State<Info> {
   Utils utils = Utils();
   int patrolBalance = 0;
   int baseBalance = 0;
+  int baseLevel = 0;
+  List<BaseData> basesData = [BaseData()];
   List<DropdownMenuItem<String>> listPatrolsDropdown = [
     const DropdownMenuItem(value: "0", child: Text("Please Sign in a Patrol"))
   ];
@@ -95,7 +97,10 @@ class _InfoState extends State<Info> {
     ScanResults scanResults = ScanResults();
     int balance = 0;
     Utils utils = Utils();
-
+    basesData = (await dataManager.getBasesByGameID(widget.scanData.gameID!))!;
+    BaseData baseData =
+        basesData.where((i) => i.baseID == widget.baseData.baseID!).first;
+    baseLevel = baseData.level!;
     scanResults = await dataManager.getScanData(widget.scanData.gameID!);
     balance = utils.getBankBalanceBase(
         scanResults, widget.baseData.baseID!, account, widget.scanData.gameID!);
@@ -170,7 +175,7 @@ class _InfoState extends State<Info> {
                       children: [
                         Text("Base Level: ",
                             style: Theme.of(context).textTheme.titleSmall),
-                        Text(widget.baseData.level.toString()),
+                        Text(baseLevel.toString()),
                       ],
                     ),
                     Row(

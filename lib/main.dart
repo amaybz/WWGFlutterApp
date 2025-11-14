@@ -156,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _navigateToLogin(context);
     }
 
-    dataManager.uploadOfflineScans();
+    await dataManager.uploadOfflineScans();
     await getGames();
     int userGameID = dataManager.getUserBaseID();
     if (userGameID > 0) {
