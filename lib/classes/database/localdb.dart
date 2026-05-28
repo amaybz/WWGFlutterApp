@@ -17,7 +17,7 @@ class LocalDB {
   static const _databaseName = "local_database.db";
 
   // Increment this version when you need to change the schema.
-  static const _databaseVersion = 21;
+  static const _databaseVersion = 22;
 
   final String tblBases = "tblbases";
   final String tblGameConfig = "tblgameconfig";
@@ -72,7 +72,8 @@ class LocalDB {
         "LevelDisplayValue TEXT,"
         "LevelRequirement INTEGER)";
 
-    final String createTblBases = "CREATE TABLE IF NOT EXISTS $tblBases("
+    final String createTblBases =
+        "CREATE TABLE IF NOT EXISTS $tblBases("
         "BaseID INTEGER PRIMARY KEY, "
         "GameID INTEGER, "
         "BaseName TEXT,"
@@ -146,7 +147,8 @@ class LocalDB {
         "GameID INTEGER"
         ")";
 
-    final String createTblPatrols = "CREATE TABLE IF NOT EXISTS $tblPatrols"
+    final String createTblPatrols =
+        "CREATE TABLE IF NOT EXISTS $tblPatrols"
         "("
         "IDPatrol INTEGER PRIMARY KEY, "
         "IDGroup INTEGER, "
@@ -171,7 +173,8 @@ class LocalDB {
         "offline INTEGER"
         ")";
 
-    final String createTblScan = "CREATE TABLE IF NOT EXISTS $tblScan"
+    final String createTblScan =
+        "CREATE TABLE IF NOT EXISTS $tblScan"
         "("
         "GameTag TEXT NOT NULL, "
         "ScanTime TEXT NOT NULL, "
@@ -193,14 +196,16 @@ class LocalDB {
         "PRIMARY KEY (GameTag, ScanTime)"
         ")";
 
-    final String createTblFaction = "CREATE TABLE IF NOT EXISTS $tblFaction"
+    final String createTblFaction =
+        "CREATE TABLE IF NOT EXISTS $tblFaction"
         "("
         "IDFaction INTEGER PRIMARY KEY, "
         "FactionName TEXT, "
         "GameID INTEGER"
         ")";
 
-    final String createTblGroup = "CREATE TABLE IF NOT EXISTS $tblGroup"
+    final String createTblGroup =
+        "CREATE TABLE IF NOT EXISTS $tblGroup"
         "("
         "IDGroup INTEGER PRIMARY KEY, "
         "GroupName TEXT, "
@@ -352,8 +357,11 @@ class LocalDB {
     final Database? db = await database;
 
     // Query the table for all records.
-    final List<Map<dynamic, dynamic>>? maps =
-        await db?.query(tblBaseSignIn, where: 'Status=?', whereArgs: [1]);
+    final List<Map<dynamic, dynamic>>? maps = await db?.query(
+      tblBaseSignIn,
+      where: 'Status=?',
+      whereArgs: [1],
+    );
 
     // Convert the List<Map<String, dynamic> into a List<Dog>.
     return List.generate(maps!.length, (i) {
@@ -365,8 +373,11 @@ class LocalDB {
     // Get a reference to the database.
     final Database? db = await database;
     // Query the table for all records.
-    final List<Map<String, dynamic>>? maps = await db?.query(tblBaseSignIn,
-        where: 'IDPatrol=?, Status=1', whereArgs: [gameTag]);
+    final List<Map<String, dynamic>>? maps = await db?.query(
+      tblBaseSignIn,
+      where: 'IDPatrol=?, Status=1',
+      whereArgs: [gameTag],
+    );
     List<PatrolSignIn> patrolSignIns = [];
     patrolSignIns = List.generate(maps!.length, (i) {
       return PatrolSignIn.fromJson(maps[i]);
@@ -390,9 +401,12 @@ class LocalDB {
     };
     int? updateCount = 0;
     // do the update and get the number of affected rows
-    updateCount = await db?.update(tblBaseSignIn, row,
-        where: 'IDPatrol=? and Status=1 and IDBaseCode=?',
-        whereArgs: [patrolSignIn.iDPatrol, patrolSignIn.iDBaseCode]);
+    updateCount = await db?.update(
+      tblBaseSignIn,
+      row,
+      where: 'IDPatrol=? and Status=1 and IDBaseCode=?',
+      whereArgs: [patrolSignIn.iDPatrol, patrolSignIn.iDBaseCode],
+    );
     return updateCount;
   }
 
@@ -400,8 +414,11 @@ class LocalDB {
     // Get a reference to the database.
     final Database? db = await database;
     // Query the table for all records.
-    final List<Map<String, dynamic>>? maps =
-        await db?.query(tblBaseSignIn, where: 'offline=?', whereArgs: [1]);
+    final List<Map<String, dynamic>>? maps = await db?.query(
+      tblBaseSignIn,
+      where: 'offline=?',
+      whereArgs: [1],
+    );
     // Convert the List<Map<String, dynamic> into a List<Dog>.
     return List.generate(maps!.length, (i) {
       return PatrolSignIn.fromJson(maps[i]);
@@ -412,8 +429,11 @@ class LocalDB {
     // Get a reference to the database.
     final Database? db = await database;
     // Query the table for all records.
-    final List<Map<String, dynamic>>? maps =
-        await db?.query(tblScan, where: 'offline=?', whereArgs: [1]);
+    final List<Map<String, dynamic>>? maps = await db?.query(
+      tblScan,
+      where: 'offline=?',
+      whereArgs: [1],
+    );
     // Convert the List<Map<String, dynamic> into a List<Dog>.
     return List.generate(maps!.length, (i) {
       return ScanData.fromJson(maps[i]);
@@ -421,15 +441,22 @@ class LocalDB {
   }
 
   Future<int?> updateOfflineScanData(
-      String gameTag, String scanTime, int status) async {
+    String gameTag,
+    String scanTime,
+    int status,
+  ) async {
     // Get a reference to the database.
     final Database? db = await database;
 
     Map<String, dynamic> row = {"Offline": status};
     int? updateCount = 0;
     // do the update and get the number of affected rows
-    updateCount = await db?.update(tblScan, row,
-        where: 'GameTag=? and ScanTime=?', whereArgs: [gameTag, scanTime]);
+    updateCount = await db?.update(
+      tblScan,
+      row,
+      where: 'GameTag=? and ScanTime=?',
+      whereArgs: [gameTag, scanTime],
+    );
     return updateCount;
   }
 

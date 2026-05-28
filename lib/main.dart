@@ -363,7 +363,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            AdminMenu(accessLevel: accessLevel),
+            AdminMenu(accessLevel: accessLevel, gameID: int.parse(selectedGame!)),
           ],
         ),
       ),

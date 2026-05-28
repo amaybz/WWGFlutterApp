@@ -154,7 +154,9 @@ class WebAPI {
     BasesResults bases = BasesResults();
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
-        'POST', Uri.parse('${_apiLink!}bases/GetAllBasesByGameID.php'));
+      'POST',
+      Uri.parse('${_apiLink!}bases/GetAllBasesByGameID.php'),
+    );
     request.body = '{"GameID" : "$gameID"}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -227,7 +229,9 @@ class WebAPI {
     ScanResults scanResults = ScanResults();
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
-        'POST', Uri.parse('${_apiLink!}scan/GetAllScanResultsbyGameID.php'));
+      'POST',
+      Uri.parse('${_apiLink!}scan/GetAllScanResultsbyGameID.php'),
+    );
     request.body = '{"GameID" : $gameID}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -251,8 +255,10 @@ class WebAPI {
   Future<Activities> getActivitiesByGameID(String gameID) async {
     Activities activities = Activities();
     var headers = {'Authorization': _apiKey!};
-    var request = http.Request('POST',
-        Uri.parse('${_apiLink!}activities/GetAllActivitiesByGameID.php'));
+    var request = http.Request(
+      'POST',
+      Uri.parse('${_apiLink!}activities/GetAllActivitiesByGameID.php'),
+    );
     request.body = '{"GameID" : $gameID}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -277,7 +283,9 @@ class WebAPI {
     PatrolResults patrolResults = PatrolResults();
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
-        'POST', Uri.parse('${_apiLink!}patrols/GetAllPatrolsByGameID.php'));
+      'POST',
+      Uri.parse('${_apiLink!}patrols/GetAllPatrolsByGameID.php'),
+    );
     request.body = '{"GameID" : $gameID}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -299,11 +307,15 @@ class WebAPI {
   }
 
   Future<List<PatrolSignIn>> getSignedInPatrols(
-      String gameID, String baseCode) async {
+    String gameID,
+    String baseCode,
+  ) async {
     List<PatrolSignIn> patrolSignIn = [];
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
-        'POST', Uri.parse('${_apiLink!}basesignin/all_patrols_signed_in.php'));
+      'POST',
+      Uri.parse('${_apiLink!}basesignin/all_patrols_signed_in.php'),
+    );
     request.body = '{"IDBaseCode" : "$baseCode","GameID" : $gameID}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -327,10 +339,13 @@ class WebAPI {
   }
 
   Future<List<dynamic>> uploadOfflineScanData(
-      List<ScanData> offlineData) async {
+    List<ScanData> offlineData,
+  ) async {
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
-        'POST', Uri.parse('${_apiLink!}scan/UploadOfflineResults.php'));
+      'POST',
+      Uri.parse('${_apiLink!}scan/UploadOfflineResults.php'),
+    );
     request.body = jsonEncode(offlineData);
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -354,10 +369,13 @@ class WebAPI {
   }
 
   Future<List<dynamic>> signedInPatrolsUploadOffline(
-      List<PatrolSignIn> offlinePatrols) async {
+    List<PatrolSignIn> offlinePatrols,
+  ) async {
     var headers = {'Authorization': _apiKey!};
     var request = http.Request(
-        'POST', Uri.parse('${_apiLink!}basesignin/UploadOfflineResults.php'));
+      'POST',
+      Uri.parse('${_apiLink!}basesignin/UploadOfflineResults.php'),
+    );
     request.body = jsonEncode(offlinePatrols);
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -382,9 +400,12 @@ class WebAPI {
 
   Future<bool> setPatrolSignIn(PatrolSignIn patrolSignIn) async {
     var headers = {'Authorization': _apiKey!};
-    var request =
-        http.Request('POST', Uri.parse('${_apiLink!}basesignin/sign_in.php'));
-    request.body = '{"IDPatrol" : "${patrolSignIn.iDPatrol!}",'
+    var request = http.Request(
+      'POST',
+      Uri.parse('${_apiLink!}basesignin/sign_in.php'),
+    );
+    request.body =
+        '{"IDPatrol" : "${patrolSignIn.iDPatrol!}",'
         ' "IDBaseCode" : "${patrolSignIn.iDBaseCode!}",'
         ' "GameID" : "${patrolSignIn.gameID}",'
         ' "ScanIn" : "${patrolSignIn.scanIn}",'
@@ -414,7 +435,8 @@ class WebAPI {
   Future<bool> setBaseLevel(BaseData baseData) async {
     var headers = {'Authorization': _apiKey!};
     var request = http.Request('POST', Uri.parse('${_apiLink!}bases/levelup/'));
-    request.body = '{"BaseID" : "${baseData.baseID!}",'
+    request.body =
+        '{"BaseID" : "${baseData.baseID!}",'
         ' "level" : "${baseData.level!}"}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -438,11 +460,42 @@ class WebAPI {
     return false;
   }
 
+  Future<bool> submitScoreAdjustment(
+    int gameID,
+    String gameTag,
+    double points,
+    String comment,
+  ) async {
+    var headers = {'Authorization': _apiKey!};
+    var request = http.Request(
+      'POST',
+      Uri.parse('${_apiLink!}adjustments/'),
+    ); // Need to confirm endpoint
+    request.body =
+        '{"GameID" : "$gameID",'
+        ' "GameTag" : "$gameTag",'
+        ' "Points" : "$points",'
+        ' "Comment" : "$comment"}';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 201) {
+      String strJsonData = await response.stream.bytesToString();
+      if (kDebugMode) {
+        print("WWG_API: adjustments : $strJsonData");
+      }
+      return true;
+    }
+    return false;
+  }
+
   Future<bool> setPatrolSignOut(PatrolSignIn patrolSignIn) async {
     var headers = {'Authorization': _apiKey!};
-    var request =
-        http.Request('POST', Uri.parse('${_apiLink!}basesignin/sign_out.php'));
-    request.body = '{"IDPatrol" : "${patrolSignIn.iDPatrol!}",'
+    var request = http.Request(
+      'POST',
+      Uri.parse('${_apiLink!}basesignin/sign_out.php'),
+    );
+    request.body =
+        '{"IDPatrol" : "${patrolSignIn.iDPatrol!}",'
         ' "IDBaseCode" : "${patrolSignIn.iDBaseCode!}",'
         ' "GameID" : "${patrolSignIn.gameID}",'
         ' "ScanOut" : "${patrolSignIn.scanOut}",'
@@ -471,9 +524,12 @@ class WebAPI {
 
   Future<bool> insertScan(ScanData scanData) async {
     var headers = {'Authorization': _apiKey!};
-    var request =
-        http.Request('POST', Uri.parse('${_apiLink!}scan/insertScan.php'));
-    request.body = '{"GameTag" : "${scanData.gameTag!}",'
+    var request = http.Request(
+      'POST',
+      Uri.parse('${_apiLink!}scan/insertScan.php'),
+    );
+    request.body =
+        '{"GameTag" : "${scanData.gameTag!}",'
         ' "ScanTime" : "${scanData.scanTime!}",'
         ' "GameID" : "${scanData.gameID}",'
         ' "BaseID" : ${scanData.baseID},'
@@ -515,8 +571,10 @@ class WebAPI {
   Future<APIValidateToken> validateToken(String token) async {
     APIValidateToken apiValidateToken = APIValidateToken();
     var headers = {'Authorization': token};
-    var request =
-        http.Request('POST', Uri.parse('${_apiLink!}validate_token.php'));
+    var request = http.Request(
+      'POST',
+      Uri.parse('${_apiLink!}validate_token.php'),
+    );
     request.body = '';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -614,14 +672,15 @@ class ValidateData {
   int? baseID;
   int? manSignIn;
 
-  ValidateData(
-      {this.id,
-      this.username,
-      this.name,
-      this.access,
-      this.gameID,
-      this.baseID,
-      this.manSignIn});
+  ValidateData({
+    this.id,
+    this.username,
+    this.name,
+    this.access,
+    this.gameID,
+    this.baseID,
+    this.manSignIn,
+  });
 
   ValidateData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
