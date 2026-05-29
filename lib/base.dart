@@ -296,8 +296,7 @@ class _BaseState extends State<Base> {
   submitBankResult(submittedScanData) async {
     bool resultSubmitted = false;
     scanData = submittedScanData;
-    if (scanData.iDBaseCode != null &&
-        scanData.iDActivityCode != null &&
+    if (scanData.iDActivityCode != null &&
         scanData.gameTag != null &&
         scanData.scanTime != null &&
         scanData.gameID != null) {
@@ -307,7 +306,14 @@ class _BaseState extends State<Base> {
       scanData.resultValue ??= 0;
       scanData.result = "Success";
       scanData.baseID = widget.base.baseID;
+      scanData.iDBaseCode = widget.base.baseCode;
+      
+      // Ensure activityID is set for the backend
+      if(scanData.activityID == null) scanData.activityID = 0; 
+      
       resultSubmitted = await dataManager.insertScan(scanData);
+    } else {
+      error = "Missing required fields: Account:${scanData.iDActivityCode}, Patrol:${scanData.gameTag}, Time:${scanData.scanTime}, GameID:${scanData.gameID}";
     }
     if (resultSubmitted) {
       AlertData alertData = AlertData(alert: false, alertMessage: "Submitted");

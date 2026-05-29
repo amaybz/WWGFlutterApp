@@ -16,22 +16,10 @@ class AdminMenu extends StatefulWidget {
 class _AdminMenuState extends State<AdminMenu> {
   @override
   Widget build(BuildContext context) {
-    if (widget.accessLevel < 1) {
+    if (widget.accessLevel == 2) {
       return Column(
         children: [
-          const Text("Admin Menu Testing"),
-          ListTile(
-            title: const Text("Local Scan Results"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LocalScanResultsPage(),
-                ),
-              );
-            },
-          ),
+          const Text("Admin Menu"),
           ListTile(
             title: const Text("Score Adjustment"),
             onTap: () {
@@ -41,6 +29,38 @@ class _AdminMenuState extends State<AdminMenu> {
                 MaterialPageRoute(
                   builder: (context) =>
                       NewScoreAdjustmentPage(gameID: widget.gameID),
+                ),
+              );
+            },
+          ),
+        ],
+      );
+    }
+    if (widget.accessLevel < 2) {
+      return Column(
+        children: [
+          const Text("Admin Menu"),
+          ListTile(
+            title: const Text("Score Adjustment"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      NewScoreAdjustmentPage(gameID: widget.gameID),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            title: const Text("Local Scan Results"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LocalScanResultsPage(),
                 ),
               );
             },

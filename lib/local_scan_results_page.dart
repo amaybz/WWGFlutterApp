@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wwgnfcscoringsystem/local_scan_detail_page.dart';
 import 'package:wwgnfcscoringsystem/classes/database/localdb.dart';
 import 'package:wwgnfcscoringsystem/classes/scan_results.dart';
 
@@ -22,6 +23,7 @@ class _LocalScanResultsPageState extends State<LocalScanResultsPage> {
 
   Future<void> _loadData() async {
     List<ScanData> data = await _localDB.listScanData();
+    data.sort((a, b) => b.scanTime!.compareTo(a.scanTime!));
     setState(() {
       _scanData = data;
       _isLoading = false;
@@ -81,10 +83,16 @@ class _LocalScanResultsPageState extends State<LocalScanResultsPage> {
               itemBuilder: (context, index) {
                 final scan = _scanData[index];
                 return ListTile(
-                  title: Text('Tag: ${scan.gameTag}'),
-                  subtitle: Text(
-                    'Time: ${scan.scanTime} | Result: ${scan.result} | Offline: ${scan.offline}',
-                  ),
+                  title: Text('Tag: ${scan.gameTag} | Base: ${scan.baseID}'),
+                  subtitle: Text('Activity: ${scan.activityID} | Time: ${scan.scanTime}'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LocalScanDetailPage(scan: scan),
+                      ),
+                    );
+                  },
                 );
               },
             ),
